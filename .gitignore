@@ -1,18 +1,14 @@
-*.gem
-*.rbc
-.bundle
-.config
-coverage
-InstalledFiles
-lib/bundler/man
-pkg
-rdoc
-spec/reports
-test/tmp
-test/version_tmp
-tmp
+# OS-specific
+.DS_Store
 
-# YARD artifacts
-.yardoc
-_yardoc
-doc/
+# Bundler/Rubygems
+*.gem
+.bundle
+pkg/*
+tags
+Gemfile.lock
+
+# Vagrant
+.vagrant
+Vagrantfile
+!example_box/Vagrantfile
