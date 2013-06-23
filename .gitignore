@@ -11,4 +11,5 @@ Gemfile.lock
 # Vagrant
 .vagrant
 Vagrantfile
-!example_box/Vagrantfile
+example_box/
+parallels.box
