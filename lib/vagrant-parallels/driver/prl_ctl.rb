@@ -210,7 +210,7 @@ module VagrantPlugins
           
           if output =~ /^VM is not found$/
             return :inaccessible
-          elsif state = JSON.parse(output)se
+          elsif state = JSON.parse(output)
             return state.first.fetch('status')
           end
 
