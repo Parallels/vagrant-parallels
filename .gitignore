@@ -7,9 +7,13 @@
 pkg/*
 tags
 Gemfile.lock
+test/tmp/
 
 # Vagrant
-.vagrant
+
+# Vagrant stuff
+acceptance_config.yml
+boxes/*
 Vagrantfile
-example_box/
-parallels.box
+.vagrant
+*.box
