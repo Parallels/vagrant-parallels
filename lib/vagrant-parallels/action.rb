@@ -97,6 +97,7 @@ module VagrantPlugins
       end
 
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
+      autoload :Created, File.expand_path("../action/created", __FILE__)
     end
   end
 end
