@@ -90,6 +90,10 @@ module VagrantPlugins
           b.use Call, Created do |env, b2|
             # If the VM is NOT created yet, then do the setup steps
             if !env[:result]
+              b2.use CheckAccessible
+              b2.use HandleBoxUrl
+              b2.use RegisterTemplate
+              b2.use Import
             end
           end
           # b.use action_start
@@ -98,6 +102,9 @@ module VagrantPlugins
 
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
+      autoload :Import, File.expand_path("../action/import", __FILE__)
+      autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
+      autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
     end
   end
 end
