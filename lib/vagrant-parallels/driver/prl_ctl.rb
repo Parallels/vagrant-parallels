@@ -40,7 +40,7 @@ module VagrantPlugins
         def read_state
           list = read_status(@uuid)
           return nil unless list
-          list.first.fetch('status')
+          list.first.fetch('status').to_sym
         end
 
         # Returns a list of all UUIDs of virtual machines currently
@@ -85,6 +85,14 @@ module VagrantPlugins
           execute('resume', @uuid)
         end
 
+        def suspend
+          execute('suspend', @uuid)
+        end
+
+        def start
+          execute('start', @uuid)
+        end
+
         def halt
           execute('stop', @uuid, '--kill')
         end
@@ -101,6 +109,24 @@ module VagrantPlugins
           !!read_status(name)
         end
 
+
+        def ssh_port(expected_port)
+          @logger.debug("Searching for SSH port: #{expected_port.inspect}")
+
+          # Look for the forwarded port only by comparing the guest port
+          read_forwarded_ports.each do |_, _, hostport, guestport|
+            return hostport if guestport == expected_port
+          end
+
+          nil
+        end
+
+        def read_guest_additions_version
+          settings = read_settings
+          return nil unless settings
+          settings.fetch('GuestTools').fetch('version')
+        end
+
         private
 
           def read_status(id='')
@@ -110,6 +136,46 @@ module VagrantPlugins
             rescue
               nil
             end
+          end
+
+          def read_settings(uuid)
+            begin
+              uuid ||= @uuid
+              output = execute('list', '--info', uuid, '--json')
+              JSON.parse(output.gsub(/^INFO\[/, '').gsub(/\]\n$/,''))
+            rescue
+              nil
+            end
+          end
+
+          def read_forwarded_ports(uuid=nil, active_only=false)
+            uuid ||= @uuid
+
+            @logger.debug("read_forward_ports: uuid=#{uuid} active_only=#{active_only}")
+
+            results = []
+            current_nic = nil
+            info = execute("showvminfo", uuid, "--machinereadable", :retryable => true)
+            info.split("\n").each do |line|
+              # This is how we find the nic that a FP is attached to,
+              # since this comes first.
+              current_nic = $1.to_i if line =~ /^nic(\d+)=".+?"$/
+
+              # If we care about active VMs only, then we check the state
+              # to verify the VM is running.
+              if active_only && line =~ /^VMState="(.+?)"$/ && $1.to_s != "running"
+                return []
+              end
+
+              # Parse out the forwarded port information
+              if line =~ /^Forwarding.+?="(.+?),.+?,.*?,(.+?),.*?,(.+?)"$/
+                result = [current_nic, $1.to_s, $2.to_i, $3.to_i]
+                @logger.debug("  - #{result.inspect}")
+                results << result
+              end
+            end
+
+            results
           end
 
           def suggest_vm_name

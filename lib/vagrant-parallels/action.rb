@@ -11,6 +11,27 @@ module VagrantPlugins
       # a bootup (i.e. not saved).
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckAccessible
+          # b.use CleanMachineFolder
+          # b.use SetName
+          # b.use ClearForwardedPorts
+          # b.use Provision
+          # b.use EnvSet, :port_collision_repair => true
+          # b.use PrepareForwardedPortCollisionParams
+          # b.use HandleForwardedPortCollisions
+          # b.use PruneNFSExports
+          # b.use NFS
+          # b.use PrepareNFSSettings
+          # b.use ClearSharedFolders
+          # b.use ShareFolders
+          # b.use ClearNetworkInterfaces
+          # b.use Network
+          # b.use ForwardPorts
+          # b.use SetHostname
+          # b.use SaneDefaults
+          # b.use Customize
+          b.use Boot
+          b.use CheckGuestAdditions
         end
       end
 
@@ -29,7 +50,7 @@ module VagrantPlugins
               if env2[:result]
                 b3.use ConfigValidate
                 b3.use CheckAccessible
-                b3.use EnvSet, :force_halt => true 
+                b3.use EnvSet, :force_halt => true
                 b3.use action_halt
                 b3.use Destroy
               else
@@ -83,6 +104,17 @@ module VagrantPlugins
       # machine back up with the new configuration.
       def self.action_reload
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use Call, Created do |env1, b2|
+            if !env1[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            b2.use ConfigValidate
+            b2.use action_halt
+            b2.use action_start
+          end
         end
       end
 
@@ -90,6 +122,18 @@ module VagrantPlugins
       # suspended machines.
       def self.action_resume
         Vagrant::Action::Builder.new.tap do |b|
+          Vagrant::Action::Builder.new.tap do |b|
+            b.use CheckParallels
+            b.use Call, Created do |env, b2|
+              if env[:result]
+                b2.use CheckAccessible
+                b2.use EnvSet, :port_collision_repair => false
+                b2.use Resume
+              else
+                b2.use MessageNotCreated
+              end
+            end
+          end
         end
       end
 
@@ -109,6 +153,34 @@ module VagrantPlugins
       # A precondition of this action is that the VM exists.
       def self.action_start
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use ConfigValidate
+          b.use Call, IsRunning do |env, b2|
+            # If the VM is running, then our work here is done, exit
+            if env[:result]
+              b2.use MessageAlreadyRunning
+              next
+            end
+
+            b2.use Call, IsSaved do |env2, b3|
+              if env2[:result]
+                # The VM is saved, so just resume it
+                b3.use action_resume
+                next
+              end
+
+              b3.use Call, IsPaused do |env3, b4|
+                if env3[:result]
+                  b4.use Resume
+                  next
+                end
+
+                # The VM is not saved, so we must have to boot it up
+                # like normal. Boot!
+                b4.use action_boot
+              end
+            end
+          end
         end
       end
 
@@ -116,6 +188,16 @@ module VagrantPlugins
       # the virtual machine.
       def self.action_suspend
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use Call, Created do |env, b2|
+            if env[:result]
+              b2.use CheckAccessible
+              b2.use Suspend
+            else
+              b2.use MessageNotCreated
+            end
+          end
+
         end
       end
 
@@ -134,7 +216,7 @@ module VagrantPlugins
               b2.use Import
             end
           end
-          # b.use action_start
+          b.use action_start
         end
       end
 
@@ -146,9 +228,12 @@ module VagrantPlugins
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
-      autoload :Resume, File.expand_path("../action/destroy", __FILE__)
+      autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
-
+      autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
+      autoload :IsSaved, File.expand_path("../action/is_saved", __FILE__)
+      autoload :Boot, File.expand_path("../action/boot", __FILE__)
+      autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
     end
   end
 end
