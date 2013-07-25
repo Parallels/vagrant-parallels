@@ -38,9 +38,9 @@ module VagrantPlugins
         #
         # @return [Symbol]
         def read_state
-          status = read_status(@uuid)
-          return nil unless status
-          read_status.fetch('status')
+          list = read_status(@uuid)
+          return nil unless list
+          list.first.fetch('status')
         end
 
         # Returns a list of all UUIDs of virtual machines currently
@@ -81,20 +81,35 @@ module VagrantPlugins
           name
         end
 
+        def resume
+          execute('resume', @uuid)
+        end
+
+        def halt
+          execute('stop', @uuid, '--kill')
+        end
+
+        def delete
+          execute('delete', @uuid)
+        end
+
         def register(pvm_file)
           execute("register", pvm_file)
         end
 
+        def registered?(name)
+          !!read_status(name)
+        end
+
         private
 
-          def read_status(id)
-            params = ['list']
-            params << id if id
-            params << '--all'
-            params << '--json'
-            output = execute(params)
-            return nil if output =~ /^VM is not found$/
-            JSON.parse(output)
+          def read_status(id='')
+            begin
+              output = execute('list', id, '--all', '--json')
+              JSON.parse(output)
+            rescue
+              nil
+            end
           end
 
           def suggest_vm_name

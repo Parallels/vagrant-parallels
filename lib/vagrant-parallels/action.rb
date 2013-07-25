@@ -18,6 +18,25 @@ module VagrantPlugins
       # freeing the resources of the underlying virtual machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use Call, Created do |env1, b2|
+            if !env1[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            b2.use Call, DestroyConfirm do |env2, b3|
+              if env2[:result]
+                b3.use ConfigValidate
+                b3.use CheckAccessible
+                b3.use EnvSet, :force_halt => true 
+                b3.use action_halt
+                b3.use Destroy
+              else
+                b3.use MessageWillNotDestroy
+              end
+            end
+          end
         end
       end
 
@@ -25,6 +44,25 @@ module VagrantPlugins
       # the virtual machine, gracefully or by force.
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use Call, Created do |env, b2|
+            if env[:result]
+              b2.use CheckAccessible
+
+              b2.use Call, IsPaused do |env2, b3|
+                next if !env2[:result]
+                b3.use Resume
+              end
+
+              b2.use Call, GracefulHalt, :poweroff, :running do |env2, b3|
+                if !env2[:result]
+                  b3.use ForcedHalt
+                end
+              end
+            else
+              b2.use MessageNotCreated
+            end
+          end
         end
       end
 
@@ -105,6 +143,12 @@ module VagrantPlugins
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
+      autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
+      autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
+      autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
+      autoload :Resume, File.expand_path("../action/destroy", __FILE__)
+      autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
+
     end
   end
 end

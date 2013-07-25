@@ -1,17 +1,15 @@
 module VagrantPlugins
   module Parallels
     module Action
-      class RegisterTemplate
+      class IsRunning
         def initialize(app, env)
           @app = app
         end
 
         def call(env)
-          pvm_file = env[:machine].box.directory.join('vagrant_parallels.pvm').to_s
-          
-          unless env[:machine].provider.driver.registered?('vagrant_parallels')
-            env[:machine].provider.driver.register(pvm_file)
-          end
+          # Set the result to be true if the machine is running.
+          env[:result] = env[:machine].state.id == :running
+
           # Call the next if we have one (but we shouldn't, since this
           # middleware is built to run with the Call-type middlewares)
           @app.call(env)
