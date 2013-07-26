@@ -10,9 +10,17 @@ module VagrantPlugins
           env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
                                :name => env[:machine].box.name)
 
+          prefix = env[:root_path].basename.to_s
+          prefix.gsub!(/[^-a-z0-9_]/i, "")
+          vm_name = prefix + "_#{Time.now.to_i}"
+        
+          # Verify the name is not taken
+          vms = env[:machine].provider.driver.read_vms
+          raise Vagrant::Errors::VMNameExists, :name => vm_name if vms.include?(vm_name)
+
           # Import the virtual machine
-          vm_name = 'vagrant_parallels'
-          env[:machine].id = env[:machine].provider.driver.import(vm_name) do |progress|
+          template_name = 'vagrant_parallels'
+          env[:machine].id = env[:machine].provider.driver.import(template_name, vm_name) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
           end

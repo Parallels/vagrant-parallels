@@ -50,7 +50,7 @@ module VagrantPlugins
         def read_vms
           list = read_status
           list.map do |item|
-            item.fetch('uuid')
+            item.fetch('name')
           end
         end
 
@@ -61,11 +61,9 @@ module VagrantPlugins
           execute('--version')
         end
 
-        def import(box_name)
+        def import(template_name, vm_name)
           last = 0
-          name = suggest_vm_name
-
-          execute("clone", box_name, '--name', name) do |type, data|
+          execute("clone", template_name, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
@@ -77,8 +75,7 @@ module VagrantPlugins
               end
             end
           end
-
-          name
+          vm_name
         end
 
         def resume
@@ -109,6 +106,9 @@ module VagrantPlugins
           !!read_status(name)
         end
 
+        def set_mac_address(mac)
+          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
+        end
 
         def ssh_port(expected_port)
           @logger.debug("Searching for SSH port: #{expected_port.inspect}")
@@ -176,10 +176,6 @@ module VagrantPlugins
             end
 
             results
-          end
-
-          def suggest_vm_name
-            Time.now.to_a.slice(0..5).reverse.join('')
           end
 
           # Execute the given subcommand for PrlCtl and return the output.

@@ -18,6 +18,7 @@ module VagrantPlugins
         end
 
         def wait_for_boot
+          require 'debugger'; debugger
           @env[:ui].info I18n.t("vagrant.actions.vm.boot.waiting")
 
           @env[:machine].config.ssh.max_tries.to_i.times do |i|
