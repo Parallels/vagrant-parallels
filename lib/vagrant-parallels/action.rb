@@ -13,9 +13,8 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use CheckAccessible
           # b.use CleanMachineFolder
-          # b.use SetName
           # b.use ClearForwardedPorts
-          # b.use Provision
+          b.use Provision
           # b.use EnvSet, :port_collision_repair => true
           # b.use PrepareForwardedPortCollisionParams
           # b.use HandleForwardedPortCollisions
@@ -29,7 +28,7 @@ module VagrantPlugins
           # b.use ForwardPorts
           # b.use SetHostname
           # b.use SaneDefaults
-          # b.use Customize
+          b.use Customize
           b.use Boot
           b.use CheckGuestAdditions
         end
@@ -97,6 +96,24 @@ module VagrantPlugins
       # This action just runs the provisioners on the machine.
       def self.action_provision
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use ConfigValidate
+          b.use Call, Created do |env1, b2|
+            if !env1[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            b2.use Call, IsRunning do |env2, b3|
+              if !env2[:result]
+                b3.use MessageNotRunning
+                next
+              end
+
+              b3.use CheckAccessible
+              b3.use Provision
+            end
+          end
         end
       end
 
@@ -235,6 +252,7 @@ module VagrantPlugins
 
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
+      autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
