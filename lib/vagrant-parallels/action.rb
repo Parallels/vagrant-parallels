@@ -226,7 +226,7 @@ module VagrantPlugins
               b2.use RegisterTemplate
               b2.use Import
               b2.use UnregisterTemplate
-              #b2.use MatchMACAddress
+              b2.use MatchMACAddress
             end
           end
           b.use action_start
@@ -254,7 +254,7 @@ module VagrantPlugins
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
       autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
       autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
-      #autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
+      autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
 
     end
   end

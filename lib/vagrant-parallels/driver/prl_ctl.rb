@@ -38,20 +38,21 @@ module VagrantPlugins
         #
         # @return [Symbol]
         def read_state
-          list = read_status(@uuid)
-          return nil unless list
-          list.first.fetch('status').to_sym
+          read_settings(@uuid).fetch('status', 'error').to_sym
         end
 
         # Returns a list of all UUIDs of virtual machines currently
         # known by Parallels.
         #
         # @return [Array<String>]
-        def read_vms
-          list = read_status
-          list.map do |item|
+        def list_vms
+          read_vms.map do |item|
             item.fetch('name')
           end
+        end
+
+        def read_mac_address
+          read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
 
         # Verifies that the driver is ready to accept work.
@@ -75,7 +76,7 @@ module VagrantPlugins
               end
             end
           end
-          vm_name
+          @uuid = vm_name
         end
 
         def resume
@@ -102,82 +103,51 @@ module VagrantPlugins
           execute("register", pvm_file)
         end
 
-        def registered?(name)
-          !!read_status(name)
+        def unregister(uuid)
+          execute("unregister", uuid)
+        end
+
+        def registered?(uuid)
+          !read_settings(uuid).empty?
         end
 
         def set_mac_address(mac)
-          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
+          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', (mac || 'auto'))
         end
 
         def ssh_port(expected_port)
-          @logger.debug("Searching for SSH port: #{expected_port.inspect}")
-
-          # Look for the forwarded port only by comparing the guest port
-          read_forwarded_ports.each do |_, _, hostport, guestport|
-            return hostport if guestport == expected_port
-          end
-
-          nil
+          22
         end
 
         def read_guest_additions_version
-          settings = read_settings
-          return nil unless settings
-          settings.fetch('GuestTools').fetch('version')
+          read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
 
         private
 
-          def read_status(id='')
-            begin
-              output = execute('list', id, '--all', '--json')
-              JSON.parse(output)
-            rescue
-              nil
-            end
-          end
-
           def read_settings(uuid)
-            begin
-              uuid ||= @uuid
-              output = execute('list', '--info', uuid, '--json')
-              JSON.parse(output.gsub(/^INFO\[/, '').gsub(/\]\n$/,''))
-            rescue
-              nil
-            end
-          end
-
-          def read_forwarded_ports(uuid=nil, active_only=false)
             uuid ||= @uuid
-
-            @logger.debug("read_forward_ports: uuid=#{uuid} active_only=#{active_only}")
-
-            results = []
-            current_nic = nil
-            info = execute("showvminfo", uuid, "--machinereadable", :retryable => true)
-            info.split("\n").each do |line|
-              # This is how we find the nic that a FP is attached to,
-              # since this comes first.
-              current_nic = $1.to_i if line =~ /^nic(\d+)=".+?"$/
-
-              # If we care about active VMs only, then we check the state
-              # to verify the VM is running.
-              if active_only && line =~ /^VMState="(.+?)"$/ && $1.to_s != "running"
-                return []
-              end
-
-              # Parse out the forwarded port information
-              if line =~ /^Forwarding.+?="(.+?),.+?,.*?,(.+?),.*?,(.+?)"$/
-                result = [current_nic, $1.to_s, $2.to_i, $3.to_i]
-                @logger.debug("  - #{result.inspect}")
-                results << result
-              end
-            end
-
-            results
+            output = execute('list', '--info', uuid, '--json')
+            JSON.parse(output.gsub(/^INFO/, '')).first
+          rescue
+            {}
           end
 
+          def read_vms
+            output = execute('list', '--all', '--json')
+            JSON.parse(output)
+          rescue
+            []
+          end
+
+          def read_templates
+            output = execute('list', '--template', '--json')
+            JSON.parse(output)
+          rescue
+            []
+          end
+
+        private
           # Execute the given subcommand for PrlCtl and return the output.
           def execute(*command, &block)
             # Get the options hash if it exists

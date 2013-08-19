@@ -15,7 +15,7 @@ module VagrantPlugins
           vm_name = prefix + "_#{Time.now.to_i}"
 
           # Verify the name is not taken
-          vms = env[:machine].provider.driver.read_vms
+          vms = env[:machine].provider.driver.list_vms
           raise Vagrant::Errors::VMNameExists, :name => vm_name if vms.include?(vm_name)
 
           # Import the virtual machine
