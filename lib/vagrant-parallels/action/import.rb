@@ -15,8 +15,9 @@ module VagrantPlugins
           vm_name = prefix + "_#{Time.now.to_i}"
 
           # Verify the name is not taken
-          vms = env[:machine].provider.driver.list_vms
-          raise Vagrant::Errors::VMNameExists, :name => vm_name if vms.include?(vm_name)
+          if env[:machine].provider.driver.registered? vm_name
+            raise Vagrant::Errors::VMNameExists, :name => vm_name
+          end
 
           # Import the virtual machine
           template_name = Pathname.glob(

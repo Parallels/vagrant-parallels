@@ -76,7 +76,7 @@ module VagrantPlugins
               end
             end
           end
-          @uuid = vm_name
+          @uuid = read_settings(vm_name).fetch('ID', vm_name)
         end
 
         def resume
@@ -123,103 +123,106 @@ module VagrantPlugins
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
 
-        private
+        def execute_command(command)
+          raw(*command)
+        end
 
-          def read_settings(uuid)
-            uuid ||= @uuid
-            output = execute('list', '--info', uuid, '--json')
-            JSON.parse(output.gsub(/^INFO/, '')).first
-          rescue
-            {}
-          end
+      private
 
-          def read_vms
-            output = execute('list', '--all', '--json')
-            JSON.parse(output)
-          rescue
-            []
-          end
+        def read_settings(uuid)
+          uuid ||= @uuid
+          output = execute('list', '--info', uuid, '--json')
+          JSON.parse(output.gsub(/^INFO/, '')).first
+        rescue
+          {}
+        end
 
-          def read_templates
-            output = execute('list', '--template', '--json')
-            JSON.parse(output)
-          rescue
-            []
-          end
+        def read_vms
+          output = execute('list', '--all', '--json')
+          JSON.parse(output)
+        rescue
+          []
+        end
 
-        private
-          # Execute the given subcommand for PrlCtl and return the output.
-          def execute(*command, &block)
-            # Get the options hash if it exists
-            opts = {}
-            opts = command.pop if command.last.is_a?(Hash)
+        def read_templates
+          output = execute('list', '--template', '--json')
+          JSON.parse(output)
+        rescue
+          []
+        end
 
-            tries = 0
-            tries = 3 if opts[:retryable]
+        # Execute the given subcommand for PrlCtl and return the output.
+        def execute(*command, &block)
+          # Get the options hash if it exists
+          opts = {}
+          opts = command.pop if command.last.is_a?(Hash)
 
-            # Variable to store our execution result
-            r = nil
+          tries = 0
+          tries = 3 if opts[:retryable]
 
-            # If there is an error with PrlCtl, this gets set to true
-            errored = false
+          # Variable to store our execution result
+          r = nil
 
-            retryable(:on => VagrantPlugins::Parallels::Errors::ParallelsError, :tries => tries, :sleep => 1) do
-              # Execute the command
-              r = raw(*command, &block)
+          # If there is an error with PrlCtl, this gets set to true
+          errored = false
 
-              # If the command was a failure, then raise an exception that is
-              # nicely handled by Vagrant.
-              if r.exit_code != 0
-                if @interrupted
-                  @logger.info("Exit code != 0, but interrupted. Ignoring.")
-                elsif r.exit_code == 126
-                  # This exit code happens if PrlCtl is on the PATH,
-                  # but another executable it tries to execute is missing.
-                  # This is usually indicative of a corrupted Parallels install.
-                  raise VagrantPlugins::Parallels::Errors::ParallelsErrorNotFoundError
-                else
-                  errored = true
-                end
+          retryable(:on => VagrantPlugins::Parallels::Errors::ParallelsError, :tries => tries, :sleep => 1) do
+            # Execute the command
+            r = raw(*command, &block)
+
+            # If the command was a failure, then raise an exception that is
+            # nicely handled by Vagrant.
+            if r.exit_code != 0
+              if @interrupted
+                @logger.info("Exit code != 0, but interrupted. Ignoring.")
+              elsif r.exit_code == 126
+                # This exit code happens if PrlCtl is on the PATH,
+                # but another executable it tries to execute is missing.
+                # This is usually indicative of a corrupted Parallels install.
+                raise VagrantPlugins::Parallels::Errors::ParallelsErrorNotFoundError
               else
-                if r.stderr =~ /failed to open \/dev\/prlctl/i
-                  # This catches an error message that only shows when kernel
-                  # drivers aren't properly installed.
-                  @logger.error("Error message about unable to open prlctl")
-                  raise VagrantPlugins::Parallels::Errors::ParallelsErrorKernelModuleNotLoaded
-                end
+                errored = true
+              end
+            else
+              if r.stderr =~ /failed to open \/dev\/prlctl/i
+                # This catches an error message that only shows when kernel
+                # drivers aren't properly installed.
+                @logger.error("Error message about unable to open prlctl")
+                raise VagrantPlugins::Parallels::Errors::ParallelsErrorKernelModuleNotLoaded
+              end
 
-                if r.stderr =~ /Invalid usage/
-                  @logger.info("PrlCtl error text found, assuming error.")
-                  errored = true
-                end
+              if r.stderr =~ /Invalid usage/
+                @logger.info("PrlCtl error text found, assuming error.")
+                errored = true
               end
             end
-
-            # If there was an error running PrlCtl, show the error and the
-            # output.
-            if errored
-              raise VagrantPlugins::Parallels::Errors::ParallelsError,
-                :command => command.inspect,
-                :stderr  => r.stderr
-            end
-
-            r.stdout
           end
 
-          # Executes a command and returns the raw result object.
-          def raw(*command, &block)
-            int_callback = lambda do
-              @interrupted = true
-              @logger.info("Interrupted.")
-            end
-
-            # Append in the options for subprocess
-            command << { :notify => [:stdout, :stderr] }
-
-            Vagrant::Util::Busy.busy(int_callback) do
-              Vagrant::Util::Subprocess.execute(@manager_path, *command, &block)
-            end
+          # If there was an error running PrlCtl, show the error and the
+          # output.
+          if errored
+            raise VagrantPlugins::Parallels::Errors::ParallelsError,
+              :command => command.inspect,
+              :stderr  => r.stderr
           end
+
+          r.stdout
+        end
+
+        # Executes a command and returns the raw result object.
+        def raw(*command, &block)
+          int_callback = lambda do
+            @interrupted = true
+            @logger.info("Interrupted.")
+          end
+
+          # Append in the options for subprocess
+          command << { :notify => [:stdout, :stderr] }
+
+          Vagrant::Util::Busy.busy(int_callback) do
+            Vagrant::Util::Subprocess.execute(@manager_path, *command, &block)
+          end
+        end
       end
     end
   end
