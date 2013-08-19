@@ -52,6 +52,7 @@ module VagrantPlugins
                 b3.use CheckAccessible
                 b3.use EnvSet, :force_halt => true
                 b3.use action_halt
+                b3.use UnregisterTemplate
                 b3.use Destroy
               else
                 b3.use MessageWillNotDestroy
@@ -224,6 +225,7 @@ module VagrantPlugins
               b2.use HandleBoxUrl
               b2.use RegisterTemplate
               b2.use Import
+              b2.use UnregisterTemplate
               #b2.use MatchMACAddress
             end
           end
@@ -236,6 +238,7 @@ module VagrantPlugins
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
+      autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
@@ -247,6 +250,9 @@ module VagrantPlugins
       autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
+      autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
+      autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
+      autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
       autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
       #autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
 
