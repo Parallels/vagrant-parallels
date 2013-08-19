@@ -140,7 +140,7 @@ module VagrantPlugins
       # This is the action that will exec into an SSH shell.
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckVirtualbox
+          b.use CheckParallels
           b.use CheckCreated
           b.use CheckAccessible
           b.use CheckRunning
@@ -151,7 +151,7 @@ module VagrantPlugins
       # This is the action that will run a single SSH command.
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckVirtualbox
+          b.use CheckParallels
           b.use CheckCreated
           b.use CheckAccessible
           b.use CheckRunning
@@ -224,7 +224,7 @@ module VagrantPlugins
               b2.use HandleBoxUrl
               b2.use RegisterTemplate
               b2.use Import
-              b2.use MatchMACAddress
+              #b2.use MatchMACAddress
             end
           end
           b.use action_start
@@ -248,8 +248,8 @@ module VagrantPlugins
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
       autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
-      autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
-      
+      #autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
+
     end
   end
 end
