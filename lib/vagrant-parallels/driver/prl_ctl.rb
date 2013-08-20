@@ -63,7 +63,7 @@ module VagrantPlugins
         end
 
         def clear_shared_folders
-          read_settings(vm_name).fetch("Host Shared Folders", [nil]).drop(1).each_key do |folder|
+          read_settings.fetch("Host Shared Folders", {}).keys.drop(1).each do |folder|
             execute("set", @uuid, "--shf-host-del", folder)
           end
         end
@@ -129,32 +129,47 @@ module VagrantPlugins
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
 
+        def share_folders(folders)
+          folders.each do |folder|
+            # Add the shared folder
+            execute('set', @uuid, '--shf-host-add', folder[:name], '--path', folder[:hostpath])
+          end
+        end
+
+        def symlink(folder, path)
+          guest_execute('ln', '-s', Pathname.new('/media/psf').join(folder).to_s, path)
+        end
+
         def execute_command(command)
           raw(*command)
         end
 
       private
 
-        def read_settings(uuid)
+        def read_settings(uuid=nil)
           uuid ||= @uuid
-          output = execute('list', '--info', uuid, '--json')
+          output = execute('list', uuid, '--info', '--json', :retryable => true)
           JSON.parse(output.gsub(/^INFO/, '')).first
         rescue
           {}
         end
 
         def read_vms
-          output = execute('list', '--all', '--json')
+          output = execute('list', '--all', '--json', :retryable => true)
           JSON.parse(output)
         rescue
           []
         end
 
         def read_templates
-          output = execute('list', '--template', '--json')
+          output = execute('list', '--template', '--json', :retryable => true)
           JSON.parse(output)
         rescue
           []
+        end
+
+        def guest_execute(*command)
+          execute('exec', @uuid, *command)
         end
 
         # Execute the given subcommand for PrlCtl and return the output.

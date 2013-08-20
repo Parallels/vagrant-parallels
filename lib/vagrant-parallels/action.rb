@@ -21,8 +21,8 @@ module VagrantPlugins
           # b.use PruneNFSExports
           # b.use NFS
           # b.use PrepareNFSSettings
-          # b.use ShareFolders
           b.use ClearSharedFolders
+          b.use ShareFolders
           # b.use ClearNetworkInterfaces
           # b.use Network
           # b.use ForwardPorts
@@ -272,6 +272,7 @@ module VagrantPlugins
       autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
       autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
       autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
+      autoload :ShareFolders, File.expand_path("../action/share_folders", __FILE__)
 
     end
   end
