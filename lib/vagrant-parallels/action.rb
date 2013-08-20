@@ -28,7 +28,6 @@ module VagrantPlugins
           # b.use ForwardPorts
           # b.use SetHostname
           # b.use SaneDefaults
-          b.use Customize
           b.use Boot
           b.use CheckGuestAdditions
         end
@@ -252,7 +251,6 @@ module VagrantPlugins
 
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
-      autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
