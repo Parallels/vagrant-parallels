@@ -62,6 +62,12 @@ module VagrantPlugins
           execute('--version')
         end
 
+        def clear_shared_folders
+          read_settings(vm_name).fetch("Host Shared Folders", [nil]).drop(1).each_key do |folder|
+            execute("set", @uuid, "--shf-host-del", folder)
+          end
+        end
+
         def import(template_name, vm_name)
           last = 0
           execute("clone", template_name, '--name', vm_name) do |type, data|

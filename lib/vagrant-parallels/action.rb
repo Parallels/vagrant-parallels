@@ -15,14 +15,14 @@ module VagrantPlugins
           # b.use CleanMachineFolder
           # b.use ClearForwardedPorts
           b.use Provision
-          # b.use EnvSet, :port_collision_repair => true
+          b.use EnvSet, :port_collision_repair => true
           # b.use PrepareForwardedPortCollisionParams
           # b.use HandleForwardedPortCollisions
           # b.use PruneNFSExports
           # b.use NFS
           # b.use PrepareNFSSettings
-          # b.use ClearSharedFolders
           # b.use ShareFolders
+          b.use ClearSharedFolders
           # b.use ClearNetworkInterfaces
           # b.use Network
           # b.use ForwardPorts
@@ -273,6 +273,7 @@ module VagrantPlugins
       autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
       autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
       autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
+      autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
 
     end
   end
