@@ -85,6 +85,14 @@ module VagrantPlugins
           @uuid = read_settings(vm_name).fetch('ID', vm_name)
         end
 
+        def delete_adapters
+          read_settings.fetch('Hardware').each do |k, _|
+            if k != 'net0' and k.start_with? 'net'
+              execute('set', @uuid, '--device-del', k)
+            end
+          end
+        end
+
         def resume
           execute('resume', @uuid)
         end
@@ -118,7 +126,7 @@ module VagrantPlugins
         end
 
         def set_mac_address(mac)
-          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', (mac || 'auto'))
+          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
         end
 
         def ssh_port(expected_port)

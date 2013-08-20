@@ -23,7 +23,7 @@ module VagrantPlugins
           # b.use PrepareNFSSettings
           b.use ClearSharedFolders
           b.use ShareFolders
-          # b.use ClearNetworkInterfaces
+          b.use ClearNetworkInterfaces
           # b.use Network
           # b.use ForwardPorts
           # b.use SetHostname
@@ -253,6 +253,7 @@ module VagrantPlugins
       autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
+      autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
