@@ -38,7 +38,7 @@ module VagrantPlugins
         #
         # @return [Symbol]
         def read_state
-          read_settings(@uuid).fetch('status', 'error').to_sym
+          read_settings(@uuid).fetch('State', 'inaccessible').to_sym
         end
 
         # Returns a list of all UUIDs of virtual machines currently
