@@ -109,7 +109,7 @@ module VagrantPlugins
         end
 
         def halt(force=false)
-          execute('stop', @uuid, force ? '--kill', '')
+          execute('stop', @uuid, force ? '--kill' : '')
         end
 
         def delete
