@@ -26,7 +26,7 @@ module VagrantPlugins
           b.use ClearNetworkInterfaces
           # b.use Network
           # b.use ForwardPorts
-          # b.use SetHostname
+          b.use SetHostname
           # b.use SaneDefaults
           b.use Boot
           b.use CheckGuestAdditions
