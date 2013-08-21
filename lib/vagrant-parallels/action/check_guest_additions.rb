@@ -10,16 +10,16 @@ module VagrantPlugins
           # Use the raw interface for now, while the virtualbox gem
           # doesn't support guest properties (due to cross platform issues)
           guest_version = env[:machine].provider.driver.read_guest_additions_version
-          if !version
+          if !guest_version
             env[:ui].warn I18n.t("vagrant.actions.vm.check_guest_additions.not_detected")
           else
-            env[:machine].provider.driver.verify! =~ /\w+ (\d.+)/
+            env[:machine].provider.driver.verify! =~ /^[\w\s]+ ([\d.]+)$/
             os_version = $1
 
-            if guest_version != os_version
+            unless os_version.start_with? guest_version
               env[:ui].warn(I18n.t("vagrant.actions.vm.check_guest_additions.version_mismatch",
-                                   :guest_version => guest_version,
-                                   :parallels_version => os_version))
+                                   guest_version: guest_version,
+                                   parallels_version: os_version))
             end
           end
 

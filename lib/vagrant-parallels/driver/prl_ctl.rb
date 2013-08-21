@@ -45,10 +45,13 @@ module VagrantPlugins
         # known by Parallels.
         #
         # @return [Array<String>]
-        def list_vms
-          read_vms.map do |item|
-            item.fetch('name')
+        def read_vms
+          list = {}
+          json({}) { execute('list', '--all', '--json', retryable: true) }.each do |item|
+            list[item.fetch('name')] = item.fetch('uuid')
           end
+
+          list
         end
 
         def read_mac_address
@@ -144,36 +147,20 @@ module VagrantPlugins
           end
         end
 
-        def symlink(folder, path)
-          guest_execute('ln', '-s', Pathname.new('/media/psf').join(folder).to_s, path)
-        end
-
         def execute_command(command)
           raw(*command)
         end
 
-      private
+        private
 
         def read_settings(uuid=nil)
           uuid ||= @uuid
-          output = execute('list', uuid, '--info', '--json', :retryable => true)
-          JSON.parse(output.gsub(/^INFO/, '')).first
-        rescue
-          {}
+          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^INFO/, '') }.first
         end
 
-        def read_vms
-          output = execute('list', '--all', '--json', :retryable => true)
-          JSON.parse(output)
-        rescue
-          []
-        end
-
-        def read_templates
-          output = execute('list', '--template', '--json', :retryable => true)
-          JSON.parse(output)
-        rescue
-          []
+        def json(default)
+          data = yield
+          JSON.parse(data) rescue default
         end
 
         def guest_execute(*command)
@@ -195,9 +182,9 @@ module VagrantPlugins
           # If there is an error with PrlCtl, this gets set to true
           errored = false
 
-          retryable(:on => VagrantPlugins::Parallels::Errors::ParallelsError, :tries => tries, :sleep => 1) do
+          retryable(on: VagrantPlugins::Parallels::Errors::ParallelsError, tries: tries, sleep: 1) do
             # Execute the command
-            r = raw(*command, &block)
+            r = raw(@manager_path, *command, &block)
 
             # If the command was a failure, then raise an exception that is
             # nicely handled by Vagrant.
@@ -231,25 +218,25 @@ module VagrantPlugins
           # output.
           if errored
             raise VagrantPlugins::Parallels::Errors::ParallelsError,
-              :command => command.inspect,
-              :stderr  => r.stderr
+              command: command.inspect,
+              stderr:  r.stderr
           end
 
           r.stdout
         end
 
         # Executes a command and returns the raw result object.
-        def raw(*command, &block)
+        def raw(cli, *command, &block)
           int_callback = lambda do
             @interrupted = true
             @logger.info("Interrupted.")
           end
 
           # Append in the options for subprocess
-          command << { :notify => [:stdout, :stderr] }
+          command << { notify: [:stdout, :stderr] }
 
           Vagrant::Util::Busy.busy(int_callback) do
-            Vagrant::Util::Subprocess.execute(@manager_path, *command, &block)
+            Vagrant::Util::Subprocess.execute(cli, *command, &block)
           end
         end
       end

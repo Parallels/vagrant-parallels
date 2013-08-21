@@ -18,9 +18,9 @@ module VagrantPlugins
           b.use EnvSet, :port_collision_repair => true
           # b.use PrepareForwardedPortCollisionParams
           # b.use HandleForwardedPortCollisions
-          # b.use PruneNFSExports
-          # b.use NFS
-          # b.use PrepareNFSSettings
+          b.use PruneNFSExports
+          b.use NFS
+          #b.use PrepareNFSSettings
           b.use ClearSharedFolders
           b.use ShareFolders
           b.use ClearNetworkInterfaces
@@ -249,31 +249,33 @@ module VagrantPlugins
         end
       end
 
-      autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
-      autoload :Created, File.expand_path("../action/created", __FILE__)
-      autoload :Import, File.expand_path("../action/import", __FILE__)
+      autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
+      autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
+      autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
+      autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
+      autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
-      autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
-      autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
+      autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
+      autoload :Created, File.expand_path("../action/created", __FILE__)
+      autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
+      autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
+      autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
-      autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
-      autoload :Resume, File.expand_path("../action/resume", __FILE__)
-      autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
-      autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
       autoload :IsSaved, File.expand_path("../action/is_saved", __FILE__)
-      autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
-      autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
-      autoload :Boot, File.expand_path("../action/boot", __FILE__)
+      autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
       autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
       autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
       autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
-      autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
-      autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
-      autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
+      #autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
+      autoload :PruneNFSExports, File.expand_path("../action/prune_nfs_exports", __FILE__)
+      autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
+      autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :ShareFolders, File.expand_path("../action/share_folders", __FILE__)
+      autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
+      autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
 
     end
   end
