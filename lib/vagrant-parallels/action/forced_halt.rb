@@ -10,7 +10,7 @@ module VagrantPlugins
           current_state = env[:machine].state.id
           if current_state == :running
             env[:ui].info I18n.t("vagrant.actions.vm.halt.force")
-            env[:machine].provider.driver.halt
+            env[:machine].provider.driver.halt(true)
           end
 
           @app.call(env)
