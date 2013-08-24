@@ -54,6 +54,15 @@ module VagrantPlugins
           list
         end
 
+        def read_templates
+          list = {}
+          json({}) { execute('list', '--template', '--json', retryable: true) }.each do |item|
+            list[item.fetch('name')] = item.fetch('uuid')
+          end
+
+          list
+        end
+
         def read_mac_address
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
@@ -125,7 +134,7 @@ module VagrantPlugins
         end
 
         def registered?(uuid)
-          !read_settings(uuid).empty?
+          read_templates.values.include?(uuid) || read_vms.values.include?(uuid)
         end
 
         def set_mac_address(mac)
@@ -155,10 +164,10 @@ module VagrantPlugins
 
         def read_settings(uuid=nil)
           uuid ||= @uuid
-          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^INFO/, '') }.first
+          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^INFO\[/, '').gsub(/\]$/, '') }
         end
 
-        def json(default)
+        def json(default=nil)
           data = yield
           JSON.parse(data) rescue default
         end
