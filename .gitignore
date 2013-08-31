@@ -1,6 +1,9 @@
 # OS-specific
 .DS_Store
 
+#rbenv
+.ruby-version
+
 # Bundler/Rubygems
 *.gem
 .bundle
