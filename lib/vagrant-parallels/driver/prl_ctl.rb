@@ -158,6 +158,10 @@ module VagrantPlugins
           end
         end
 
+        def symlink(id, path)
+          guest_execute('ln', '-sf', "/media/psf/#{id}", path)
+        end
+
         def execute_command(command)
           raw(*command)
         end

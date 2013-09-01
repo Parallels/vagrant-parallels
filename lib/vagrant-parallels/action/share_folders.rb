@@ -107,7 +107,7 @@ module VagrantPlugins
                                     :guest_path => data[:guestpath]))
 
               # Symlink to mounted folder to guest path
-              #@env[:machine].provider.driver.symlink(id, data[:guestpath])
+              @env[:machine].provider.driver.symlink(id, data[:guestpath])
             else
               # If no guest path is specified, then automounting is disabled
               @env[:ui].info(I18n.t("vagrant.actions.vm.share_folders.nomount_entry",
