@@ -118,7 +118,9 @@ module VagrantPlugins
         end
 
         def halt(force=false)
-          execute('stop', @uuid, force ? '--kill' : '')
+          args = ['stop', @uuid]
+          args << '--kill' if force
+          execute(*args)
         end
 
         def delete
@@ -158,6 +160,14 @@ module VagrantPlugins
 
         def execute_command(command)
           raw(*command)
+        end
+
+        def ready?
+          !!guest_execute('uname') rescue false
+        end
+
+        def ip
+          guest_execute('ifconfig eth0 | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sed -n 1p').chomp rescue nil
         end
 
         private
@@ -216,7 +226,10 @@ module VagrantPlugins
                 raise VagrantPlugins::Parallels::Errors::ParallelsErrorKernelModuleNotLoaded
               end
 
-              if r.stderr =~ /Invalid usage/
+              if r.stderr =~ /Unable to perform/i
+                @logger.info("VM not running for command to work.")
+                errored = true
+              elsif r.stderr =~ /Invalid usage/i
                 @logger.info("PrlCtl error text found, assuming error.")
                 errored = true
               end

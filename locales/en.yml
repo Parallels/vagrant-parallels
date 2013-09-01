@@ -873,10 +873,11 @@ en:
             the port forwarding doesn't work. If any problems occur, please try a
             port higher than 1024.
         halt:
-          force: |-
-            Forcing shutdown of VM...
-          graceful: |-
-            Attempting graceful shutdown of VM...
+          force: Forcing shutdown of VM...
+          graceful: Attempting graceful shutdown of VM...
+          waiting: Waiting for VM to shutdown. This can take a few minutes.
+          failed: Failed to gracefully shutdown the VM.
+          done: VM shutdown complete!
         hostname:
           setting: "Setting hostname..."
         import:

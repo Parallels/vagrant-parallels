@@ -21,7 +21,7 @@ module VagrantPlugins
           @env[:ui].info I18n.t("vagrant.actions.vm.boot.waiting")
 
           @env[:machine].config.ssh.max_tries.to_i.times do |i|
-            if @env[:machine].communicate.ready?
+            if @env[:machine].provider.driver.ready?
               @env[:ui].info I18n.t("vagrant.actions.vm.boot.ready")
               return true
             end

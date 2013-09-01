@@ -28,11 +28,9 @@ module VagrantPlugins
         # we return nil.
         return nil if state.id == :not_created
 
-        # Return what we know. The host is always "127.0.0.1" because
-        # Parallels VMs are always local. The port we try to discover
-        # by reading the forwarded ports.
+        # Return ip from running machine, use ip from config if available
         return {
-          :host => "127.0.0.1",
+          :host => @machine.config.ssh.host || @driver.ip,
           :port => @driver.ssh_port(@machine.config.ssh.guest_port)
         }
       end
