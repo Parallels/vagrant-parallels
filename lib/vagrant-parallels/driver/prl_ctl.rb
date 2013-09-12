@@ -41,10 +41,10 @@ module VagrantPlugins
           read_settings(@uuid).fetch('State', 'inaccessible').to_sym
         end
 
-        # Returns a list of all UUIDs of virtual machines currently
-        # known by Parallels.
+        # Returns a hash of all UUIDs of virtual machines currently
+        # known by Parallels. Hash keys is VM names
         #
-        # @return [Array<String>]
+        # @return [Hash]
         def read_vms
           list = {}
           json({}) { execute('list', '--all', '--json', retryable: true) }.each do |item|
@@ -54,6 +54,10 @@ module VagrantPlugins
           list
         end
 
+        # Returns a hash of all UUIDs of VM templates currently
+        # known by Parallels. Hash keys is template names
+        #
+        # @return [Hash]
         def read_templates
           list = {}
           json({}) { execute('list', '--template', '--json', retryable: true) }.each do |item|
@@ -135,8 +139,8 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
-        def registered?(uuid)
-          read_templates.values.include?(uuid) || read_vms.values.include?(uuid)
+        def registered?(name)
+          read_templates.has_key?(name) || read_vms.has_key?(name)
         end
 
         def set_mac_address(mac)
