@@ -178,7 +178,7 @@ module VagrantPlugins
 
         def read_settings(uuid=nil)
           uuid ||= @uuid
-          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^INFO\[/, '').gsub(/\]$/, '') }
+          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
         end
 
         def json(default=nil)
