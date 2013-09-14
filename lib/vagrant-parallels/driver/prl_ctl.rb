@@ -151,7 +151,7 @@ module VagrantPlugins
           22
         end
 
-        def read_guest_additions_version
+        def read_guest_tools_version
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
 

@@ -230,7 +230,7 @@ en:
         complete.
       environment_locked: |-
         An instance of Vagrant is already running. Only one instance of Vagrant
-        may run at any given time to avoid problems with Parallels inconsistencies
+        may run at any given time to avoid problems with Parallels Desktop inconsistencies
         occurring. Please wait for the other instance of Vagrant to end and then
         try again.
       forward_port_adapter_not_found: |-
@@ -281,7 +281,7 @@ en:
       linux_mount_failed: |-
         Failed to mount folders in Linux guest. This is usually beacuse
         the "vboxsf" file system is not available. Please verify that
-        the guest additions are properly installed in the guest and
+        the Parallels Tools are properly installed in the guest and
         can work properly. The command attempted was:
 
         %{command}
@@ -364,7 +364,7 @@ en:
       port_collision_resume: |-
         This VM cannot be resumed, because the forwarded ports would collide
         with a running program (it could be another virtual machine). Normally,
-        Vagrant will attempt to fix this for you but Parallels only allows
+        Vagrant will attempt to fix this for you but Parallels Desktop only allows
         forwarded ports to change if the VM is powered off. Therefore, please
         reload your VM or stop the other program to continue.
       provider_not_found: |-
@@ -517,52 +517,52 @@ en:
 
         %{file}
       prlctl_error: |-
-        There was an error while executing `PrlCtl`, a CLI used by Vagrant
-        for controlling Parallels. The command and stderr is shown below.
+        There was an error while executing `prlctl`, a CLI used by Vagrant
+        for controlling Parallels Desktop. The command and stderr is shown below.
 
         Command: %{command}
 
         Stderr: %{stderr}
       prlctl_not_found_error: |-
-        The "PrlCtl" command or one of its dependencies could not
-        be found. Please verify Parallels is properly installed. You can verify
-        everything is okay by running "PrlCtl --version" and verifying
-        that the Parallels version is outputted.
+        The "prlctl" command or one of its dependencies could not
+        be found. Please verify Parallels Desktop is properly installed. You can verify
+        everything is okay by running "prlctl --version" and verifying
+        that the Parallels Desktop version is outputted.
       virtualbox_invalid_version: |-
-        Vagrant has detected that you have a version of Parallels installed
+        Vagrant has detected that you have a version of Parallels Desktop installed
         that is not supported. Please install one of the supported versions
         listed below to use Vagrant:
 
         %{supported_versions}
       virtualbox_kernel_module_not_loaded: |-
-        Parallels is complaining that the kernel module is not loaded. Please
-        run `PrlCtl --version` or open the Parallels GUI to see the error
+        Parallels Desktop is complaining that the kernel module is not loaded. Please
+        run `prlctl --version` or open the Parallels Desktop GUI to see the error
         message which should contain instructions on how to fix this error.
       virtualbox_install_incomplete: |-
-        Parallels is complaining that the installation is incomplete. Please
-        run `PrlCtl --version` to see the error message which should contain
+        Parallels Desktop is complaining that the installation is incomplete. Please
+        run `prlctl --version` to see the error message which should contain
         instructions on how to fix this error.
       virtualbox_no_room_for_high_level_network: |-
-        There is no available slots on the Parallels VM for the configured
+        There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"
         network configurations consume a single network adapter slot on the
-        Parallels VM. Parallels limits the number of slots to 8, and it
+        Parallels Desktop VM. Parallels Desktop limits the number of slots to 8, and it
         appears that every slot is in use. Please lower the number of used
         network adapters.
       virtualbox_not_detected: |-
-        Vagrant could not detect Parallels! Make sure Parallels is properly installed.
-        Vagrant uses the `PrlCtl` binary that ships with Parallels, and requires
-        this to be available on the PATH. If Parallels is installed, please find the
-        `PrlCtl` binary and add it to the PATH environmental variable.
+        Vagrant could not detect Parallels Desktop! Make sure Parallels Desktop is properly installed.
+        Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
+        this to be available on the PATH. If Parallels Desktop is installed, please find the
+        `prlctl` binary and add it to the PATH environmental variable.
       vm_creation_required: |-
         VM must be created before running this command. Run `vagrant up` first.
       vm_inaccessible: |-
         Your VM has become "inaccessible." Unfortunately, this is a critical error
-        with Parallels that Vagrant can not cleanly recover from. Please open Parallels
+        with Parallels Desktop that Vagrant can not cleanly recover from. Please open Parallels Desktop
         and clear out your inaccessible virtual machines or find a way to fix
         them.
       vm_name_exists: |-
-        A Parallels machine with the name '%{name}' already exists.
+        A Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing
         name, and try again.
       vm_no_match: |-
@@ -648,7 +648,7 @@ en:
     commands:
       common:
         vm_already_running: |-
-          Parallels VM is already running.
+          Parallels Desktop VM is already running.
         vm_not_created: "VM not created. Moving on..."
         vm_not_running: "VM is not currently running. Please bring it up to run this command."
       box:
@@ -688,12 +688,12 @@ en:
         gurumeditation: |-
           The VM is in the "guru meditation" state. This is a rare case which means
           that an internal error in VitualBox caused the VM to fail. This is always
-          the sign of a bug in Parallels. You can try to bring your VM back online
+          the sign of a bug in Parallels Desktop. You can try to bring your VM back online
           with a `vagrant up`.
         inaccessible: |-
-          The VM is inaccessible! This is a rare case which means that Parallels
+          The VM is inaccessible! This is a rare case which means that Parallels Desktop
           can't find your VM configuration. This usually happens when upgrading
-          Parallels, moving to a new computer, etc. Please consult Parallels
+          Parallels Desktop, moving to a new computer, etc. Please consult Parallels
           for how to handle this issue.
         output: |-
           Current machine states:
@@ -707,9 +707,9 @@ en:
           default provider will be shown. So if a provider is not listed,
           then the machine is not created for that environment.
         paused: |-
-          The VM is paused. This VM may have been paused via the Parallels
-          GUI or the PrlCtl command line interface. To unpause, please
-          use the Parallels GUI and/or PrlCtl command line interface so
+          The VM is paused. This VM may have been paused via the Parallels Desktop
+          GUI or the prlctl command line interface. To unpause, please
+          use the Parallels Desktop GUI and/or prlctl command line interface so
           that vagrant would be able to control the VM again.
         poweroff: |-
           The VM is powered off. To restart the VM, simply run `vagrant up`
@@ -726,7 +726,7 @@ en:
           To resume this VM, simply run `vagrant up`.
         stuck: |-
           The VM is "stuck!" This is a very rare state which means that
-          Parallels is unable to recover the current state of the VM.
+          Parallels Desktop is unable to recover the current state of the VM.
           The only known solution to this problem is to restart your
           machine, sorry.
         listing: |-
@@ -754,11 +754,11 @@ en:
           failed: Failed to connect to VM!
           failed_to_boot: |-
             Failed to connect to VM via SSH. Please verify the VM successfully booted
-            by looking at the Parallels GUI.
+            by looking at the Parallels Desktop GUI.
           failed_to_run: |-
             The VM failed to remain in the "running" state while attempting to boot.
             This is normally caused by a misconfiguration or host system incompatibilities.
-            Please open the Parallels GUI and attempt to boot the virtual machine
+            Please open the Parallels Desktop GUI and attempt to boot the virtual machine
             manually to get a more informative error message.
         bridged_networking:
           available: |-
@@ -788,24 +788,24 @@ en:
 
             The box must be added through the `vagrant box add` command. Please view
             the documentation associated with the command for more information.
-        check_guest_additions:
+        check_guest_tools:
           not_detected: |-
-            No guest additions were detected on the base box for this VM! Guest
-            additions are required for forwarded ports, shared folders, host only
+            No Parallels Tools were detected on the base box for this VM! Parallels
+            Tools are required for forwarded ports, shared folders, host only
             networking, and more. If SSH fails on this machine, please install
-            the guest additions and repackage the box to continue.
+            the Parallels Tools and repackage the box to continue.
 
             This is not an error message; everything may continue to work properly,
             in which case you may ignore this message.
           version_mismatch: |-
-            The guest additions on this VM do not match the installed version of
-            Parallels! In most cases this is fine, but in rare cases it can
+            The Parallels Tools on this VM do not match the installed version of
+            Parallels Desktop! In most cases this is fine, but in rare cases it can
             cause things such as shared folders to not work properly. If you see
-            shared folder errors, please update the guest additions within the
+            shared folder errors, please update the Parallels Tools within the
             virtual machine and reload your VM.
 
-            Guest Additions Version: %{guest_version}
-            Parallels Version: %{virtualbox_version}
+            Parallels Tools Version: %{tools_version}
+            Parallels Desktop Version: %{parallels_version}
         clear_forward_ports:
           deleting: Clearing any previously set forwarded ports...
         clear_network_interfaces:
@@ -864,7 +864,7 @@ en:
           forwarding_entry: |-
             -- %{guest_port} => %{host_port} (adapter %{adapter})
           non_nat: |-
-            Parallels adapter #%{adapter} not configured as "NAT". Skipping port
+            Parallels Desktop network adapter #%{adapter} not configured as "NAT". Skipping port
             forwards on this adapter.
           privileged_ports: |-
             You are trying to forward to privileged ports (ports <= 1024). Most
@@ -883,7 +883,7 @@ en:
         import:
           importing: Importing base box '%{name}'...
           failure: |-
-            The VM import failed! Try running `PrlCtl import` on the box file
+            The VM import failed! Try running `prlctl import` on the box file
             manually for more verbose error output.
         match_mac:
           matching: Matching MAC address for NAT networking...
@@ -909,7 +909,7 @@ en:
             using the other host only network.
           no_adapters: |-
             No available adapters on the virtual machine were found to accomodate
-            for all configured networks. Parallels virtual machines have 8
+            for all configured networks. Parallels Desktop virtual machines have 8
             network interfaces available usually, so please lower the number of
             networks to below 8.
           preparing: |-

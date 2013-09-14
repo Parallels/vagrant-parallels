@@ -30,7 +30,7 @@ module VagrantPlugins
           # b.use SaneDefaults
           b.use Boot
           b.use WaitForCommunicator
-          b.use CheckGuestAdditions
+          b.use CheckGuestTools
         end
       end
 
@@ -252,7 +252,7 @@ module VagrantPlugins
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
-      autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
+      autoload :CheckGuestTools, File.expand_path("../action/check_guest_tools", __FILE__)
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
       autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
