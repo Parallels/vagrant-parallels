@@ -29,6 +29,7 @@ module VagrantPlugins
           b.use SetHostname
           # b.use SaneDefaults
           b.use Boot
+          b.use WaitForCommunicator
           b.use CheckGuestAdditions
         end
       end
@@ -74,7 +75,10 @@ module VagrantPlugins
                 b3.use Resume
               end
 
-              b2.use ParallelsHalt
+              b2.use Call, GracefulHalt, :stopped, :running do |env2, b3|
+                next if !env2[:result]
+                b3.use ForcedHalt
+              end
             else
               b2.use MessageNotCreated
             end
@@ -255,7 +259,7 @@ module VagrantPlugins
       autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
-      autoload :ParallelsHalt, File.expand_path("../action/parallels_halt", __FILE__)
+      autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
