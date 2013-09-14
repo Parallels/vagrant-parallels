@@ -175,7 +175,13 @@ module VagrantPlugins
         end
 
         def ip
-          guest_execute('ifconfig eth0 | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sed -n 1p').chomp rescue nil
+          mac_addr = read_mac_address.downcase
+          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
+            if line.include? mac_addr
+              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+              return ip
+            end
+          end
         end
 
         private
