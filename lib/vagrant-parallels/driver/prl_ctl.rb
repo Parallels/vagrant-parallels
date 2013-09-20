@@ -41,10 +41,10 @@ module VagrantPlugins
           read_settings(@uuid).fetch('State', 'inaccessible').to_sym
         end
 
-        # Returns a list of all UUIDs of virtual machines currently
-        # known by Parallels.
+        # Returns a hash of all UUIDs of virtual machines currently
+        # known by Parallels. Hash keys is VM names
         #
-        # @return [Array<String>]
+        # @return [Hash]
         def read_vms
           list = {}
           json({}) { execute('list', '--all', '--json', retryable: true) }.each do |item|
@@ -54,6 +54,10 @@ module VagrantPlugins
           list
         end
 
+        # Returns a hash of all UUIDs of VM templates currently
+        # known by Parallels. Hash keys is template names
+        #
+        # @return [Hash]
         def read_templates
           list = {}
           json({}) { execute('list', '--template', '--json', retryable: true) }.each do |item|
@@ -135,8 +139,8 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
-        def registered?(uuid)
-          read_templates.values.include?(uuid) || read_vms.values.include?(uuid)
+        def registered?(name)
+          read_templates.has_key?(name) || read_vms.has_key?(name)
         end
 
         def set_mac_address(mac)
@@ -147,7 +151,7 @@ module VagrantPlugins
           22
         end
 
-        def read_guest_additions_version
+        def read_guest_tools_version
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
 
@@ -171,7 +175,13 @@ module VagrantPlugins
         end
 
         def ip
-          guest_execute('ifconfig eth0 | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sed -n 1p').chomp rescue nil
+          mac_addr = read_mac_address.downcase
+          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
+            if line.include? mac_addr
+              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+              return ip
+            end
+          end
         end
 
         private

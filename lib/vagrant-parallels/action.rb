@@ -29,7 +29,8 @@ module VagrantPlugins
           b.use SetHostname
           # b.use SaneDefaults
           b.use Boot
-          b.use CheckGuestAdditions
+          b.use WaitForCommunicator
+          b.use CheckGuestTools
         end
       end
 
@@ -74,7 +75,10 @@ module VagrantPlugins
                 b3.use Resume
               end
 
-              b2.use ParallelsHalt
+              b2.use Call, GracefulHalt, :stopped, :running do |env2, b3|
+                next if !env2[:result]
+                b3.use ForcedHalt
+              end
             else
               b2.use MessageNotCreated
             end
@@ -248,14 +252,14 @@ module VagrantPlugins
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
-      autoload :CheckGuestAdditions, File.expand_path("../action/check_guest_additions", __FILE__)
+      autoload :CheckGuestTools, File.expand_path("../action/check_guest_tools", __FILE__)
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
       autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
       autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
-      autoload :ParallelsHalt, File.expand_path("../action/parallels_halt", __FILE__)
+      autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
