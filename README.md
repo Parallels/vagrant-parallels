@@ -6,7 +6,7 @@ provider to Vagrant, allowing Vagrant to control and provision machines using Pa
 ## Note
 
 This project is still in active development and not all vagrant features have been developed, please report any issues you might find.
-Almost all features are available except for exporting/packaging VM's this will be available soon isA (ان شاء الله)
+Almost all features are available except for exporting/packaging VM's this will be available soon [isA](http://en.wikipedia.org/wiki/In_Shaa%27_Allah) (ان شاء الله)
 
 We look forward to hearing from you with any issues or features, Thank you
 
