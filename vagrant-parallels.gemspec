@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.name          = "vagrant-parallels"
   spec.version       = VagrantPlugins::Parallels::VERSION
   spec.platform      = Gem::Platform::RUBY
-  spec.authors       = ["Youssef Shahin"]
-  spec.email         = ["yshahin@gmail.com"]
+  spec.authors       = ["Youssef Shahin", "Kevin Kaland"]
+  spec.email         = ["yshahin@gmail.com", "admin@wizonesolutions.com"]
   spec.description   = %q{Enables Vagrant to manage Parallels machines.}
   spec.summary       = %q{Enables Vagrant to manage Parallels machines.}
   spec.homepage      = "http://github.com/yshahin/vagrant-parallels"
