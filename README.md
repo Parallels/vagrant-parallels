@@ -16,7 +16,7 @@ Install using standard Vagrant 1.1+ plugin installation methods. After
 installing, then do a `vagrant up` and specify the `parallels` provider. An example is shown below.
 
 ```
-$ vagrant plugin install vagrant-parallels --plugin-prerelease
+$ vagrant plugin install vagrant-parallels
 ...
 $ vagrant init
 $ vagrant up --provider=parallels
