@@ -20,11 +20,11 @@ module VagrantPlugins
           end
 
           # Import the virtual machine
-          template_name = Pathname.glob(
+          template_uuid = env[:machine].provider.driver.read_template_paths[File.realpath(Pathname.glob(
               env[:machine].box.directory.join('*.pvm')
-            ).first.basename.to_s[0...-4]
+            ).first)] # because the hash value is the UUID
 
-          env[:machine].id = env[:machine].provider.driver.import(template_name, vm_name) do |progress|
+          env[:machine].id = env[:machine].provider.driver.import(template_uuid, vm_name) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
           end

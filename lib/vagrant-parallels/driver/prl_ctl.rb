@@ -103,9 +103,9 @@ module VagrantPlugins
           end
         end
 
-        def import(template_name, vm_name)
+        def import(template_uuid, vm_name)
           last = 0
-          execute("clone", template_name, '--name', vm_name) do |type, data|
+          execute("clone", template_uuid, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
