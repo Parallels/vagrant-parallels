@@ -1,22 +1,25 @@
 # Vagrant Parallels Provider
 
-This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [Parallels](http://www.parallels.com/products/desktop/)
-provider to Vagrant, allowing Vagrant to control and provision machines using Parallels insead of the default Virtualbox.
+This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [Parallels Desktop](http://www.parallels.com/products/desktop/)
+provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop insead of the default Virtualbox.
 
 ## Note
 
 This project is still in active development and not all vagrant features have been developed, please report any issues you might find.
-Almost all features are available except for exporting/packaging VM's this will be available soon [isA](http://en.wikipedia.org/wiki/In_Shaa%27_Allah) (ان شاء الله)
+Almost all features are available except for exporting/packaging VM's this will be available soon.
 
 We look forward to hearing from you with any issues or features, Thank you
 
 ## Usage
 
-Install using standard Vagrant 1.1+ plugin installation methods. After
-installing, then do a `vagrant up` and specify the `parallels` provider. An example is shown below.
+This plugin is not available on official Vagrant repository yet. So, you should to build a gem-package by yourself and then install it:
 
 ```
-$ vagrant plugin install vagrant-parallels
+$ git clone https://github.com/yshahin/vagrant-parallels
+$ cd vagrant-parallels
+$ rake build 
+...
+$ vagrant plugin install ./pkg/vagrant-parallels-<version>.gem
 ...
 $ vagrant init
 $ vagrant up --provider=parallels
