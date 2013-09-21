@@ -55,5 +55,5 @@ Gem::Specification.new do |spec|
 
   spec.files = unignored_files
   spec.executables = unignored_files.map { |f| f[/^bin\/(.*)/, 1] }.compact
-  spec.require_path = ["lib"]
+  spec.require_path = "lib"
 end
