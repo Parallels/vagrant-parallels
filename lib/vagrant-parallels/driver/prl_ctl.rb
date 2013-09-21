@@ -54,6 +54,16 @@ module VagrantPlugins
           list
         end
 
+        # TODO: Reduce duplication on this and read_template_paths
+        def read_vm_paths
+          list = {}
+          read_info.each do |item|
+            list[File.realpath item.fetch('Home')] = item.fetch('ID')
+          end
+
+          list
+        end
+
         # Returns a hash of all UUIDs of VM templates currently
         # known by Parallels. Hash keys is template names
         #
@@ -62,6 +72,15 @@ module VagrantPlugins
           list = {}
           json({}) { execute('list', '--template', '--json', retryable: true) }.each do |item|
             list[item.fetch('name')] = item.fetch('uuid')
+          end
+
+          list
+        end
+
+        def read_template_paths
+          list = {}
+          read_template_info.each do |item|
+            list[File.realpath item.fetch('Home')] = item.fetch('ID')
           end
 
           list
@@ -139,8 +158,10 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
-        def registered?(name)
-          read_templates.has_key?(name) || read_vms.has_key?(name)
+        def registered?(path)
+          # TODO: Make this take UUID and have callers pass that instead
+          # Need a way to get the UUID from unregistered templates though (config.pvs XML parsing/regex?)
+          read_template_paths.has_key?(path) || read_vm_paths.has_key?(path)
         end
 
         def set_mac_address(mac)
@@ -185,6 +206,28 @@ module VagrantPlugins
         end
 
         private
+
+        # Parse the JSON from *all* VMs and return an array of objects
+        def read_info
+          json({}) { execute('list', '--info', '--json', retryable: true).gsub(/^(INFO)?/, '') }
+        end
+
+        # Cheat a little so we can send back just the template info
+        def read_template_info
+          # First just get a list of template UUIDs
+          template_uuids = read_templates.values
+
+          # Now build an info array only including those
+          template_info = []
+
+          read_info.each do |item|
+            if template_uuids.include? item.fetch("ID")
+              template_info.push item
+            end
+          end
+
+          template_info
+        end
 
         def read_settings(uuid=nil)
           uuid ||= @uuid

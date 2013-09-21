@@ -7,9 +7,11 @@ module VagrantPlugins
         end
 
         def call(env)
-          pvm_file = Pathname.glob(env[:machine].box.directory.join('*.pvm')).first
+          pvm_glob = Pathname.glob(env[:machine].box.directory.join('*.pvm')).first
+          # TODO: Handle error cases better, throw a Vagrant error and not a stack trace etc.
+          pvm_file = File.realpath pvm_glob.to_s
 
-          unless env[:machine].provider.driver.registered?(pvm_file.basename.to_s[0...-4])
+          unless env[:machine].provider.driver.registered?(pvm_file)
             env[:machine].provider.driver.register(pvm_file.to_s)
           end
           # Call the next if we have one (but we shouldn't, since this
