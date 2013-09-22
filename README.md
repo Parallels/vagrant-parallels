@@ -11,15 +11,10 @@ Almost all features are available except for exporting/packaging VM's this will 
 We look forward to hearing from you with any issues or features, Thank you
 
 ## Usage
-
-This plugin is not available on official Vagrant repository yet. So, you should to build a gem-package by yourself and then install it:
+Install using standard Vagrant 1.1+ plugin installation methods. After installing, then do a `vagrant up` and specify the `parallels` provider. An example is shown below.
 
 ```
-$ git clone https://github.com/yshahin/vagrant-parallels
-$ cd vagrant-parallels
-$ rake build 
-...
-$ vagrant plugin install ./pkg/vagrant-parallels-<version>.gem
+$ vagrant plugin install vagrant-parallels
 ...
 $ vagrant init
 $ vagrant up --provider=parallels
@@ -82,3 +77,16 @@ Use bundler to execute Vagrant:
 ```
 $ bundle exec vagrant up --provider=parallels
 ```
+
+After testing you can also build a gem-package by yourself and then install it as a plugin:
+(if you have 'vagrant-parallels' plugin already installed, delete it first)
+
+```
+$ git clone https://github.com/yshahin/vagrant-parallels
+$ cd vagrant-parallels
+$ rake build 
+...
+$ vagrant plugin install ./pkg/vagrant-parallels-<version>.gem
+...
+```
+So, now you have your own plugin installed, check it by command `vagrant plugin list` 
