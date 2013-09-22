@@ -75,7 +75,13 @@ module VagrantPlugins
         #
         # This should raise a VagrantError if things are not ready.
         def verify!
+          # TODO: Use version method?
           execute('--version')
+        end
+
+        def version
+          raw_version = execute('--version', retryable: true)
+          raw_version.gsub('/prlctl version /', '')
         end
 
         def clear_shared_folders
