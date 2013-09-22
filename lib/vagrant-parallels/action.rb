@@ -76,8 +76,9 @@ module VagrantPlugins
               end
 
               b2.use Call, GracefulHalt, :stopped, :running do |env2, b3|
-                next if !env2[:result]
-                b3.use ForcedHalt
+                if !env2[:result]
+                  b3.use ForcedHalt
+                end
               end
             else
               b2.use MessageNotCreated
