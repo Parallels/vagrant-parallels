@@ -15,14 +15,13 @@ module VagrantPlugins
           vm_name = prefix + "_#{Time.now.to_i}"
 
           # Verify the name is not taken
-          if env[:machine].provider.driver.registered? vm_name
+          if env[:machine].provider.driver.read_all_names.has_key?(vm_name)
             raise Vagrant::Errors::VMNameExists, :name => vm_name
           end
 
           # Import the virtual machine
-          template_uuid = env[:machine].provider.driver.read_template_paths[File.realpath(Pathname.glob(
-              env[:machine].box.directory.join('*.pvm')
-            ).first)] # because the hash value is the UUID
+          template_path = File.realpath(Pathname.glob(env[:machine].box.directory.join('*.pvm')).first)
+          template_uuid = env[:machine].provider.driver.read_all_paths[template_path]
 
           env[:machine].id = env[:machine].provider.driver.import(template_uuid, vm_name) do |progress|
             env[:ui].clear_line
