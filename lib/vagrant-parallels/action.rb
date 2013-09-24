@@ -140,16 +140,14 @@ module VagrantPlugins
       # suspended machines.
       def self.action_resume
         Vagrant::Action::Builder.new.tap do |b|
-          Vagrant::Action::Builder.new.tap do |b|
-            b.use CheckParallels
-            b.use Call, Created do |env, b2|
-              if env[:result]
-                b2.use CheckAccessible
-                b2.use EnvSet, :port_collision_repair => false
-                b2.use Resume
-              else
-                b2.use MessageNotCreated
-              end
+          b.use CheckParallels
+          b.use Call, Created do |env, b2|
+            if env[:result]
+              b2.use CheckAccessible
+              b2.use EnvSet, :port_collision_repair => false
+              b2.use Resume
+            else
+              b2.use MessageNotCreated
             end
           end
         end
