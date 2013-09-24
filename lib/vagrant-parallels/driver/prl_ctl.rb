@@ -47,8 +47,8 @@ module VagrantPlugins
         # @return [Hash]
         def read_all_names
           list = {}
-          json({}) { execute('list', '--all', '--json', retryable: true) }.each do |item|
-            list[item.fetch('name')] = item.fetch('uuid')
+          read_all_info.each do |item|
+            list[item.fetch('Name')] = item.fetch('ID')
           end
 
           list
