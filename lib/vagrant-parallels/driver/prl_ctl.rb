@@ -41,27 +41,27 @@ module VagrantPlugins
           read_settings(@uuid).fetch('State', 'inaccessible').to_sym
         end
 
-        # Returns a hash of all UUIDs of virtual machines currently
-        # known by Parallels. Hash keys is VM names
+        # Returns a hash of all UUIDs assigned to VMs and templates currently
+        # known by Parallels. Keys are 'name' values
         #
         # @return [Hash]
-        def read_vms
+        def read_all_names
           list = {}
-          json({}) { execute('list', '--all', '--json', retryable: true) }.each do |item|
-            list[item.fetch('name')] = item.fetch('uuid')
+          read_all_info.each do |item|
+            list[item.fetch('Name')] = item.fetch('ID')
           end
 
           list
         end
 
-        # Returns a hash of all UUIDs of VM templates currently
-        # known by Parallels. Hash keys is template names
+        # Returns a hash of all UUIDs assigned to VMs and templates currently
+        # known by Parallels. Keys are 'Home' directories
         #
         # @return [Hash]
-        def read_templates
+        def read_all_paths
           list = {}
-          json({}) { execute('list', '--template', '--json', retryable: true) }.each do |item|
-            list[item.fetch('name')] = item.fetch('uuid')
+          read_all_info.each do |item|
+            list[File.realpath item.fetch('Home')] = item.fetch('ID')
           end
 
           list
@@ -90,9 +90,9 @@ module VagrantPlugins
           end
         end
 
-        def import(template_name, vm_name)
+        def import(template_uuid, vm_name)
           last = 0
-          execute("clone", template_name, '--name', vm_name) do |type, data|
+          execute("clone", template_uuid, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
@@ -145,8 +145,10 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
-        def registered?(name)
-          read_templates.has_key?(name) || read_vms.has_key?(name)
+        def registered?(path)
+          # TODO: Make this take UUID and have callers pass that instead
+          # Need a way to get the UUID from unregistered templates though (config.pvs XML parsing/regex?)
+          read_all_paths.has_key?(path)
         end
 
         def set_mac_address(mac)
@@ -191,6 +193,17 @@ module VagrantPlugins
         end
 
         private
+
+        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
+        def read_all_info
+          vms_arr = json({}) do
+            execute('list', '--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          templates_arr = json({}) do
+            execute('list', '--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          vms_arr | templates_arr
+        end
 
         def read_settings(uuid=nil)
           uuid ||= @uuid
