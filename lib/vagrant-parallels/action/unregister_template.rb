@@ -7,12 +7,14 @@ module VagrantPlugins
         end
 
         def call(env)
-          vm_name = Pathname.glob(
+          template_path = File.realpath(Pathname.glob(
             env[:machine].box.directory.join('*.pvm')
-            ).first.basename.to_s[0...-4]
+            ).first)
 
-          if env[:machine].provider.driver.registered?(vm_name)
-            env[:machine].provider.driver.unregister(vm_name)
+          template_uuid = env[:machine].provider.driver.read_all_paths[template_path]
+
+          if env[:machine].provider.driver.registered?(template_path)
+            env[:machine].provider.driver.unregister(template_uuid)
           end
           # Call the next if we have one (but we shouldn't, since this
           # middleware is built to run with the Call-type middlewares)
