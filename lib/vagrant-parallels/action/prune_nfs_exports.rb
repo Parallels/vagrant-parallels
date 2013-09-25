@@ -8,7 +8,7 @@ module VagrantPlugins
 
         def call(env)
           if env[:host]
-            vms = env[:machine].provider.driver.read_vms
+            vms = env[:machine].provider.driver.read_all_names
             env[:host].nfs_prune(vms.values)
           end
 
