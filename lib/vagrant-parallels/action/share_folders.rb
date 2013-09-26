@@ -106,8 +106,17 @@ module VagrantPlugins
               @env[:ui].info(I18n.t("vagrant.actions.vm.share_folders.mounting_entry",
                                     :guest_path => data[:guestpath]))
 
-              # Symlink to mounted folder to guest path
-              @env[:machine].provider.driver.symlink(id, data[:guestpath])
+              # Dup the data so we can pass it to the guest API
+              data = data.dup
+
+              # Calculate the owner and group
+              ssh_info = @env[:machine].ssh_info
+              data[:owner] ||= ssh_info[:username]
+              data[:group] ||= ssh_info[:username]
+
+              # Mount the actual folder
+              @env[:machine].guest.capability(
+                :mount_parallels_shared_folder, id, data[:guestpath], data)
             else
               # If no guest path is specified, then automounting is disabled
               @env[:ui].info(I18n.t("vagrant.actions.vm.share_folders.nomount_entry",
