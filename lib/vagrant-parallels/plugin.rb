@@ -1,5 +1,3 @@
-require "vagrant"
-
 begin
   require "vagrant"
 rescue LoadError
@@ -70,6 +68,17 @@ module VagrantPlugins
       #   require File.expand_path("../config", __FILE__)
       #   Config
       # end
+
+      guest_capability(:darwin, :mount_parallels_shared_folder) do
+        require_relative "guest_cap/darwin/mount_parallels_shared_folder"
+        GuestDarwinCap::MountParallelsSharedFolder
+      end
+
+      guest_capability(:linux, :mount_parallels_shared_folder) do
+        require_relative "guest_cap/linux/mount_parallels_shared_folder"
+        GuestLinuxCap::MountParallelsSharedFolder
+      end
+
     end
 
     module Driver
