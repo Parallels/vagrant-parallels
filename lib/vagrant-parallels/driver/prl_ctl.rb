@@ -90,13 +90,6 @@ module VagrantPlugins
           end
         end
 
-        def optimize_disk
-          env.ui.info "Optimizing Disk"
-          path_to_hdd = File.join read_settings.fetch("Home"), "harddisk.hdd"
-          optimize_command = "#{@prldisktool} compact --buildmap --hdd #{path_to_hdd}"
-          shell_exec optimize_command
-        end
-
         def import(template_uuid, vm_name)
           last = 0
           execute("clone", template_uuid, '--name', vm_name) do |type, data|
@@ -159,15 +152,25 @@ module VagrantPlugins
             end
           end
 
-          new_vm = read_settings(vm_name).fetch('ID', vm_name)
-          compress(new_vm)
-          new_vm
+          read_settings(vm_name).fetch('ID', vm_name)
         end
 
-        def compress(uuid=nil)
+        def compact(uuid=nil)
           uuid ||= @uuid
           path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
-          raw('prl_disk_tool', 'compact', '--buildmap', '--hdd', path_to_hdd) if path_to_hdd
+          last = 0
+          raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              current = $1.to_i
+              if current > last
+                last = current
+                yield current if block_given?
+              end
+            end
+          end
         end
 
         def register(pvm_file)

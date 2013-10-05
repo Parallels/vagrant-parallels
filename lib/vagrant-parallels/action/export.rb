@@ -38,8 +38,6 @@ module VagrantPlugins
 
         def export
 
-          #@env[:machine].provider.driver.compress
-
           #Reusable, need to package it into a utils class
           prefix = @env[:root_path].basename.to_s
           prefix.gsub!(/[^-a-z0-9_]/i, "")
@@ -47,6 +45,13 @@ module VagrantPlugins
 
           @env[:ui].info I18n.t("vagrant.actions.vm.export.exporting")
           uuid = @env[:machine].provider.driver.export(@env["export.temp_dir"], vm_name) do |progress|
+            @env[:ui].clear_line
+            @env[:ui].report_progress(progress, 100, false)
+          end
+          @env[:ui].clear_line
+
+          @env[:ui].info I18n.t("vagrant.actions.vm.export.compacting")
+          @env[:machine].provider.driver.compact(uuid) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
           end
