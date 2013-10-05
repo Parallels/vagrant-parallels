@@ -3,7 +3,7 @@ require 'vagrant/util/template_renderer'
 module VagrantPlugins
   module Parallels
     module Action
-      class PackageVagrantfile
+      class PackageConfigFiles
         # For TemplateRenderer
         include Vagrant::Util
 
@@ -13,6 +13,7 @@ module VagrantPlugins
 
         def call(env)
           @env = env
+          create_metadata
           create_vagrantfile
           @app.call(env)
         end
@@ -26,6 +27,17 @@ module VagrantPlugins
               :base_mac => @env[:machine].provider.driver.read_mac_address
             }))
           end
+        end
+
+        def create_metadata
+          File.open(File.join(@env["export.temp_dir"], "metadata.json"), "w") do |f|
+            f.write(template_metadatafile)
+          end
+        end
+
+      private
+        def template_metadatafile
+          %Q({"provider": "parallels"}\n)
         end
       end
     end

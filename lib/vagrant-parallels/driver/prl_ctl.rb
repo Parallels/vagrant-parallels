@@ -90,6 +90,13 @@ module VagrantPlugins
           end
         end
 
+        def optimize_disk
+          env.ui.info "Optimizing Disk"
+          path_to_hdd = File.join read_settings.fetch("Home"), "harddisk.hdd"
+          optimize_command = "#{@prldisktool} compact --buildmap --hdd #{path_to_hdd}"
+          shell_exec optimize_command
+        end
+
         def import(template_uuid, vm_name)
           last = 0
           execute("clone", template_uuid, '--name', vm_name) do |type, data|
@@ -152,7 +159,15 @@ module VagrantPlugins
             end
           end
 
-          read_settings(vm_name).fetch('ID', vm_name)
+          new_vm = read_settings(vm_name).fetch('ID', vm_name)
+          compress(new_vm)
+          new_vm
+        end
+
+        def compress(uuid=nil)
+          uuid ||= @uuid
+          path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
+          raw('prl_disk_tool', 'compact', '--buildmap', '--hdd', path_to_hdd) if path_to_hdd
         end
 
         def register(pvm_file)
@@ -186,10 +201,6 @@ module VagrantPlugins
             # Add the shared folder
             execute('set', @uuid, '--shf-host-add', folder[:name], '--path', folder[:hostpath])
           end
-        end
-
-        def execute_command(command)
-          raw(*command)
         end
 
         def ready?

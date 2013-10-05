@@ -103,7 +103,7 @@ module VagrantPlugins
             #b2.use ClearForwardedPorts
             b2.use ClearSharedFolders
             b2.use Export
-            b2.use PackageVagrantfile
+            b2.use PackageConfigFiles
             b2.use Package
           end
         end
@@ -287,7 +287,7 @@ module VagrantPlugins
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
       autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
       autoload :Package, File.expand_path("../action/package", __FILE__)
-      autoload :PackageVagrantfile, File.expand_path("../action/package_vagrantfile", __FILE__)
+      autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PruneNFSExports, File.expand_path("../action/prune_nfs_exports", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)

@@ -37,6 +37,9 @@ module VagrantPlugins
         end
 
         def export
+
+          #@env[:machine].provider.driver.compress
+
           #Reusable, need to package it into a utils class
           prefix = @env[:root_path].basename.to_s
           prefix.gsub!(/[^-a-z0-9_]/i, "")
