@@ -137,6 +137,24 @@ module VagrantPlugins
           execute('delete', @uuid)
         end
 
+        def export(path, vm_name)
+          last = 0
+          execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3})%/
+              current = $1.to_i
+              if current > last
+                last = current
+                yield current if block_given?
+              end
+            end
+          end
+
+          read_settings(vm_name).fetch('ID', vm_name)
+        end
+
         def register(pvm_file)
           execute("register", pvm_file)
         end
