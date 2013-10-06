@@ -30,6 +30,7 @@ module VagrantPlugins
           if temp_dir && File.exist?(temp_dir)
             FileUtils.rm_rf(temp_dir)
           end
+          env.provider.driver.cleanup
         end
 
         def setup_temp_dir
