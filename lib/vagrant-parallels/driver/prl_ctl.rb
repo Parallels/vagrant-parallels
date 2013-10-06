@@ -61,7 +61,9 @@ module VagrantPlugins
         def read_all_paths
           list = {}
           read_all_info.each do |item|
-            list[File.realpath(item.fetch('Home'))] = item.fetch('ID')
+            if Dir.exists? item.fetch('Home')
+              list[File.realpath item.fetch('Home')] = item.fetch('ID')
+            end
           end
 
           list
@@ -69,12 +71,6 @@ module VagrantPlugins
 
         def read_mac_address
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
-        end
-
-        def cleanup
-          read_all_info.each do |item|
-            unregister(item.fetch('ID')) unless Dir.exists? item.fetch('Home')
-          end
         end
 
         # Verifies that the driver is ready to accept work.

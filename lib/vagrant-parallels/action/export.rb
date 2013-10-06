@@ -20,6 +20,7 @@ module VagrantPlugins
 
           setup_temp_dir
           export
+          compact
 
           @app.call(env)
 
@@ -30,7 +31,6 @@ module VagrantPlugins
           if temp_dir && File.exist?(temp_dir)
             FileUtils.rm_rf(temp_dir)
           end
-          env.provider.driver.cleanup
         end
 
         def setup_temp_dir
@@ -39,23 +39,28 @@ module VagrantPlugins
           FileUtils.mkpath(@env["export.temp_dir"])
         end
 
+        #TODO: cleanup registered VM on interupt
         def export
-
-          vm_name = generate_name(@env[:root_path], 'cloned')
+          vm_name = generate_name(@env[:root_path], '_export')
 
           @env[:ui].info I18n.t("vagrant.actions.vm.export.exporting")
-          uuid = @env[:machine].provider.driver.export(@env["export.temp_dir"], vm_name) do |progress|
+          @uuid = @env[:machine].provider.driver.export(@env["export.temp_dir"], vm_name) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
           end
-          @env[:ui].clear_line
 
-          @env[:ui].info I18n.t("vagrant.actions.vm.export.compacting")
-          @env[:machine].provider.driver.compact(uuid) do |progress|
+          # Clear the line a final time so the next data can appear
+          # alone on the line.
+          @env[:ui].clear_line
+        end
+
+        def compact
+          @env[:ui].info I18n.t("vagrant_parallels.actions.vm.export.compacting")
+          @env[:machine].provider.driver.compact(@uuid) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
           end
-          @env[:machine].provider.driver.unregister(uuid)
+          @env[:machine].provider.driver.unregister(@uuid)
 
           # Clear the line a final time so the next data can appear
           # alone on the line.

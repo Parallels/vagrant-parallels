@@ -87,7 +87,7 @@ module VagrantPlugins
 
     module Util
       def generate_name(path, suffix='')
-        "#{path.basename.to_s.gsub(/[^-a-z0-9_]/i, '')}_#{suffix}_#{Time.now.to_i}"
+        "#{path.basename.to_s.gsub(/[^-a-z0-9_]/i, '')}#{suffix}_#{Time.now.to_i}"
       end
     end
   end

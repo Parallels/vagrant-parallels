@@ -9,8 +9,9 @@ module VagrantPlugins
           @app = app
         end
 
+        #TODO: Clean up registered VM on interupt
         def call(env)
-          env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
+          env[:ui].info I18n.t("vagrant_parallels.actions.vm.import.importing",
                                :name => env[:machine].box.name)
 
           vm_name = generate_name(env[:root_path])
