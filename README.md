@@ -1,6 +1,6 @@
 # Vagrant Parallels Provider
 
-This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [Parallels Desktop](http://www.parallels.com/products/desktop/)
+This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds an [Parallels Desktop](http://www.parallels.com/products/desktop/)
 provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop insead of the default Virtualbox.
 
 ## Note
@@ -84,9 +84,9 @@ After testing you can also build a gem-package by yourself and then install it a
 ```
 $ git clone https://github.com/yshahin/vagrant-parallels
 $ cd vagrant-parallels
-$ rake build 
+$ rake build
 ...
 $ vagrant plugin install ./pkg/vagrant-parallels-<version>.gem
 ...
 ```
-So, now you have your own plugin installed, check it by command `vagrant plugin list` 
+So, now you have your own plugin installed, check it by command `vagrant plugin list`
