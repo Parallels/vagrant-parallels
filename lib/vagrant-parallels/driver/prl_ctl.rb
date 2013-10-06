@@ -61,7 +61,9 @@ module VagrantPlugins
         def read_all_paths
           list = {}
           read_all_info.each do |item|
-            list[File.realpath item.fetch('Home')] = item.fetch('ID')
+            if Dir.exists? item.fetch('Home')
+              list[File.realpath item.fetch('Home')] = item.fetch('ID')
+            end
           end
 
           list
@@ -137,6 +139,42 @@ module VagrantPlugins
           execute('delete', @uuid)
         end
 
+        def export(path, vm_name)
+          last = 0
+          execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3})%/
+              current = $1.to_i
+              if current > last
+                last = current
+                yield current if block_given?
+              end
+            end
+          end
+
+          read_settings(vm_name).fetch('ID', vm_name)
+        end
+
+        def compact(uuid=nil)
+          uuid ||= @uuid
+          path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
+          last = 0
+          raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              current = $1.to_i
+              if current > last
+                last = current
+                yield current if block_given?
+              end
+            end
+          end
+        end
+
         def register(pvm_file)
           execute("register", pvm_file)
         end
@@ -168,10 +206,6 @@ module VagrantPlugins
             # Add the shared folder
             execute('set', @uuid, '--shf-host-add', folder[:name], '--path', folder[:hostpath])
           end
-        end
-
-        def execute_command(command)
-          raw(*command)
         end
 
         def ready?
