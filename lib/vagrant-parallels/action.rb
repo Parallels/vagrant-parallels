@@ -90,6 +90,22 @@ module VagrantPlugins
       # This action packages the virtual machine into a single box file.
       def self.action_package
         Vagrant::Action::Builder.new.tap do |b|
+          b.use CheckParallels
+          b.use Call, Created do |env1, b2|
+            if !env1[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            b2.use SetupPackageFiles
+            b2.use CheckAccessible
+            b2.use action_halt
+            #b2.use ClearForwardedPorts
+            b2.use ClearSharedFolders
+            b2.use Export
+            b2.use PackageConfigFiles
+            b2.use Package
+          end
         end
       end
 
@@ -248,6 +264,7 @@ module VagrantPlugins
         end
       end
 
+      #autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
@@ -258,6 +275,7 @@ module VagrantPlugins
       autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
+      autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
@@ -268,10 +286,12 @@ module VagrantPlugins
       autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
       autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
-      #autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
+      autoload :Package, File.expand_path("../action/package", __FILE__)
+      autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PruneNFSExports, File.expand_path("../action/prune_nfs_exports", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
+      autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :ShareFolders, File.expand_path("../action/share_folders", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
       autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)

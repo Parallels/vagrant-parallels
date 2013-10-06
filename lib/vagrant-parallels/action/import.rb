@@ -2,17 +2,19 @@ module VagrantPlugins
   module Parallels
     module Action
       class Import
+
+        include Util
+
         def initialize(app, env)
           @app = app
         end
 
+        #TODO: Clean up registered VM on interupt
         def call(env)
-          env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
+          env[:ui].info I18n.t("vagrant_parallels.actions.vm.import.importing",
                                :name => env[:machine].box.name)
 
-          prefix = env[:root_path].basename.to_s
-          prefix.gsub!(/[^-a-z0-9_]/i, "")
-          vm_name = prefix + "_#{Time.now.to_i}"
+          vm_name = generate_name(env[:root_path])
 
           # Verify the name is not taken
           if env[:machine].provider.driver.read_all_names.has_key?(vm_name)
