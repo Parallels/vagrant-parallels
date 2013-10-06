@@ -6,6 +6,8 @@ module VagrantPlugins
       class Export
         attr_reader :temp_dir
 
+        include Util
+
         def initialize(app, env)
           @app = app
         end
@@ -38,10 +40,7 @@ module VagrantPlugins
 
         def export
 
-          #Reusable, need to package it into a utils class
-          prefix = @env[:root_path].basename.to_s
-          prefix.gsub!(/[^-a-z0-9_]/i, "")
-          vm_name = "#{prefix}_cloned_#{Time.now.to_i}"
+          vm_name = generate_name(@env[:root_path], 'cloned')
 
           @env[:ui].info I18n.t("vagrant.actions.vm.export.exporting")
           uuid = @env[:machine].provider.driver.export(@env["export.temp_dir"], vm_name) do |progress|

@@ -84,5 +84,11 @@ module VagrantPlugins
     module Driver
       autoload :PrlCtl, File.expand_path("../driver/prl_ctl", __FILE__)
     end
+
+    module Util
+      def generate_name(path, suffix='')
+        "#{path.basename.to_s.gsub(/[^-a-z0-9_]/i, '')}_#{suffix}_#{Time.now.to_i}"
+      end
+    end
   end
 end
