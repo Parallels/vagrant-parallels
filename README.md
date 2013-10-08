@@ -23,6 +23,26 @@ $ vagrant up --provider=parallels
 
 You need to have a paralles compatible box file installed before doing a `vagrnat up`, please refer to the coming section for instaructions.
 
+### Default Provider
+
+When using parallels as your vagrant provider after almost every command you will need to append `--provider=parallels` to simplify this you can set your default vagrant provider as **parallels**
+
+If your using BASH
+
+```
+# Append to bash
+echo "export VAGRANT_DEFAULT_PROVIDER=parallels" | tee -a ~/.bashrc
+source ~/.bashrc
+```
+
+If your using ZSH
+
+```
+# Append to zsh
+echo "export VAGRANT_DEFAULT_PROVIDER=parallels" | tee -a ~/.zshrc
+source ~/.zshrc
+```
+
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
