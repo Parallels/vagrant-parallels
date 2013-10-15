@@ -93,17 +93,12 @@ module VagrantPlugins
         end
 
         def import(template_uuid, vm_name)
-          last = 0
           execute("clone", template_uuid, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3})%/
-              current = $1.to_i
-              if current > last
-                last = current
-                yield current if block_given?
-              end
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              yield $1.to_i if block_given?
             end
           end
           @uuid = read_settings(vm_name).fetch('ID', vm_name)
@@ -140,17 +135,12 @@ module VagrantPlugins
         end
 
         def export(path, vm_name)
-          last = 0
           execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3})%/
-              current = $1.to_i
-              if current > last
-                last = current
-                yield current if block_given?
-              end
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              yield $1.to_i if block_given?
             end
           end
 
@@ -160,17 +150,12 @@ module VagrantPlugins
         def compact(uuid=nil)
           uuid ||= @uuid
           path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
-          last = 0
           raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
             if lines.last =~ /.+?(\d{,3}) ?%/
-              current = $1.to_i
-              if current > last
-                last = current
-                yield current if block_given?
-              end
+              yield $1.to_i if block_given?
             end
           end
         end
@@ -249,14 +234,43 @@ module VagrantPlugins
           execute('exec', @uuid, *command)
         end
 
+        def error_detection(command_response)
+          errored = false
+          # If the command was a failure, then raise an exception that is
+          # nicely handled by Vagrant.
+          if command_response.exit_code != 0
+            if @interrupted
+              @logger.info("Exit code != 0, but interrupted. Ignoring.")
+            elsif command_response.exit_code == 126
+              # This exit code happens if PrlCtl is on the PATH,
+              # but another executable it tries to execute is missing.
+              # This is usually indicative of a corrupted Parallels install.
+              raise VagrantPlugins::Parallels::Errors::ParallelsErrorNotFoundError
+            else
+              errored = true
+            end
+          elsif command_response.stderr =~ /failed to open \/dev\/prlctl/i
+            # This catches an error message that only shows when kernel
+            # drivers aren't properly installed.
+            @logger.error("Error message about unable to open prlctl")
+            raise VagrantPlugins::Parallels::Errors::ParallelsErrorKernelModuleNotLoaded
+          elsif command_response.stderr =~ /Unable to perform/i
+            @logger.info("VM not running for command to work.")
+            errored = true
+          elsif command_response.stderr =~ /Invalid usage/i
+            @logger.info("PrlCtl error text found, assuming error.")
+            errored = true
+          end
+          errored
+        end
+
         # Execute the given subcommand for PrlCtl and return the output.
         def execute(*command, &block)
           # Get the options hash if it exists
           opts = {}
           opts = command.pop if command.last.is_a?(Hash)
 
-          tries = 0
-          tries = 3 if opts[:retryable]
+          tries = opts[:retryable] ? 3 : 0
 
           # Variable to store our execution result
           r = nil
@@ -267,36 +281,7 @@ module VagrantPlugins
           retryable(on: VagrantPlugins::Parallels::Errors::ParallelsError, tries: tries, sleep: 1) do
             # Execute the command
             r = raw(@manager_path, *command, &block)
-
-            # If the command was a failure, then raise an exception that is
-            # nicely handled by Vagrant.
-            if r.exit_code != 0
-              if @interrupted
-                @logger.info("Exit code != 0, but interrupted. Ignoring.")
-              elsif r.exit_code == 126
-                # This exit code happens if PrlCtl is on the PATH,
-                # but another executable it tries to execute is missing.
-                # This is usually indicative of a corrupted Parallels install.
-                raise VagrantPlugins::Parallels::Errors::ParallelsErrorNotFoundError
-              else
-                errored = true
-              end
-            else
-              if r.stderr =~ /failed to open \/dev\/prlctl/i
-                # This catches an error message that only shows when kernel
-                # drivers aren't properly installed.
-                @logger.error("Error message about unable to open prlctl")
-                raise VagrantPlugins::Parallels::Errors::ParallelsErrorKernelModuleNotLoaded
-              end
-
-              if r.stderr =~ /Unable to perform/i
-                @logger.info("VM not running for command to work.")
-                errored = true
-              elsif r.stderr =~ /Invalid usage/i
-                @logger.info("PrlCtl error text found, assuming error.")
-                errored = true
-              end
-            end
+            errored = error_detection(r)
           end
 
           # If there was an error running PrlCtl, show the error and the
