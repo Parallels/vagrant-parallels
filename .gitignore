@@ -21,3 +21,4 @@ Vagrantfile
 .vagrant
 *.box
 *.pyc
+sandi_meter
