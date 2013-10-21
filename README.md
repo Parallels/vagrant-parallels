@@ -1,11 +1,11 @@
 # Vagrant Parallels Provider
 
 This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
-provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop insead of the default Virtualbox.
+provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop instead of the default Virtualbox.
 
 ## Note
 
-This project is still in active development and not all vagrant features have been developed, please report any issues you might find.
+This project is still in active development and not all vagrant features have been developed, so please report any issues you might find.
 Almost all features are available except for exporting/packaging VM's.  This will be available soon.
 
 We look forward to hearing from you with any issues or features.  Thank you!
