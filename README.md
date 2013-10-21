@@ -1,14 +1,14 @@
 # Vagrant Parallels Provider
 
-This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds an [Parallels Desktop](http://www.parallels.com/products/desktop/)
-provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop insead of the default Virtualbox.
+This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
+provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop instead of the default Virtualbox.
 
 ## Note
 
-This project is still in active development and not all vagrant features have been developed, please report any issues you might find.
-Almost all features are available except for exporting/packaging VM's this will be available soon.
+This project is still in active development and not all vagrant features have been developed, so please report any issues you might find.
+Almost all features are available except for exporting/packaging VM's.  This will be available soon.
 
-We look forward to hearing from you with any issues or features, Thank you
+We look forward to hearing from you with any issues or features.  Thank you!
 
 ## Usage
 Install using standard Vagrant 1.1+ plugin installation methods. After installing, then do a `vagrant up` and specify the `parallels` provider. An example is shown below.
@@ -21,13 +21,13 @@ $ vagrant up --provider=parallels
 ...
 ```
 
-You need to have a paralles compatible box file installed before doing a `vagrnat up`, please refer to the coming section for instaructions.
+You need to have a parallels compatible box file installed before doing a `vagrant up`, please refer to the coming section for instructions.
 
 ### Default Provider
 
-When using parallels as your vagrant provider after almost every command you will need to append `--provider=parallels` to simplify this you can set your default vagrant provider as **parallels**
+When using parallels as your vagrant provider after almost every command you will need to append `--provider=parallels`. To simplify this you can set your default vagrant provider as **parallels**
 
-If your using BASH
+If you're using BASH
 
 ```
 # Append to bash
@@ -35,7 +35,7 @@ echo "export VAGRANT_DEFAULT_PROVIDER=parallels" | tee -a ~/.bashrc
 source ~/.bashrc
 ```
 
-If your using ZSH
+If you're using ZSH
 
 ```
 # Append to zsh
@@ -90,7 +90,7 @@ and add the following line to your `Vagrantfile`
 Vagrant.require_plugin "vagrant-parallels"
 ```
 
-You need to have a compatable box file installed, refer to box file section
+You need to have a compatible box file installed, refer to box file section
 
 Use bundler to execute Vagrant:
 
@@ -109,4 +109,4 @@ $ rake build
 $ vagrant plugin install ./pkg/vagrant-parallels-<version>.gem
 ...
 ```
-So, now you have your own plugin installed, check it by command `vagrant plugin list`
+So, now that you have your own plugin installed, check it with the command `vagrant plugin list`
