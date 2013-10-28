@@ -207,6 +207,11 @@ module VagrantPlugins
           end
         end
 
+        # apply custom vm setting via set parameter
+        def set_vm_settings(command)
+          raw(@manager_path, *command)
+        end
+
         private
 
         # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)

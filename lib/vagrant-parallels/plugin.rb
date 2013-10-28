@@ -29,6 +29,11 @@ module VagrantPlugins
         Provider
       end
 
+      config(:parallels, :provider) do
+        require File.expand_path("../config", __FILE__)
+        Config
+      end
+
       # This initializes the internationalization strings.
       def self.setup_i18n
         I18n.load_path << File.expand_path("locales/en.yml", Parallels.source_root)
