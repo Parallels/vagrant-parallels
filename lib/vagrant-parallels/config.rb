@@ -21,14 +21,14 @@ module VagrantPlugins
         @customizations.each do |event, _|
           if !valid_events.include?(event)
             errors << I18n.t(
-              "vagrant.virtualbox.config.invalid_event",
+              "vagrant_parallels.config.invalid_event",
               event: event.to_s,
               valid_events: valid_events.join(", "))
           end
         end
         @customizations.each do |event, command|
           if event == "pre-import" && command.index(:id)
-            errors << I18n.t("vagrant.virtualbox.config.id_in_pre_import")
+            errors << I18n.t("vagrant_parallels.config.id_in_pre_import")
           end
         end
 

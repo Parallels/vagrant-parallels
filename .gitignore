@@ -22,6 +22,3 @@ Vagrantfile
 *.box
 *.pyc
 sandi_meter
-
-# IDE
-.idea
