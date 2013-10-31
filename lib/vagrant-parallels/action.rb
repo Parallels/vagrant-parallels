@@ -28,7 +28,9 @@ module VagrantPlugins
           # b.use ForwardPorts
           b.use SetHostname
           # b.use SaneDefaults
+          b.use Customize, "pre-boot"
           b.use Boot
+          b.use Customize, "post-boot"
           b.use WaitForCommunicator
           b.use CheckGuestTools
         end
@@ -255,6 +257,7 @@ module VagrantPlugins
               b2.use CheckAccessible
               b2.use HandleBoxUrl
               b2.use RegisterTemplate
+              b2.use Customize, "pre-import"
               b2.use Import
               b2.use UnregisterTemplate
               b2.use MatchMACAddress
@@ -274,6 +277,7 @@ module VagrantPlugins
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
       autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
+      autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)

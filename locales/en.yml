@@ -641,7 +641,11 @@ en:
         shared_folder_nfs_owner_group: |-
           Shared folder that have NFS enabled do no support owner/group
           attributes. Host path: %{path}
-
+      id_in_pre_import: |-
+        The ':id' parameter is not available in "pre-import" customizations.
+      invalid_event: |-
+        %{event} is not a valid event for customization. Valid events
+        are: %{valid_events}
 #-------------------------------------------------------------------------------
 # Translations for commands. e.g. `vagrant x`
 #-------------------------------------------------------------------------------
