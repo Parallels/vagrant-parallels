@@ -29,9 +29,11 @@ module VagrantPlugins
           @uuid = uuid
 
           # Set the path to prlctl
-          @manager_path = "prlctl"
+          @prlctl_path = "prlctl"
+          @prlsrvctl_path = "prlsrvctl"
 
-          @logger.info("Parallels path: #{@manager_path}")
+          @logger.info("CLI prlctl path: #{@prlctl_path}")
+          @logger.info("CLI prlsrvctl path: #{@prlsrvctl_path}")
         end
 
         # Returns the current state of this VM.
@@ -271,6 +273,14 @@ module VagrantPlugins
 
         # Execute the given subcommand for PrlCtl and return the output.
         def execute(*command, &block)
+          # Get the utility to execute: 'prlctl' by default and 'prlsrvctl' if it set as a first argument in command
+          if command.first == :prlsrvctl
+            cli = @prlsrvctl_path
+            command.delete_at(0)
+          else
+            cli = @prlctl_path
+          end
+
           # Get the options hash if it exists
           opts = {}
           opts = command.pop if command.last.is_a?(Hash)
@@ -285,7 +295,7 @@ module VagrantPlugins
 
           retryable(on: VagrantPlugins::Parallels::Errors::ParallelsError, tries: tries, sleep: 1) do
             # Execute the command
-            r = raw(@manager_path, *command, &block)
+            r = raw(cli, *command, &block)
             errored = error_detection(r)
           end
 
