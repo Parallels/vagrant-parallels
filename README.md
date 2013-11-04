@@ -60,6 +60,27 @@ The box format is basically just the required `metadata.json` file
 along with a `Vagrantfile` that does default settings for the
 provider-specific configuration for this provider.
 
+## Networking
+By default 'vagrant-parallels' uses the basic Vagrant networking approach. By default VM has one adapter assigned to the 'Shared' network in Parallels Desktop.
+But you can also add one ore more `:private_network` adapters, as described below: 
+
+### Private Network
+It is fully compatible with basic Vagrant [Private Networking](http://docs.vagrantup.com/v2/networking/private_network.html). 
+#### Available arguments:
+- `type` - IP configuration way: `:static` or `:dhcp`. Default is `:static`. If `:dchp` is set, such adapter will be configured to default subnet: '10.37.129.1/255.255.255.0'.
+- `ip` - IP address wich will be assigned to this network adapter. It is required only if type is `:static`.
+- `netmask` - network mask. Default is `255.255.255.0`. It is required only if type is `:static`.
+- `nic_type` - Unnecessary argument, means the type of network adapter. Can be any of `virtio`, `e1000` or `rtl`. Default is `e1000`.
+
+#### Example:
+Vagrant.configure("2") do |config|
+  config.vm.network :private_network, ip: "33.33.33.50", netmask: "255.255.0.0" 
+  config.vm.network :private_network, type: :dhcp, nic_type: "rtl"
+end
+It means that two private network adapters will be configured: 
+1) The first will have static ip '33.33.33.50' and mask '255.255.0.0'. It will be represented as device `e1000` by default (e.g. 'Intel(R) PRO/1000 MT').
+2) The second adapter will be configured as `rtl` ('Realtek RTL8029AS') and get an IP from internal DHCP server, which is working on the default network '10.37.129.1/24'.
+
 ## Development
 
 To work on the `vagrant-parallels` plugin, clone this repository out
