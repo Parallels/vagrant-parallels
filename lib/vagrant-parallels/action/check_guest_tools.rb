@@ -7,8 +7,6 @@ module VagrantPlugins
         end
 
         def call(env)
-          # Use the raw interface for now, while the virtualbox gem
-          # doesn't support guest properties (due to cross platform issues)
           tools_version = env[:machine].provider.driver.read_guest_tools_version
           if !tools_version
             env[:ui].warn I18n.t("vagrant.actions.vm.check_guest_tools.not_detected")
