@@ -12,11 +12,15 @@ module VagrantPlugins
       end
 
       class ParallelsErrorNotFoundError < VagrantParallelsError
-        error_key(:not_found_error)
+        error_key(:prlctl_not_found_error)
       end
 
       class ParallelsErrorKernelModuleNotLoaded < VagrantParallelsError
-        error_key(:kernel_module_not_loaded)
+        error_key(:parallels_kernel_module_not_loaded)
+      end
+
+      class ParallelsNoRoomForHighLevelNetwork < VagrantParallelsError
+        error_key(:parallels_no_room_for_high_level_network)
       end
     end
   end

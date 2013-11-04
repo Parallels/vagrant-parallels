@@ -2,17 +2,35 @@ module VagrantPlugins
   module Parallels
     class Config < Vagrant.plugin("2", :config)
       attr_reader :customizations
+      attr_accessor :destroy_unused_network_interfaces
+      attr_reader :network_adapters
       attr_accessor :name
 
       def initialize
         @customizations   = []
+        @destroy_unused_network_interfaces = UNSET_VALUE
+        @network_adapters  = {}
         @name             = UNSET_VALUE
+
+        network_adapter(0, :shared)
       end
 
       def customize(*command)
         event   = command.first.is_a?(String) ? command.shift : "pre-boot"
         command = command[0]
         @customizations << [event, command]
+      end
+
+      def network_adapter(slot, type, *args)
+        @network_adapters[slot] = [type, args]
+      end
+
+      def finalize!
+        if @destroy_unused_network_interfaces == UNSET_VALUE
+          @destroy_unused_network_interfaces = true
+        end
+
+        @name = nil if @name == UNSET_VALUE
       end
 
       def validate(machine)
