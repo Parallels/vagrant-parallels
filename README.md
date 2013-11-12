@@ -133,3 +133,15 @@ $ vagrant plugin install ./pkg/vagrant-parallels-<version>.gem
 ...
 ```
 So, now that you have your own plugin installed, check it with the command `vagrant plugin list`
+
+## Contributors
+
+A great thanks to the people who helping this project stand on its feet, thank you
+
+* Kevin Kaland `@wizonesolutions`
+* Mikhail Zholobov `@legal90`
+* Dmytro Vasylenko `@odi-um`
+* Thomas Koschate `@koschate`
+
+and to all the people who are using and testing this tool
+
