@@ -69,11 +69,6 @@ module VagrantPlugins
         end
       end
 
-      # config(:parallels, :provider) do
-      #   require File.expand_path("../config", __FILE__)
-      #   Config
-      # end
-
       guest_capability(:darwin, :mount_parallels_shared_folder) do
         require_relative "guest_cap/darwin/mount_parallels_shared_folder"
         GuestDarwinCap::MountParallelsSharedFolder

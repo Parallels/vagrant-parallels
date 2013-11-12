@@ -2,6 +2,7 @@ require 'log4r'
 require 'json'
 
 require 'vagrant/util/busy'
+require "vagrant/util/network_ip"
 require 'vagrant/util/platform'
 require 'vagrant/util/retryable'
 require 'vagrant/util/subprocess'
@@ -16,6 +17,7 @@ module VagrantPlugins
       class PrlCtl
         # Include this so we can use `Subprocess` more easily.
         include Vagrant::Util::Retryable
+        include Vagrant::Util::NetworkIP
 
         attr_reader :uuid
 
@@ -29,9 +31,112 @@ module VagrantPlugins
           @uuid = uuid
 
           # Set the path to prlctl
-          @manager_path = "prlctl"
+          @prlctl_path = "prlctl"
+          @prlsrvctl_path = "prlsrvctl"
 
-          @logger.info("Parallels path: #{@manager_path}")
+          @logger.info("CLI prlctl path: #{@prlctl_path}")
+          @logger.info("CLI prlsrvctl path: #{@prlsrvctl_path}")
+        end
+
+        def create_host_only_network(options)
+          # Create the interface
+          execute(:prlsrvctl, "net", "add", options[:name], "--type", "host-only")
+
+          # Configure it
+          args = ["--ip", "#{options[:adapter_ip]}/#{options[:netmask]}"]
+          if options[:dhcp]
+            args.concat(["--dhcp-ip", options[:dhcp][:ip],
+                         "--ip-scope-start", options[:dhcp][:lower],
+                         "--ip-scope-end", options[:dhcp][:upper]])
+          end
+
+          execute(:prlsrvctl, "net", "set", options[:name], *args)
+
+          # Determine interface to which it has been bound
+          net_info = json { execute(:prlsrvctl, 'net', 'info', options[:name], '--json', retryable: true) }
+          bound_to = net_info['Bound To']
+
+          # Return the details
+          return {
+              :name => options[:name],
+              :bound_to => bound_to,
+              :ip   => options[:adapter_ip],
+              :netmask => options[:netmask],
+              :dhcp => options[:dhcp]
+          }
+        end
+
+        def delete_unused_host_only_networks
+          networks = read_virtual_networks()
+
+          # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
+          # They should not be deleted anyway.
+          networks.keep_if do |net|
+            net['Type'] == "host-only" && /^vnic(\d+)$/.match(net['Bound To'])[1].to_i >= 2
+          end
+
+          read_all_info.each do |vm|
+            used_nets = vm.fetch('Hardware', {}).select { |name, _| name.start_with? 'net' }
+            used_nets.each_value do |net_params|
+              networks.delete_if { |net|  net['Bound To'] == net_params.fetch('iface', nil)}
+            end
+
+          end
+
+          networks.each do |net|
+            # Delete the actual host only network interface.
+            execute(:prlsrvctl, "net", "del", net["Network ID"])
+          end
+        end
+
+        def enable_adapters(adapters)
+          # Get adapters which have already configured for this VM
+          # Such adapters will be just overridden
+          existing_adapters = read_settings.fetch('Hardware', {}).keys.select { |name| name.start_with? 'net' }
+
+          # Disable all previously existing adapters (except shared 'vnet0')
+          existing_adapters.each do |adapter|
+            if adapter != 'vnet0'
+              execute('set', @uuid, '--device-set', adapter, '--disable')
+            end
+          end
+
+          adapters.each do |adapter|
+            args = []
+            if existing_adapters.include? "net#{adapter[:adapter]}"
+              args.concat(["--device-set","net#{adapter[:adapter]}", "--enable"])
+            else
+              args.concat(["--device-add", "net"])
+            end
+
+            if adapter[:hostonly] or adapter[:bridge]
+              # Oddly enough, but there is a 'bridge' anyway.
+              # The only difference is the destination interface:
+              # - in host-only (private) network it will be bridged to the 'vnicX' device
+              # - in real bridge (public) network it will be bridged to the assigned device
+              args.concat(["--type", "bridged", "--iface", adapter[:bound_to]])
+            end
+
+            if adapter[:shared]
+              args.concat(["--type", "shared"])
+            end
+
+            if adapter[:dhcp]
+              args.concat(["--dhcp", "yes"])
+            elsif adapter[:ip]
+              args.concat(["--ipdel", "all", "--ipadd", "#{adapter[:ip]}/#{adapter[:netmask]}"])
+            end
+
+            if adapter[:mac_address]
+              args.concat(["--mac", adapter[:mac_address]])
+            end
+
+            if adapter[:nic_type]
+              args.concat(["--adapter-type", adapter[:nic_type].to_s])
+            end
+
+            execute("set", @uuid, *args)
+          end
         end
 
         # Returns the current state of this VM.
@@ -69,8 +174,78 @@ module VagrantPlugins
           list
         end
 
+        def read_bridged_interfaces
+          net_list = read_virtual_networks()
+
+          # Skip 'vnicXXX' and 'Default' interfaces
+          net_list.delete_if do |net|
+            net['Type'] != "bridged" or net['Bound To'] =~ /^(vnic(.+?)|Default)$/
+          end
+
+          bridged_ifaces = []
+          net_list.collect do |iface|
+            info = {}
+            ifconfig = raw('ifconfig', iface['Bound To']).stdout
+            # Assign default values
+            info[:name]    = iface['Network ID']
+            info[:ip]      = "0.0.0.0"
+            info[:netmask] = "0.0.0.0"
+            info[:status]  = "Down"
+
+            ifconfig.split("\n").each do |line|
+              if line =~ /(?<=inet\s)(\S*)/
+                info[:ip] = $1.to_s
+              end
+              if line =~ /(?<=netmask\s)(\S*)/
+                # Netmask will be converted from hex to dec:
+                # '0xffffff00' -> '255.255.255.0'
+                info[:netmask] = $1.hex.to_s(16).scan(/../).each.map{|octet| octet.hex}.join(".")
+              elsif line =~ /\W(UP)\W/
+                info[:status] = "Up"
+              end
+            end
+            bridged_ifaces << info
+          end
+          bridged_ifaces
+        end
+
+        def read_host_only_interfaces
+          net_list = read_virtual_networks()
+          net_list.keep_if { |net| net['Type'] == "host-only" }
+
+          hostonly_ifaces = []
+          net_list.collect do |iface|
+            info = {}
+            net_info = json { execute(:prlsrvctl, 'net', 'info', iface['Network ID'], '--json') }
+            # Really we need to work with bounded virtual interface
+            info[:name]     = net_info['Network ID']
+            info[:bound_to] = net_info['Bound To']
+            info[:ip]       = net_info['Parallels adapter']['IP address']
+            info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
+            # Such interfaces are always in 'Up'
+            info[:status]   = "Up"
+
+            # There may be a fake DHCPv4 parameters
+            # We can trust them only if adapter IP and DHCP IP are in the same subnet
+            dhcp_ip = net_info['DHCPv4 server']['Server address']
+            if network_address(info[:ip], info[:netmask]) == network_address(dhcp_ip, info[:netmask])
+              info[:dhcp] = {
+                :ip      => dhcp_ip,
+                :lower   => net_info['DHCPv4 server']['IP scope start address'],
+                :upper   => net_info['DHCPv4 server']['IP scope end address']
+              }
+            end
+            hostonly_ifaces << info
+          end
+        hostonly_ifaces
+        end
+
         def read_mac_address
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
+        end
+
+        def read_virtual_networks
+          json { execute(:prlsrvctl, 'net', 'list', '--json', retryable: true) }
         end
 
         # Verifies that the driver is ready to accept work.
@@ -105,9 +280,9 @@ module VagrantPlugins
         end
 
         def delete_adapters
-          read_settings.fetch('Hardware').each do |k, _|
-            if k != 'net0' and k.start_with? 'net'
-              execute('set', @uuid, '--device-del', k)
+          read_settings.fetch('Hardware', {}).each do |adapter, params|
+            if adapter.start_with?('net') and !params.fetch("enabled", true)
+              execute('set', @uuid, '--device-del', adapter)
             end
           end
         end
@@ -271,6 +446,14 @@ module VagrantPlugins
 
         # Execute the given subcommand for PrlCtl and return the output.
         def execute(*command, &block)
+          # Get the utility to execute: 'prlctl' by default and 'prlsrvctl' if it set as a first argument in command
+          if command.first == :prlsrvctl
+            cli = @prlsrvctl_path
+            command.delete_at(0)
+          else
+            cli = @prlctl_path
+          end
+
           # Get the options hash if it exists
           opts = {}
           opts = command.pop if command.last.is_a?(Hash)
@@ -285,7 +468,7 @@ module VagrantPlugins
 
           retryable(on: VagrantPlugins::Parallels::Errors::ParallelsError, tries: tries, sleep: 1) do
             # Execute the command
-            r = raw(@manager_path, *command, &block)
+            r = raw(cli, *command, &block)
             errored = error_detection(r)
           end
 

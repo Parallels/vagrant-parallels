@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          # "Enable" all the adapters we setup.
+          # Delete all disabled network adapters
           env[:ui].info I18n.t("vagrant.actions.vm.clear_network_interfaces.deleting")
           env[:machine].provider.driver.delete_adapters
 

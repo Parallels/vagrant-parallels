@@ -27,8 +27,8 @@ module VagrantPlugins
           mount_shared_folders
         end
 
-        # This method returns an actual list of VirtualBox shared
-        # folders to create and their proper path.
+        # This method returns an actual list of Parallels Desktop
+        # shared folders to create and their proper path.
         def shared_folders
           {}.tap do |result|
             @env[:machine].config.vm.synced_folders.each do |id, data|

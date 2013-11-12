@@ -23,8 +23,8 @@ module VagrantPlugins
           #b.use PrepareNFSSettings
           b.use ClearSharedFolders
           b.use ShareFolders
+          b.use Network
           b.use ClearNetworkInterfaces
-          # b.use Network
           # b.use ForwardPorts
           b.use SetHostname
           # b.use SaneDefaults
@@ -55,6 +55,7 @@ module VagrantPlugins
                 b3.use action_halt
                 b3.use UnregisterTemplate
                 b3.use Destroy
+                b3.use DestroyUnusedNetworkInterfaces
               else
                 b3.use MessageWillNotDestroy
               end
@@ -279,6 +280,7 @@ module VagrantPlugins
       autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
+      autoload :DestroyUnusedNetworkInterfaces, File.expand_path("../action/destroy_unused_network_interfaces", __FILE__)
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
@@ -290,6 +292,7 @@ module VagrantPlugins
       autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
       autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
+      autoload :Network, File.expand_path("../action/network", __FILE__)
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PruneNFSExports, File.expand_path("../action/prune_nfs_exports", __FILE__)
