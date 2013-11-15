@@ -38,6 +38,19 @@ module VagrantPlugins
           @logger.info("CLI prlsrvctl path: #{@prlsrvctl_path}")
         end
 
+        def compact(uuid=nil)
+          uuid ||= @uuid
+          path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
+          raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              yield $1.to_i if block_given?
+            end
+          end
+        end
+
         def create_host_only_network(options)
           # Create the interface
           execute(:prlsrvctl, "net", "add", options[:name], "--type", "host-only")
@@ -64,6 +77,24 @@ module VagrantPlugins
               :netmask => options[:netmask],
               :dhcp => options[:dhcp]
           }
+        end
+
+        def clear_shared_folders
+          read_settings.fetch("Host Shared Folders", {}).keys.drop(1).each do |folder|
+            execute("set", @uuid, "--shf-host-del", folder)
+          end
+        end
+
+        def delete
+          execute('delete', @uuid)
+        end
+
+        def delete_adapters
+          read_settings.fetch('Hardware', {}).each do |adapter, params|
+            if adapter.start_with?('net') and !params.fetch("enabled", true)
+              execute('set', @uuid, '--device-del', adapter)
+            end
+          end
         end
 
         def delete_unused_host_only_networks
@@ -141,11 +172,45 @@ module VagrantPlugins
           end
         end
 
-        # Returns the current state of this VM.
-        #
-        # @return [Symbol]
-        def read_state
-          read_settings(@uuid).fetch('State', 'inaccessible').to_sym
+        def export(path, vm_name)
+          execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              yield $1.to_i if block_given?
+            end
+          end
+
+          read_settings(vm_name).fetch('ID', vm_name)
+        end
+
+        def halt(force=false)
+          args = ['stop', @uuid]
+          args << '--kill' if force
+          execute(*args)
+        end
+
+        def import(template_uuid, vm_name)
+          execute("clone", template_uuid, '--name', vm_name) do |type, data|
+            lines = data.split("\r")
+            # The progress of the import will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              yield $1.to_i if block_given?
+            end
+          end
+          @uuid = read_settings(vm_name).fetch('ID', vm_name)
+        end
+
+        def ip
+          mac_addr = read_mac_address.downcase
+          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
+            if line.include? mac_addr
+              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+              return ip
+            end
+          end
         end
 
         # Returns a hash of all UUIDs assigned to VMs and templates currently
@@ -212,6 +277,10 @@ module VagrantPlugins
           bridged_ifaces
         end
 
+        def read_guest_tools_version
+          read_settings.fetch('GuestTools', {}).fetch('version', nil)
+        end
+
         def read_host_only_interfaces
           net_list = read_virtual_networks()
           net_list.keep_if { |net| net['Type'] == "host-only" }
@@ -247,8 +316,65 @@ module VagrantPlugins
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
 
+        # Returns the current state of this VM.
+        #
+        # @return [Symbol]
+        def read_state
+          read_settings(@uuid).fetch('State', 'inaccessible').to_sym
+        end
+
         def read_virtual_networks
           json { execute(:prlsrvctl, 'net', 'list', '--json', retryable: true) }
+        end
+
+        def ready?
+          !!guest_execute('uname') rescue false
+        end
+
+        def register(pvm_file)
+          execute("register", pvm_file)
+        end
+
+        def registered?(path)
+          # TODO: Make this take UUID and have callers pass that instead
+          # Need a way to get the UUID from unregistered templates though (config.pvs XML parsing/regex?)
+          read_all_paths.has_key?(path)
+        end
+
+        def resume
+          execute('resume', @uuid)
+        end
+
+        def set_mac_address(mac)
+          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
+        end
+
+        # apply custom vm setting via set parameter
+        def set_vm_settings(command)
+          raw(@manager_path, *command)
+        end
+
+        def share_folders(folders)
+          folders.each do |folder|
+            # Add the shared folder
+            execute('set', @uuid, '--shf-host-add', folder[:name], '--path', folder[:hostpath])
+          end
+        end
+
+        def ssh_port(expected_port)
+          22
+        end
+
+        def start
+          execute('start', @uuid)
+        end
+
+        def suspend
+          execute('suspend', @uuid)
+        end
+
+        def unregister(uuid)
+          execute("unregister", uuid)
         end
 
         # Verifies that the driver is ready to accept work.
@@ -264,133 +390,16 @@ module VagrantPlugins
           raw_version.gsub('/prlctl version /', '')
         end
 
-        def clear_shared_folders
-          read_settings.fetch("Host Shared Folders", {}).keys.drop(1).each do |folder|
-            execute("set", @uuid, "--shf-host-del", folder)
-          end
-        end
-
-        def import(template_uuid, vm_name)
-          execute("clone", template_uuid, '--name', vm_name) do |type, data|
-            lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
-            end
-          end
-          @uuid = read_settings(vm_name).fetch('ID', vm_name)
-        end
-
-        def delete_adapters
-          read_settings.fetch('Hardware', {}).each do |adapter, params|
-            if adapter.start_with?('net') and !params.fetch("enabled", true)
-              execute('set', @uuid, '--device-del', adapter)
-            end
-          end
-        end
-
-        def resume
-          execute('resume', @uuid)
-        end
-
-        def suspend
-          execute('suspend', @uuid)
-        end
-
-        def start
-          execute('start', @uuid)
-        end
-
-        def halt(force=false)
-          args = ['stop', @uuid]
-          args << '--kill' if force
-          execute(*args)
-        end
-
-        def delete
-          execute('delete', @uuid)
-        end
-
-        def export(path, vm_name)
-          execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
-            lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
-            end
-          end
-
-          read_settings(vm_name).fetch('ID', vm_name)
-        end
-
-        def compact(uuid=nil)
-          uuid ||= @uuid
-          path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
-          raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
-            lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
-            end
-          end
-        end
-
-        def register(pvm_file)
-          execute("register", pvm_file)
-        end
-
-        def unregister(uuid)
-          execute("unregister", uuid)
-        end
-
-        def registered?(path)
-          # TODO: Make this take UUID and have callers pass that instead
-          # Need a way to get the UUID from unregistered templates though (config.pvs XML parsing/regex?)
-          read_all_paths.has_key?(path)
-        end
-
-        def set_mac_address(mac)
-          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
-        end
-
-        def ssh_port(expected_port)
-          22
-        end
-
-        def read_guest_tools_version
-          read_settings.fetch('GuestTools', {}).fetch('version', nil)
-        end
-
-        def share_folders(folders)
-          folders.each do |folder|
-            # Add the shared folder
-            execute('set', @uuid, '--shf-host-add', folder[:name], '--path', folder[:hostpath])
-          end
-        end
-
-        def ready?
-          !!guest_execute('uname') rescue false
-        end
-
-        def ip
-          mac_addr = read_mac_address.downcase
-          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
-            if line.include? mac_addr
-              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
-              return ip
-            end
-          end
-        end
-
-        # apply custom vm setting via set parameter
-        def set_vm_settings(command)
-          raw(@manager_path, *command)
-        end
-
         private
+
+        def guest_execute(*command)
+          execute('exec', @uuid, *command)
+        end
+
+        def json(default=nil)
+          data = yield
+          JSON.parse(data) rescue default
+        end
 
         # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
         def read_all_info
@@ -406,15 +415,6 @@ module VagrantPlugins
         def read_settings(uuid=nil)
           uuid ||= @uuid
           json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
-        end
-
-        def json(default=nil)
-          data = yield
-          JSON.parse(data) rescue default
-        end
-
-        def guest_execute(*command)
-          execute('exec', @uuid, *command)
         end
 
         def error_detection(command_response)
