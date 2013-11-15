@@ -316,6 +316,35 @@ module VagrantPlugins
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
 
+        def read_network_interfaces
+          nics = {}
+
+          # Get enabled VM's network interfaces
+          ifaces = read_settings.fetch('Hardware', {}).keep_if do |dev, params|
+            dev.start_with?('net') and params.fetch("enabled", true)
+          end
+          ifaces.each do |name, params|
+            adapter = name.match(/^net(\d+)$/)[1].to_i
+            nics[adapter] ||= {}
+
+            if params['type'] == "shared"
+              nics[adapter][:type] = :shared
+            elsif params['type'] == "host"
+              # It is PD internal host-only network and it is bounded to 'vnic1'
+              nics[adapter][:type] = :hostonly
+              nics[adapter][:hostonly] = "vnic1"
+            elsif params['type'] == "bridged" and params.fetch('iface','').start_with?('vnic')
+              # Bridged to the 'vnicXX'? Then it is a host-only, actually.
+              nics[adapter][:type] = :hostonly
+              nics[adapter][:hostonly] = params.fetch('iface','')
+            elsif params['type'] == "bridged"
+              nics[adapter][:type] = :bridged
+              nics[adapter][:bridge] = params.fetch('iface','')
+            end
+          end
+          nics
+        end
+
         # Returns the current state of this VM.
         #
         # @return [Symbol]
