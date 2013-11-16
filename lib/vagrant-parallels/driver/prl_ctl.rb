@@ -125,6 +125,8 @@ module VagrantPlugins
               args.concat(["--dhcp", "yes"])
             elsif adapter[:ip]
               args.concat(["--ipdel", "all", "--ipadd", "#{adapter[:ip]}/#{adapter[:netmask]}"])
+            else
+              args.concat(["--dhcp", "no"])
             end
 
             if adapter[:mac_address]
@@ -187,23 +189,24 @@ module VagrantPlugins
             info = {}
             ifconfig = raw('ifconfig', iface['Bound To']).stdout
             # Assign default values
-            info[:name]    = iface['Network ID']
+            info[:name]    = iface['Network ID'].gsub(/\s\(.*?\)$/, '')
+            info[:bound_to] = iface['Bound To']
             info[:ip]      = "0.0.0.0"
             info[:netmask] = "0.0.0.0"
             info[:status]  = "Down"
 
-            ifconfig.split("\n").each do |line|
-              if line =~ /(?<=inet\s)(\S*)/
-                info[:ip] = $1.to_s
-              end
-              if line =~ /(?<=netmask\s)(\S*)/
-                # Netmask will be converted from hex to dec:
-                # '0xffffff00' -> '255.255.255.0'
-                info[:netmask] = $1.hex.to_s(16).scan(/../).each.map{|octet| octet.hex}.join(".")
-              elsif line =~ /\W(UP)\W/
-                info[:status] = "Up"
-              end
+            if ifconfig =~ /(?<=inet\s)(\S*)/
+              info[:ip] = $1.to_s
             end
+            if ifconfig =~ /(?<=netmask\s)(\S*)/
+              # Netmask will be converted from hex to dec:
+              # '0xffffff00' -> '255.255.255.0'
+              info[:netmask] = $1.hex.to_s(16).scan(/../).each.map{|octet| octet.hex}.join(".")
+            end
+            if ifconfig =~ /\W(UP)\W/ and ifconfig !~ /(?<=status:\s)inactive$/
+              info[:status] = "Up"
+            end
+
             bridged_ifaces << info
           end
           bridged_ifaces

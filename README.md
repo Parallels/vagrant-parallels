@@ -65,9 +65,10 @@ By default 'vagrant-parallels' uses the basic Vagrant networking approach. By de
 But you can also add one ore more `:private_network` adapters, as described below: 
 
 ### Private Network
-It is fully compatible with basic Vagrant [Private Networking](http://docs.vagrantup.com/v2/networking/private_network.html). 
+It is fully compatible with basic Vagrant [Private Networks](http://docs.vagrantup.com/v2/networking/private_network.html).
 #### Available arguments:
-- `type` - IP configuration way: `:static` or `:dhcp`. Default is `:static`. If `:dchp` is set, such interface will get an IP dynamically from default subnet "10.37.129.1/255.255.255.0".
+- `type` - IP configuration way: `:static` or `:dhcp` (exactly Symbol object). Default is `:static`. If `:dchp` is set, such interface will get an IP dynamically from default subnet "10.37.129.1/255.255.255.0".
+- `mac` - MAC address which will be assigned to this network adapter. If omitted, MAC will be automatically generated at the first `up` of VM.
 - `ip` - IP address which will be assigned to this network adapter. It is required only if type is `:static`.
 - `netmask` - network mask. Default is `"255.255.255.0"`. It is required only if type is `:static`.
 - `nic_type` - Unnecessary argument, means the type of network adapter. Can be any of `"virtio"`, `"e1000"` or `"rtl"`. Default is `"e1000"`.
@@ -82,6 +83,28 @@ end
 It means that two private network adapters will be configured: 
 1) The first will have static ip '33.33.33.50' and mask '255.255.0.0'. It will be represented as device `"e1000"` by default (e.g. 'Intel(R) PRO/1000 MT').
 2) The second adapter will be configured as `"rtl"` ('Realtek RTL8029AS') and get an IP from internal DHCP server, which is working on the default network "10.37.129.1/255.255.255.0".
+
+### Public Network
+It is fully compatible with basic Vagrant [Public Networks](http://docs.vagrantup.com/v2/networking/public_network.html).
+#### Available arguments (unnecessary, but provider specific):
+- `bridge` - target host's interface for bridged network. You can specify full (ex: `Wi-Fi`) or short (ex: `en0`) name of interface. If omitted, you will be asked to choose the interface during the VM boot (or if only one interface exists, it will be chosen automatically).
+_Hint:_ Full names of network interfaces are displayed in _System Preferences -> Network_ window, and short names - in the `ifconfig` command output on your Mac.
+- `mac` - MAC address which will be assigned to this network adapter. If omitted, MAC will be automatically generated at the first `up` of VM.
+- `ip` - IP address which will be assigned to this network adapter. Use it, if you want to configure adapter manually.
+- `netmask` - network mask. Default is `"255.255.255.0"`. It is used only in pair with `ip`
+- `type` - IP configuration way, only `:dhcp` is available. Use it only if your public network has a valid DHCP server. Otherwise, omit this attribute or use an `ip` and `netmask` described above.
+- `nic_type` - type of network adapter. Can be any of `"virtio"`, `"e1000"` or `"rtl"`. Default is `"e1000"`.
+
+#### Example:
+```ruby
+Vagrant.configure("2") do |config|
+  config.vm.network :public_network, bridge: "Wi-Fi", mac: "001C425FC3AB", type: :dhcp
+  config.vm.network :public_network, bridge: "en4", ip: "10.3.1.18", netmask: "255.255.252.0"
+end
+```
+It means that two public network adapters will be configured:
+1) The first will be bridged to the 'Wi-Fi' host machine's interface and will have the specified MAC address. After the VM boot it will be automatically configured to get an IP from the DHCP server, which is accessible in the 'Wi-Fi' network).
+2) The second adapter will be bridged to the interface 'en4' and will have static ip '10.3.1.18' and mask '255.255.252.0'.
 
 ## Development
 
