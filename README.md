@@ -67,7 +67,7 @@ But you can also add one ore more `:private_network` adapters, as described belo
 ### Private Network
 It is fully compatible with basic Vagrant [Private Networks](http://docs.vagrantup.com/v2/networking/private_network.html).
 #### Available arguments:
-- `type` - IP configuration way: `:static` or `:dhcp`. Default is `:static`. If `:dchp` is set, such interface will get an IP dynamically from default subnet "10.37.129.1/255.255.255.0".
+- `type` - IP configuration way: `:static` or `:dhcp` (exactly Symbol object). Default is `:static`. If `:dchp` is set, such interface will get an IP dynamically from default subnet "10.37.129.1/255.255.255.0".
 - `mac` - MAC address which will be assigned to this network adapter. If omitted, MAC will be automatically generated at the first `up` of VM.
 - `ip` - IP address which will be assigned to this network adapter. It is required only if type is `:static`.
 - `netmask` - network mask. Default is `"255.255.255.0"`. It is required only if type is `:static`.
@@ -77,7 +77,7 @@ It is fully compatible with basic Vagrant [Private Networks](http://docs.vagrant
 ```ruby
 Vagrant.configure("2") do |config|
   config.vm.network :private_network, ip: "33.33.33.50", netmask: "255.255.0.0" 
-  config.vm.network :private_network, type: "dhcp", nic_type: "rtl"
+  config.vm.network :private_network, type: :dhcp, nic_type: "rtl"
 end
 ```
 It means that two private network adapters will be configured: 
@@ -88,17 +88,17 @@ It means that two private network adapters will be configured:
 It is fully compatible with basic Vagrant [Public Networks](http://docs.vagrantup.com/v2/networking/public_network.html).
 #### Available arguments (unnecessary, but provider specific):
 - `bridge` - target host's interface for bridged network. You can specify full (ex: `Wi-Fi`) or short (ex: `en0`) name of interface. If omitted, you will be asked to choose the interface during the VM boot (or if only one interface exists, it will be chosen automatically).
+_Hint:_ Full names of network interfaces are displayed in _System Preferences -> Network_ window, and short names - in the `ifconfig` command output on your Mac.
 - `mac` - MAC address which will be assigned to this network adapter. If omitted, MAC will be automatically generated at the first `up` of VM.
 - `ip` - IP address which will be assigned to this network adapter. Use it, if you want to configure adapter manually.
 - `netmask` - network mask. Default is `"255.255.255.0"`. It is used only in pair with `ip`
-- `type` - IP configuration way, only `dhcp` is available. Use it only if your public network has a valid DHCP server. Otherwise, omit this attribute or use an `ip` and `netmask` described above.
+- `type` - IP configuration way, only `:dhcp` is available. Use it only if your public network has a valid DHCP server. Otherwise, omit this attribute or use an `ip` and `netmask` described above.
 - `nic_type` - type of network adapter. Can be any of `"virtio"`, `"e1000"` or `"rtl"`. Default is `"e1000"`.
-_Hint:_ Full names of network interfaces are displayed in _System Preferences -> Network_ window, and short names - in the `ifconfig` command output on your Mac.
 
 #### Example:
 ```ruby
 Vagrant.configure("2") do |config|
-  config.vm.network :public_network, bridge: "Wi-Fi", mac: "001C425FC3AB", type: "dhcp"
+  config.vm.network :public_network, bridge: "Wi-Fi", mac: "001C425FC3AB", type: :dhcp
   config.vm.network :public_network, bridge: "en4", ip: "10.3.1.18", netmask: "255.255.252.0"
 end
 ```
