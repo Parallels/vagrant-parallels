@@ -20,7 +20,7 @@ module VagrantPlugins
           # b.use HandleForwardedPortCollisions
           b.use PruneNFSExports
           b.use NFS
-          #b.use PrepareNFSSettings
+          b.use PrepareNFSSettings
           b.use ClearSharedFolders
           b.use ShareFolders
           b.use Network
@@ -268,7 +268,6 @@ module VagrantPlugins
         end
       end
 
-      #autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
       autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
@@ -295,6 +294,7 @@ module VagrantPlugins
       autoload :Network, File.expand_path("../action/network", __FILE__)
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
+      autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :PruneNFSExports, File.expand_path("../action/prune_nfs_exports", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
