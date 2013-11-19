@@ -35,7 +35,7 @@ module VagrantPlugins
           machine.provider.driver.read_network_interfaces.each do |adapter, opts|
             if opts[:type] == :hostonly
               machine.provider.driver.read_host_only_interfaces.each do |interface|
-                if interface[:name] == opts[:hostonly]
+                if interface[:bound_to] == opts[:hostonly]
                   return interface[:ip]
                 end
               end
@@ -50,13 +50,18 @@ module VagrantPlugins
         #
         # @return [String]
         def read_machine_ip(machine)
+          ips = []
           machine.config.vm.networks.each do |type, options|
             if type == :private_network && options[:ip].is_a?(String)
-              return options[:ip]
+              ips << options[:ip]
             end
           end
 
-          nil
+          if ips.empty?
+            return nil
+          end
+
+          ips
         end
       end
     end
