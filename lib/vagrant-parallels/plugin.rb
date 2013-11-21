@@ -40,6 +40,10 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
+      command("snapshot") do
+        require_relative("command/snapshot/root")
+        CommandSnapshot::Root
+      end
     end
 
     module Driver
