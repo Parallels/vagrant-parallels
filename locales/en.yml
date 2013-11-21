@@ -549,6 +549,16 @@ en:
         Parallels Desktop VM. Parallels Desktop limits the number of slots to 8, and it
         appears that every slot is in use. Please lower the number of used
         network adapters.
+      parallels_no_snapshot: |-
+        The VM does not have any snapshot. You can create it using `vagrant snapshot take`.
+      parallels_snapshot_id_required: |-
+        Please specify the snapshot ID.
+
+        %{help}
+      parallels_snapshot_name_required: |-
+        Please specify the snapshot name.
+
+        %{help}
       virtualbox_not_detected: |-
         Vagrant could not detect Parallels Desktop! Make sure Parallels Desktop is properly installed.
         Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires

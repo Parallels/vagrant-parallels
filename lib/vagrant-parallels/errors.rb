@@ -22,6 +22,18 @@ module VagrantPlugins
       class ParallelsNoRoomForHighLevelNetwork < VagrantParallelsError
         error_key(:parallels_no_room_for_high_level_network)
       end
+
+      class ParallelsNoSnapshot < VagrantParallelsError
+        error_key(:parallels_no_snapshot)
+      end
+
+      class ParallelsSnapshotNameRequired < VagrantParallelsError
+        error_key(:parallels_snapshot_name_required)
+      end
+
+      class ParallelsSnapshotIdRequired < VagrantParallelsError
+        error_key(:parallels_snapshot_id_required)
+      end
     end
   end
 end
