@@ -8,7 +8,7 @@ module VagrantPlugins
           opts = OptionParser.new do |opts|
             opts.banner = "List snapshot IDs"
             opts.separator ""
-            opts.separator "Usage: vagrant snapshot list [vm-name]"
+            opts.separator "Usage: vagrant prl-snapshot list [vm-name]"
 
             opts.on("-t", "--tree", "Draw the tree.") do |t|
               options[:tree] = t

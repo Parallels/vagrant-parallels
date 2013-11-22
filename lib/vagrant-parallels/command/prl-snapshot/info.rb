@@ -6,7 +6,7 @@ module VagrantPlugins
           opts = OptionParser.new do |opts|
             opts.banner = "Show snapshot detailed information"
             opts.separator ""
-            opts.separator "Usage: vagrant snapshot info [vm-name] <SNAPSHOT_ID>"
+            opts.separator "Usage: vagrant prl-snapshot info [vm-name] <SNAPSHOT_ID>"
           end
           # Parse the options
           argv = parse_options(opts)

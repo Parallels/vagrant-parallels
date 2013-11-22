@@ -53,7 +53,7 @@ module VagrantPlugins
         # Prints the help out for this command
         def help
           opts = OptionParser.new do |opts|
-            opts.banner = "Usage: vagrant snapshot <command> [<args>]"
+            opts.banner = "Usage: vagrant prl-snapshot <command> [<args>]"
             opts.separator ""
             opts.separator "Available subcommands:"
 
@@ -67,7 +67,7 @@ module VagrantPlugins
             end
 
             opts.separator ""
-            opts.separator "For help on any individual command run `vagrant snapshot <command> -h`"
+            opts.separator "For help on any individual command run `vagrant prl-snapshot <command> -h`"
           end
 
           @env.ui.info(opts.help, :prefix => false)
