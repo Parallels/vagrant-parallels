@@ -40,6 +40,10 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
+      command("prl-snapshot") do
+        require_relative("command/prl-snapshot/root")
+        CommandSnapshot::Root
+      end
     end
 
     module Driver

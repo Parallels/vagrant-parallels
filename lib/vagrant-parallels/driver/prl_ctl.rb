@@ -185,6 +185,10 @@ module VagrantPlugins
           read_settings(vm_name).fetch('ID', vm_name)
         end
 
+        def guest_execute(*command)
+          execute('exec', @uuid, *command)
+        end
+
         def halt(force=false)
           args = ['stop', @uuid]
           args << '--kill' if force
@@ -211,6 +215,22 @@ module VagrantPlugins
               return ip
             end
           end
+        end
+
+        def json(default=nil)
+          data = yield
+          JSON.parse(data) rescue default
+        end
+
+        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
+        def read_all_info
+          vms_arr = json({}) do
+            execute('list', '--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          templates_arr = json({}) do
+            execute('list', '--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          vms_arr | templates_arr
         end
 
         # Returns a hash of all UUIDs assigned to VMs and templates currently
@@ -345,6 +365,11 @@ module VagrantPlugins
           nics
         end
 
+        def read_settings(uuid=nil)
+          uuid ||= @uuid
+          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
+        end
+
         # Returns the current state of this VM.
         #
         # @return [Symbol]
@@ -417,33 +442,6 @@ module VagrantPlugins
         def version
           raw_version = execute('--version', retryable: true)
           raw_version.gsub('/prlctl version /', '')
-        end
-
-        private
-
-        def guest_execute(*command)
-          execute('exec', @uuid, *command)
-        end
-
-        def json(default=nil)
-          data = yield
-          JSON.parse(data) rescue default
-        end
-
-        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
-        def read_all_info
-          vms_arr = json({}) do
-            execute('list', '--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          templates_arr = json({}) do
-            execute('list', '--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          vms_arr | templates_arr
-        end
-
-        def read_settings(uuid=nil)
-          uuid ||= @uuid
-          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
         end
 
         def error_detection(command_response)

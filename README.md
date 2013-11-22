@@ -106,6 +106,18 @@ It means that two public network adapters will be configured:
 1) The first will be bridged to the 'Wi-Fi' host machine's interface and will have the specified MAC address. After the VM boot it will be automatically configured to get an IP from the DHCP server, which is accessible in the 'Wi-Fi' network).
 2) The second adapter will be bridged to the interface 'en4' and will have static ip '10.3.1.18' and mask '255.255.252.0'.
 
+## Command prl-snapshot
+This plugin adds to Vagrant, new command `prl-snapshot` allowing to manage your VMs snapshots:
+```
+ vagrant prl-snapshot take [vm-name] [NAME]            # take snapshot, labeled by NAME
+ vagrant prl-snapshot list [vm-name] [--tree]          # list snapshots
+ vagrant prl-snapshot info [vm-name] [ID]              # show info about snapshot, specified by ID
+ vagrant prl-snapshot go [vm-name] [ID] [--reload]     # revert VM to the snapshot, specified by ID
+ vagrant prl-snapshot back [vm-name] [--reload]        # revert VM to the current snapshot
+ vagrant prl-snapshot delete [vm-name] [ID]            # delete the snapshot, specified by ID
+```
+For help on any individual command run `vagrant prl-snapshot <command> -h`
+
 ## Development
 
 To work on the `vagrant-parallels` plugin, clone this repository out
