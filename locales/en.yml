@@ -550,7 +550,7 @@ en:
         appears that every slot is in use. Please lower the number of used
         network adapters.
       parallels_no_snapshot: |-
-        The VM does not have any snapshot. You can create it using `vagrant snapshot take`.
+        The VM does not have any snapshot. You can create it using `vagrant prl-snapshot take`.
       parallels_snapshot_id_required: |-
         Please specify the snapshot ID.
 
