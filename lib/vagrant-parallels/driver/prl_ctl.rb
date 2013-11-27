@@ -380,7 +380,7 @@ module VagrantPlugins
 
         # apply custom vm setting via set parameter
         def set_vm_settings(command)
-          raw(@manager_path, *command)
+          raw(@prlctl_path, *command)
         end
 
         def share_folders(folders)
