@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-core", "~> 2.12.2"
   spec.add_development_dependency "rspec-expectations", "~> 2.12.1"
   spec.add_development_dependency "rspec-mocks", "~> 2.12.1"
+  spec.add_development_dependency "i18n-tasks", "~> 0.2.5"
 
   # The following block of code determines the files that should be included
   # in the gem. It does this by reading all the files in the directory where
