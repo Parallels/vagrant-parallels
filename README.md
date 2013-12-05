@@ -1,6 +1,5 @@
 # Vagrant Parallels Provider
-[ ![Codeship Status for yshahin/vagrant-parallels](https://www.codeship.io/projects/fcb7a750-3aa5-0131-2188-5e2830110a10/status?branch=master)](https://www.codeship.io/projects/10186)
-
+[![Build Status](https://travis-ci.org/yshahin/vagrant-parallels.png?branch=master)](https://travis-ci.org/yshahin/vagrant-parallels)
 [![Code Climate](https://codeclimate.com/github/yshahin/vagrant-parallels.png)](https://codeclimate.com/github/yshahin/vagrant-parallels)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
