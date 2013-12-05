@@ -103,7 +103,8 @@ module VagrantPlugins
           # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
           # They should not be deleted anyway.
           networks.keep_if do |net|
-            net['Type'] == "host-only" && /^vnic(\d+)$/.match(net['Bound To'])[1].to_i >= 2
+            net['Type'] == "host-only" &&
+                net['Bound To'].match(/^(?>vnic|Parallels Host-Only #)(\d+)$/)[1].to_i >= 2
           end
 
           read_all_info.each do |vm|
