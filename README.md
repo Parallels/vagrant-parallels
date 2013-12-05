@@ -1,4 +1,5 @@
 # Vagrant Parallels Provider
+[ ![Codeship Status for yshahin/vagrant-parallels](https://www.codeship.io/projects/fcb7a750-3aa5-0131-2188-5e2830110a10/status?branch=master)](https://www.codeship.io/projects/10186)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
 provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop instead of the default Virtualbox.
@@ -62,7 +63,7 @@ provider-specific configuration for this provider.
 
 ## Networking
 By default 'vagrant-parallels' uses the basic Vagrant networking approach. By default VM has one adapter assigned to the 'Shared' network in Parallels Desktop.
-But you can also add one ore more `:private_network` adapters, as described below: 
+But you can also add one ore more `:private_network` adapters, as described below:
 
 ### Private Network
 It is fully compatible with basic Vagrant [Private Networks](http://docs.vagrantup.com/v2/networking/private_network.html).
@@ -76,11 +77,11 @@ It is fully compatible with basic Vagrant [Private Networks](http://docs.vagrant
 #### Example:
 ```ruby
 Vagrant.configure("2") do |config|
-  config.vm.network :private_network, ip: "33.33.33.50", netmask: "255.255.0.0" 
+  config.vm.network :private_network, ip: "33.33.33.50", netmask: "255.255.0.0"
   config.vm.network :private_network, type: :dhcp, nic_type: "rtl"
 end
 ```
-It means that two private network adapters will be configured: 
+It means that two private network adapters will be configured:
 1) The first will have static ip '33.33.33.50' and mask '255.255.0.0'. It will be represented as device `"e1000"` by default (e.g. 'Intel(R) PRO/1000 MT').
 2) The second adapter will be configured as `"rtl"` ('Realtek RTL8029AS') and get an IP from internal DHCP server, which is working on the default network "10.37.129.1/255.255.255.0".
 
