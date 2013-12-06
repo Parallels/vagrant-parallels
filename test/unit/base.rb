@@ -11,7 +11,6 @@ $:.unshift File.expand_path("../../", __FILE__)
 
 # Load in helpers
 require "support/tempdir"
-require "unit/support/shared/base_context"
 require "unit/support/shared/parallels_context"
 
 # Do not buffer output
