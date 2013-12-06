@@ -538,10 +538,9 @@ en:
         Parallels Desktop is complaining that the kernel module is not loaded. Please
         run `prlctl --version` or open the Parallels Desktop GUI to see the error
         message which should contain instructions on how to fix this error.
-      virtualbox_install_incomplete: |-
-        Parallels Desktop is complaining that the installation is incomplete. Please
-        run `prlctl --version` to see the error message which should contain
-        instructions on how to fix this error.
+      parallels_install_incomplete: |-
+        Parallels Desktop is complaining that the installation is incomplete. Try to reinstall Parallels
+        Desktop or contact Parallels support.
       parallels_no_room_for_high_level_network: |-
         There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"

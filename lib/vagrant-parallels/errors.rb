@@ -19,6 +19,10 @@ module VagrantPlugins
         error_key(:parallels_kernel_module_not_loaded)
       end
 
+      class ParallelsInstallIncomplete < VagrantParallelsError
+        error_key(:parallels_install_incomplete)
+      end
+
       class ParallelsNoRoomForHighLevelNetwork < VagrantParallelsError
         error_key(:parallels_no_room_for_high_level_network)
       end
