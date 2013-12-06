@@ -11,12 +11,11 @@ module VagrantPlugins
           if !tools_version
             env[:ui].warn I18n.t("vagrant.actions.vm.check_guest_tools.not_detected")
           else
-            env[:machine].provider.driver.verify! =~ /^[\w\s]+ ([\d.]+)$/
-            os_version = $1
-            unless os_version.start_with? tools_version
+            pd_version = env[:machine].provider.driver.version
+            unless pd_version.start_with? tools_version
               env[:ui].warn(I18n.t("vagrant_parallels.actions.vm.check_guest_tools.version_mismatch",
                                    tools_version: tools_version,
-                                   parallels_version: os_version))
+                                   parallels_version: pd_version))
             end
           end
 
