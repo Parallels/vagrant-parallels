@@ -19,6 +19,7 @@ acceptance_config.yml
 boxes/*
 Vagrantfile
 .vagrant
+vagrant-spec.config.rb
 *.box
 *.pyc
 sandi_meter
