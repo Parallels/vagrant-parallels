@@ -31,6 +31,18 @@ describe VagrantPlugins::Parallels::Driver::PrlCtl do
     end
   end
 
+  describe "clear_shared_folders" do
+    shf_hash = {"enabled" => true, "shf_name_1" => {}, "shf_name_2" => {}}
+    it "deletes every shared folder assigned to the VM" do
+      subject.stub(:read_settings).and_return({"Host Shared Folders" => shf_hash})
+
+      subprocess.should_receive(:execute).exactly(2).times.
+          with("prlctl", "set", uuid, "--shf-host-del", an_instance_of(String), an_instance_of(Hash)).
+          and_return(subprocess_result(stdout: "Shared folder deleted"))
+      subject.clear_shared_folders
+    end
+  end
+
   describe "halt" do
     it "stops the VM" do
       subprocess.should_receive(:execute).
