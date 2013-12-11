@@ -12,17 +12,14 @@ module VagrantPlugins
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use CheckAccessible
-          # b.use CleanMachineFolder
           # b.use ClearForwardedPorts
           b.use Provision
           b.use EnvSet, :port_collision_repair => true
           # b.use PrepareForwardedPortCollisionParams
           # b.use HandleForwardedPortCollisions
-          b.use PruneNFSExports
-          b.use NFS
+          b.use SyncedFolderCleanup
+          b.use SyncedFolders
           b.use PrepareNFSSettings
-          b.use ClearSharedFolders
-          b.use ShareFolders
           b.use Network
           b.use ClearNetworkInterfaces
           # b.use ForwardPorts
@@ -295,11 +292,9 @@ module VagrantPlugins
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
-      autoload :PruneNFSExports, File.expand_path("../action/prune_nfs_exports", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
-      autoload :ShareFolders, File.expand_path("../action/share_folders", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
       autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
 

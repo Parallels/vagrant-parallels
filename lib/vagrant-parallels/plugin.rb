@@ -6,8 +6,8 @@ end
 
 # This is a sanity check to make sure no one is attempting to install
 # this into an early Vagrant version.
-if Vagrant::VERSION < "1.2.0"
-  raise "The Vagrant Parallels plugin is only compatible with Vagrant 1.2+"
+if Vagrant::VERSION < "1.4.0"
+  raise "The Vagrant Parallels plugin is only compatible with Vagrant 1.4+"
 end
 
 module VagrantPlugins
@@ -38,6 +38,11 @@ module VagrantPlugins
       guest_capability(:linux, :mount_parallels_shared_folder) do
         require_relative "guest_cap/linux/mount_parallels_shared_folder"
         GuestLinuxCap::MountParallelsSharedFolder
+      end
+
+      synced_folder(:parallels) do
+        require File.expand_path("../synced_folder", __FILE__)
+        SyncedFolder
       end
 
     end
