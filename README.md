@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/yshahin/vagrant-parallels.png?branch=master)](https://travis-ci.org/yshahin/vagrant-parallels)
 [![Code Climate](https://codeclimate.com/github/yshahin/vagrant-parallels.png)](https://codeclimate.com/github/yshahin/vagrant-parallels)
 
-This is a [Vagrant](http://www.vagrantup.com) **1.4+** plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
+This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
 provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop instead of the default Virtualbox.
 
 ## Note
@@ -12,18 +12,23 @@ Almost all features are available except for exporting/packaging VM's.  This wil
 
 We look forward to hearing from you with any issues or features.  Thank you!
 
+## Installation
+The latest version of this provider is supporting **only Vagrant 1.4 or higher**.
+If you are still using Vagrant 1.3.*, please, specify the plugin version '0.0.9':
+
+- For Vagrant 1.4 or higher execute `vagrant plugin install vagrant-parallels`.
+- For Vagrant 1.3.x execute `vagrant plugin install vagrant-parallels --plugin-version 0.0.9`.
+
 ## Usage
-Install using standard Vagrant 1.1+ plugin installation methods. After installing, then do a `vagrant up` and specify the `parallels` provider. An example is shown below.
+After installing, then do a `vagrant up` and specify the `parallels` provider. An example is shown below.
 
 ```
-$ vagrant plugin install vagrant-parallels
-...
 $ vagrant init
 $ vagrant up --provider=parallels
 ...
 ```
 
-You need to have a parallels compatible box file installed before doing a `vagrant up`, please refer to the coming section for instructions.
+You need to have a parallels compatible box specified in your `Vagrantfile` before doing a `vagrant up`, please refer to the coming section for instructions.
 
 ### Default Provider
 
