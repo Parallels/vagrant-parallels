@@ -4,6 +4,8 @@ require 'rubygems'
 require 'bundler/setup'
 require 'rspec/core/rake_task'
 
+load 'tasks/i18n-tasks.rake'
+
 # Immediately sync all stdout so that tools like buildbot can
 # immediately load in the output.
 $stdout.sync = true
