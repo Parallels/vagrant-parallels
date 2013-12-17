@@ -9,7 +9,7 @@ module VagrantPlugins
         def call(env)
           tools_version = env[:machine].provider.driver.read_guest_tools_version
           if !tools_version
-            env[:ui].warn I18n.t("vagrant.actions.vm.check_guest_tools.not_detected")
+            env[:ui].warn I18n.t("vagrant_parallels.actions.vm.check_guest_tools.not_detected")
           else
             pd_version = env[:machine].provider.driver.version
             unless pd_version.start_with? tools_version
