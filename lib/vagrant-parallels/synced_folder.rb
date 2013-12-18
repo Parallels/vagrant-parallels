@@ -39,7 +39,7 @@ module VagrantPlugins
         machine.ui.info(I18n.t("vagrant.actions.vm.share_folders.mounting"))
         folders.each do |id, data|
           if data[:guestpath]
-            data[:guestpath] = data[:guestpath]
+            id = Pathname.new(id).to_s.split('/').drop_while{|i| i.empty?}.join('_')
 
             # Guest path specified, so mount the folder to specified point
             machine.ui.info(I18n.t("vagrant.actions.vm.share_folders.mounting_entry",
