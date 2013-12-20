@@ -17,6 +17,7 @@ module VagrantPlugins
           b.use EnvSet, :port_collision_repair => true
           # b.use PrepareForwardedPortCollisionParams
           # b.use HandleForwardedPortCollisions
+          b.use PrepareNFSValidIds
           b.use SyncedFolderCleanup
           b.use SyncedFolders
           b.use PrepareNFSSettings
@@ -53,6 +54,8 @@ module VagrantPlugins
                 b3.use UnregisterTemplate
                 b3.use Destroy
                 b3.use DestroyUnusedNetworkInterfaces
+                b3.use PrepareNFSValidIds
+                b3.use SyncedFolderCleanup
               else
                 b3.use MessageWillNotDestroy
               end
@@ -101,7 +104,8 @@ module VagrantPlugins
             b2.use CheckAccessible
             b2.use action_halt
             #b2.use ClearForwardedPorts
-            b2.use ClearSharedFolders
+            b2.use PrepareNFSValidIds
+            b2.use SyncedFolderCleanup
             b2.use Export
             b2.use PackageConfigFiles
             b2.use Package
@@ -272,7 +276,6 @@ module VagrantPlugins
       autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
       autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
-      autoload :ClearSharedFolders, File.expand_path("../action/clear_shared_folders", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
@@ -292,6 +295,7 @@ module VagrantPlugins
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
+      autoload :PrepareNFSValidIds, File.expand_path("../action/prepare_nfs_valid_ids", __FILE__)
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
