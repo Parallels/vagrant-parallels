@@ -40,6 +40,7 @@ module VagrantPlugins
 
         def compact(uuid=nil)
           uuid ||= @uuid
+          # TODO: VM can have more than one hdd!
           path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
           raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
             lines = data.split("\r")
@@ -80,7 +81,9 @@ module VagrantPlugins
         end
 
         def clear_shared_folders
-          read_settings.fetch("Host Shared Folders", {}).keys.drop(1).each do |folder|
+          shf = read_settings.fetch("Host Shared Folders", {}).keys
+          shf.delete("enabled")
+          shf.each do |folder|
             execute("set", @uuid, "--shf-host-del", folder)
           end
         end

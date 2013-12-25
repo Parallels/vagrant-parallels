@@ -4,4 +4,4 @@ before_install:
   - sudo apt-get install -qq -y bsdtar
 rvm:
   - 2.0.0
-script: rake spec
+script: rake test:unit
