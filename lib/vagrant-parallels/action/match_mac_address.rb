@@ -9,9 +9,16 @@ module VagrantPlugins
         def call(env)
           raise Vagrant::Errors::VMBaseMacNotSpecified if !env[:machine].config.vm.base_mac
 
-          # Create the proc which we want to use to modify the virtual machine
-          env[:ui].info I18n.t("vagrant.actions.vm.match_mac.matching")
-          env[:machine].provider.driver.set_mac_address(env[:machine].config.vm.base_mac)
+          env[:ui].info I18n.t("vagrant_parallels.actions.vm.match_mac.matching")
+
+          base_mac = env[:machine].config.vm.base_mac
+          # Generate new base mac if the specified address is already in use
+          if env[:machine].provider.driver.mac_in_use?(base_mac)
+            env[:ui].info I18n.t("vagrant_parallels.actions.vm.match_mac.generate")
+            env[:machine].provider.driver.set_mac_address('auto')
+          else
+            env[:machine].provider.driver.set_mac_address(base_mac)
+          end
 
           @app.call(env)
         end

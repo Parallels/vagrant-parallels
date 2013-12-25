@@ -59,6 +59,42 @@ describe VagrantPlugins::Parallels::Driver::PrlCtl do
     end
   end
 
+  describe "mac_in_use?" do
+    vm_1 = {
+      'Hardware' => {
+        'net0' => {'mac' => '001C42BB5901'},
+        'net1' => {'mac' => '001C42BB5902'},
+      }
+    }
+    vm_2 = {
+      'Hardware' => {
+        'net0' => {'mac' => '001C42BB5903'},
+        'net1' => {'mac' => '001C42BB5904'},
+      }
+    }
+
+    it "checks the MAC address is already in use" do
+      subject.stub(:read_all_info).and_return([vm_1, vm_2])
+
+      subject.mac_in_use?('00:1c:42:bb:59:01').should be_true
+      subject.mac_in_use?('00:1c:42:bb:59:02').should be_false
+      subject.mac_in_use?('00:1c:42:bb:59:03').should be_true
+      subject.mac_in_use?('00:1c:42:bb:59:04').should be_false
+    end
+  end
+
+  describe "set_mac_address" do
+    it "sets base MAC address to the Shared network adapter" do
+      subprocess.should_receive(:execute).exactly(2).times.
+        with("prlctl", "set", uuid, '--device-set', 'net0', '--type', 'shared', '--mac',
+           an_instance_of(String), an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "Settings applied"))
+
+      subject.set_mac_address('001C42DD5902')
+      subject.set_mac_address('auto')
+    end
+  end
+
   describe "start" do
     it "starts the VM" do
       subprocess.should_receive(:execute).

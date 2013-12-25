@@ -217,6 +217,18 @@ module VagrantPlugins
           end
         end
 
+
+        def mac_in_use?(mac)
+          all_macs_in_use = []
+          read_all_info.each do |vm|
+            all_macs_in_use << vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
+          end
+
+          valid_mac = mac.upcase.tr('^A-F0-9', '')
+
+          all_macs_in_use.include?(valid_mac)
+        end
+
         # Returns a hash of all UUIDs assigned to VMs and templates currently
         # known by Parallels. Keys are 'name' values
         #

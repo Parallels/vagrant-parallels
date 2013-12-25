@@ -890,7 +890,10 @@ en:
             The VM import failed! Try running `prlctl import` on the box file
             manually for more verbose error output.
         match_mac:
-          matching: Matching MAC address for NAT networking...
+          generate: |-
+            The specified base MAC is already in use. Generating a new unique MAC
+            address for Shared network...
+          matching: Matching MAC address for Shared network...
           no_base_mac: |-
             No base MAC address was specified. This is required for the NAT networking
             to work properly (and hence port forwarding, SSH, etc.). Specifying this
