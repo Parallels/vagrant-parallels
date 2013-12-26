@@ -59,9 +59,10 @@ That directory also contains instructions on how to build a box.
 Download the box file, then use vagrant to add the downloaded box using this command. Remember to use `bundle exec` before `vagrant` command if you are in development mode
 
 ```
-$ wget https://s3-eu-west-1.amazonaws.com/vagrant-parallels/devbox.box
+$ wget https://s3-eu-west-1.amazonaws.com/vagrant-parallels/devbox-201312.box
 $ vagrant box add devbox devbox.box --provider=parallels
 ```
+***updated box file to fix mac address regeneration issue #42, devbox is Ubuntu 12.04.3 LTS (GNU/Linux 3.2.0-57-generic x86_64***
 
 The box format is basically just the required `metadata.json` file
 along with a `Vagrantfile` that does default settings for the
