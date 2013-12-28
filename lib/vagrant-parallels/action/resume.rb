@@ -10,11 +10,8 @@ module VagrantPlugins
           current_state = env[:machine].provider.state.id
 
           if current_state == :suspended
-            env[:ui].info I18n.t("vagrant.actions.vm.resume.unpausing")
-            env[:machine].provider.driver.resume
-          elsif current_state == :stopped
             env[:ui].info I18n.t("vagrant.actions.vm.resume.resuming")
-            env[:action_runner].run(Boot, env)
+            env[:machine].provider.driver.resume
           end
 
           @app.call(env)

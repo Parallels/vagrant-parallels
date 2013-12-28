@@ -73,7 +73,7 @@ module VagrantPlugins
             if env[:result]
               b2.use CheckAccessible
 
-              b2.use Call, IsPaused do |env2, b3|
+              b2.use Call, IsSuspended do |env2, b3|
                 next if !env2[:result]
                 b3.use Resume
               end
@@ -208,23 +208,16 @@ module VagrantPlugins
               next
             end
 
-            b2.use Call, IsSaved do |env2, b3|
+            b2.use Call, IsSuspended do |env2, b3|
               if env2[:result]
-                # The VM is saved, so just resume it
+                # The VM is suspended, so just resume it
                 b3.use action_resume
                 next
               end
 
-              b3.use Call, IsPaused do |env3, b4|
-                if env3[:result]
-                  b4.use Resume
-                  next
-                end
-
-                # The VM is not saved, so we must have to boot it up
-                # like normal. Boot!
-                b4.use action_boot
-              end
+              # The VM is not saved, so we must have to boot it up
+              # like normal. Boot!
+              b3.use action_boot
             end
           end
         end
@@ -283,9 +276,8 @@ module VagrantPlugins
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
-      autoload :IsPaused, File.expand_path("../action/is_paused", __FILE__)
+      autoload :IsSuspended, File.expand_path("../action/is_suspended", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
-      autoload :IsSaved, File.expand_path("../action/is_saved", __FILE__)
       autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
       autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
       autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
