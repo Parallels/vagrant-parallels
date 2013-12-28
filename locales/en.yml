@@ -40,6 +40,35 @@ en:
         %{event} is not a valid event for customization. Valid events
         are: %{valid_events}
 #-------------------------------------------------------------------------------
+# Translations for commands. e.g. `vagrant x`
+#-------------------------------------------------------------------------------
+    commands:
+      common:
+        vm_already_running: |-
+          Parallels Desktop VM is already running.
+      status:
+        inaccessible: |-
+          The VM is inaccessible! This is a rare case which means that VirtualBox
+          can't find your VM configuration. This usually happens when upgrading
+          VirtualBox, moving to a new computer, etc. Please consult VirtualBox
+          for how to handle this issue.
+        not_created: |-
+          The environment has not yet been created. Run `vagrant up` to
+          create the environment. If a machine is not created, only the
+          default provider will be shown. So if a provider is not listed,
+          then the machine is not created for that environment.
+        suspended: |-
+          The VM is suspended. To resume this VM you can run `vagrant resume`
+          or `vagrant up` to restart it again, so that vagrant would be able
+          to control the VM again.
+        stopped: |-
+          The VM is stopped. To start the VM, simply run `vagrant up`
+        running: |-
+          The VM is running. To stop this VM, you can run `vagrant halt` to
+          shut it down forcefully, or you can run `vagrant suspend` to simply
+          suspend the virtual machine. In either case, to restart it again,
+          simply run `vagrant up`.
+#-------------------------------------------------------------------------------
 # Translations for Vagrant middleware acions
 #-------------------------------------------------------------------------------
     actions:

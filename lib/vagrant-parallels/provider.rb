@@ -48,7 +48,7 @@ module VagrantPlugins
 
         # Translate into short/long descriptions
         short = state_id.to_s.gsub("_", " ")
-        long  = I18n.t("vagrant.commands.status.#{state_id}")
+        long  = I18n.t("vagrant_parallels.commands.status.#{state_id}")
 
         # Return the state
         Vagrant::MachineState.new(state_id, short, long)

@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info I18n.t("vagrant.commands.common.vm_already_running")
+          env[:ui].info I18n.t("vagrant_parallels.commands.common.vm_already_running")
           @app.call(env)
         end
       end
