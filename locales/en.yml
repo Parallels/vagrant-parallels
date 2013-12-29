@@ -21,8 +21,8 @@ en:
         run `prlctl --version` or open the Parallels Desktop GUI to see the error
         message which should contain instructions on how to fix this error.
       parallels_install_incomplete: |-
-        Parallels Desktop is complaining that the installation is incomplete. Try to reinstall Parallels
-        Desktop or contact Parallels support.
+        Parallels Desktop is complaining that the installation is incomplete.
+        Try to reinstall Parallels Desktop or contact Parallels support.
       parallels_no_room_for_high_level_network: |-
         There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"
@@ -48,10 +48,10 @@ en:
           Parallels Desktop VM is already running.
       status:
         inaccessible: |-
-          The VM is inaccessible! This is a rare case which means that VirtualBox
-          can't find your VM configuration. This usually happens when upgrading
-          VirtualBox, moving to a new computer, etc. Please consult VirtualBox
-          for how to handle this issue.
+          The VM is inaccessible! This is a rare case which means that Parallels
+          Desktop can't find your VM configuration. This usually happens when deleting
+          the VM via Parallels Desktop GUI, moving to a new computer, etc.
+          Please consult Vagrant Parallels provider for how to handle this issue.
         not_created: |-
           The environment has not yet been created. Run `vagrant up` to
           create the environment. If a machine is not created, only the
