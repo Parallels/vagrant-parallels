@@ -1,0 +1,13 @@
+search:
+  paths:
+    - "lib/"
+data:
+  adapter: yaml
+  read:
+    - "locales/%{locale}.yml"
+  write:
+    - "locales/%{locale}.yml"
+ignore_unused:
+  - "vagrant_parallels.errors.*"
+ignore_missing:
+  - "vagrant.*"
