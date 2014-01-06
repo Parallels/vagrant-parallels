@@ -38,10 +38,9 @@ module VagrantPlugins
         valid_events = ["pre-import", "pre-boot", "post-boot"]
         @customizations.each do |event, _|
           if !valid_events.include?(event)
-            errors << I18n.t(
-              "vagrant_parallels.config.invalid_event",
-              event: event.to_s,
-              valid_events: valid_events.join(", "))
+            errors << I18n.t("vagrant_parallels.config.invalid_event",
+                             event: event.to_s,
+                             valid_events: valid_events.join(", "))
           end
         end
         @customizations.each do |event, command|
