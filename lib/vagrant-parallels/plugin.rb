@@ -14,7 +14,7 @@ module VagrantPlugins
   module Parallels
 
     class Plugin < Vagrant.plugin("2")
-      name "Parallels"
+      name "vagrant-parallels"
       description <<-EOF
       The Parallels provider allows Vagrant to manage and control
       Parallels-based virtual machines.
