@@ -1,6 +1,6 @@
 # Vagrant Parallels Provider
-[![Build Status](https://travis-ci.org/yshahin/vagrant-parallels.png?branch=master)](https://travis-ci.org/yshahin/vagrant-parallels)
-[![Code Climate](https://codeclimate.com/github/yshahin/vagrant-parallels.png)](https://codeclimate.com/github/yshahin/vagrant-parallels)
+[![Build Status](https://travis-ci.org/Parallels/vagrant-parallels.png?branch=master)](https://travis-ci.org/Parallels/vagrant-parallels)
+[![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.png)](https://codeclimate.com/github/Parallels/vagrant-parallels)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.3+ plugin that adds a [Parallels Desktop](http://www.parallels.com/products/desktop/)
 provider to Vagrant, allowing Vagrant to control and provision machines using Parallels Desktop instead of the default Virtualbox.
@@ -130,7 +130,7 @@ Provider allows to define directives for `prlctl set` through `Vagrantfile` in s
 To work on the `vagrant-parallels` plugin, clone this repository out
 
 ```
-$ git clone https://github.com/yshahin/vagrant-parallels
+$ git clone https://github.com/Parallels/vagrant-parallels
 $ cd vagrant-parallels
 ```
 
@@ -167,7 +167,7 @@ After testing you can also build a gem-package by yourself and then install it a
 (if you have 'vagrant-parallels' plugin already installed, delete it first)
 
 ```
-$ git clone https://github.com/yshahin/vagrant-parallels
+$ git clone https://github.com/Parallels/vagrant-parallels
 $ cd vagrant-parallels
 $ rake build
 ...
