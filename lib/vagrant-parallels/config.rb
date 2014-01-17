@@ -11,8 +11,6 @@ module VagrantPlugins
         @destroy_unused_network_interfaces = UNSET_VALUE
         @network_adapters  = {}
         @name             = UNSET_VALUE
-
-        network_adapter(0, :shared)
       end
 
       def customize(*command)
