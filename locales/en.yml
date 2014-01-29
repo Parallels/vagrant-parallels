@@ -1,5 +1,8 @@
 en:
   vagrant_parallels:
+    parallels:
+      checking_guest_tools: |-
+        Checking for Parallels Tools installed on the VM...
 #-------------------------------------------------------------------------------
 # Translations for exception classes
 #-------------------------------------------------------------------------------
@@ -69,7 +72,7 @@ en:
           suspend the virtual machine. In either case, to restart it again,
           simply run `vagrant up`.
 #-------------------------------------------------------------------------------
-# Translations for Vagrant middleware acions
+# Translations for Vagrant middleware actions
 #-------------------------------------------------------------------------------
     actions:
       vm:
