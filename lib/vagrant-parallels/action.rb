@@ -12,6 +12,7 @@ module VagrantPlugins
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use CheckAccessible
+          b.use SetName
           # b.use ClearForwardedPorts
           b.use Provision
           b.use EnvSet, :port_collision_repair => true
@@ -291,6 +292,7 @@ module VagrantPlugins
       autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
+      autoload :SetName, File.expand_path("../action/set_name", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
       autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
 

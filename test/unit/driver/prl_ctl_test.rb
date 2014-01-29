@@ -83,6 +83,16 @@ describe VagrantPlugins::Parallels::Driver::PrlCtl do
     end
   end
 
+  describe "set_name" do
+    it "sets new name for the VM" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, '--name', an_instance_of(String), an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "Settings applied"))
+
+      subject.set_name('new_vm_name')
+    end
+  end
+
   describe "set_mac_address" do
     it "sets base MAC address to the Shared network adapter" do
       subprocess.should_receive(:execute).exactly(2).times.
