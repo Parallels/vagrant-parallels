@@ -390,6 +390,10 @@ module VagrantPlugins
           execute('resume', @uuid)
         end
 
+        def set_name(name)
+          execute('set', @uuid, '--name', name, :retryable => true)
+        end
+
         def set_mac_address(mac)
           execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
         end

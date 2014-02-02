@@ -25,6 +25,15 @@ module VagrantPlugins
         @network_adapters[slot] = [type, args]
       end
 
+      # @param size [Integer, String] the memory size in MB
+      def memory=(size)
+        customize("pre-boot", ["set", :id, "--memsize", size.to_s])
+      end
+
+      def cpus=(count)
+        customize("pre-boot", ["set", :id, "--cpus", count.to_i])
+      end
+
       def finalize!
         if @destroy_unused_network_interfaces == UNSET_VALUE
           @destroy_unused_network_interfaces = true
@@ -34,7 +43,7 @@ module VagrantPlugins
       end
 
       def validate(machine)
-        errors = []
+        errors = _detected_errors
         valid_events = ["pre-import", "pre-boot", "post-boot"]
         @customizations.each do |event, _|
           if !valid_events.include?(event)
