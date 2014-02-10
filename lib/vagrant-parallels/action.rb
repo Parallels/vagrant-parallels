@@ -252,7 +252,7 @@ module VagrantPlugins
           # works fine.
           b.use Call, Created do |env, b2|
             if !env[:result]
-              b2.use HandleBoxUrl
+              b2.use HandleBox
             end
           end
 
