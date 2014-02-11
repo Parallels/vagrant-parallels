@@ -17,13 +17,13 @@ module VagrantPlugins
           vm_name = generate_name(env[:root_path])
 
           # Verify the name is not taken
-          if env[:machine].provider.driver.read_all_names.has_key?(vm_name)
+          if env[:machine].provider.driver.read_vms.has_key?(vm_name)
             raise Vagrant::Errors::VMNameExists, :name => vm_name
           end
 
           # Import the virtual machine
           template_path = File.realpath(Pathname.glob(env[:machine].box.directory.join('*.pvm')).first)
-          template_uuid = env[:machine].provider.driver.read_all_paths[template_path]
+          template_uuid = env[:machine].provider.driver.read_vms_paths[template_path]
 
           env[:machine].id = env[:machine].provider.driver.import(template_uuid, vm_name) do |progress|
             env[:ui].clear_line

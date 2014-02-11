@@ -47,8 +47,14 @@ module VagrantPlugins
 
     end
 
+    autoload :Action, File.expand_path("../action", __FILE__)
+
+    # Drop some autoloads in here to optimize the performance of loading
+    # our drivers only when they are needed.
     module Driver
-      autoload :PrlCtl, File.expand_path("../driver/prl_ctl", __FILE__)
+      autoload :Meta, File.expand_path("../driver/meta", __FILE__)
+      autoload :PD_8, File.expand_path("../driver/pd_8", __FILE__)
+      autoload :PD_9, File.expand_path("../driver/pd_9", __FILE__)
     end
 
     module Util

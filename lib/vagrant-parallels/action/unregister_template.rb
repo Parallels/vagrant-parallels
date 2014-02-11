@@ -11,7 +11,7 @@ module VagrantPlugins
             env[:machine].box.directory.join('*.pvm')
             ).first)
 
-          template_uuid = env[:machine].provider.driver.read_all_paths[template_path]
+          template_uuid = env[:machine].provider.driver.read_vms_paths[template_path]
 
           if env[:machine].provider.driver.registered?(template_path)
             env[:machine].provider.driver.unregister(template_uuid)

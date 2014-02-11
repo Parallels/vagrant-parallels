@@ -1,9 +1,9 @@
 require_relative "../base"
 
-describe VagrantPlugins::Parallels::Driver::PrlCtl do
+describe VagrantPlugins::Parallels::Driver::PD_9 do
   include_context "parallels"
 
-  subject { VagrantPlugins::Parallels::Driver::PrlCtl.new(uuid) }
+  subject { VagrantPlugins::Parallels::Driver::PD_9.new(uuid) }
 
   describe "compact" do
     it "compacts the VM disk images" do
@@ -74,7 +74,7 @@ describe VagrantPlugins::Parallels::Driver::PrlCtl do
     }
 
     it "checks the MAC address is already in use" do
-      subject.stub(:read_all_info).and_return([vm_1, vm_2])
+      subject.stub(:read_vms_info).and_return([vm_1, vm_2])
 
       subject.mac_in_use?('00:1c:42:bb:59:01').should be_true
       subject.mac_in_use?('00:1c:42:bb:59:02').should be_false
