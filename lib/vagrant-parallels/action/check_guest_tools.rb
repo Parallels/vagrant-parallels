@@ -4,9 +4,15 @@ module VagrantPlugins
       class CheckGuestTools
         def initialize(app, env)
           @app = app
+          @logger = Log4r::Logger.new("vagrant::plugins::parallels::check_guest_tools")
         end
 
         def call(env)
+          if !env[:machine].provider_config.check_guest_tools
+            @logger.info("Not checking guest tools because configuration")
+            return @app.call(env)
+          end
+
           env[:ui].output(I18n.t("vagrant_parallels.parallels.checking_guest_tools"))
 
           tools_version = env[:machine].provider.driver.read_guest_tools_version
