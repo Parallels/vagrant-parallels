@@ -21,8 +21,8 @@ module VagrantPlugins
         @customizations << [event, command]
       end
 
-      def network_adapter(slot, type, *args)
-        @network_adapters[slot] = [type, args]
+      def network_adapter(slot, type, **opts)
+        @network_adapters[slot] = [type, opts]
       end
 
       # @param size [Integer, String] the memory size in MB
