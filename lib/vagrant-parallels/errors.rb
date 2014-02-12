@@ -7,24 +7,28 @@ module VagrantPlugins
         error_namespace("vagrant_parallels.errors")
       end
 
-      class ParallelsError < VagrantParallelsError
+      class PrlCtlError < VagrantParallelsError
         error_key(:prlctl_error)
-      end
-
-      class ParallelsErrorNotFoundError < VagrantParallelsError
-        error_key(:prlctl_not_found_error)
-      end
-
-      class ParallelsErrorKernelModuleNotLoaded < VagrantParallelsError
-        error_key(:parallels_kernel_module_not_loaded)
       end
 
       class ParallelsInstallIncomplete < VagrantParallelsError
         error_key(:parallels_install_incomplete)
       end
 
+      class ParallelsInvalidVersion < VagrantParallelsError
+        error_key(:parallels_invalid_version)
+      end
+
+      class ParallelsNotDetected < VagrantParallelsError
+        error_key(:parallels_not_detected)
+      end
+
       class ParallelsNoRoomForHighLevelNetwork < VagrantParallelsError
         error_key(:parallels_no_room_for_high_level_network)
+      end
+
+      class VMInaccessible < VagrantParallelsError
+        error_key(:vm_inaccessible)
       end
     end
   end
