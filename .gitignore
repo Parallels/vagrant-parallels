@@ -1,25 +1,33 @@
 # OS-specific
 .DS_Store
 
-#rbenv
-.ruby-version
+# Vagrant stuff
+acceptance_config.yml
+boxes/*
+/Vagrantfile
+/.vagrant
+/vagrant-spec.config.rb
 
 # Bundler/Rubygems
 *.gem
 .bundle
 pkg/*
 tags
-Gemfile.lock
+/Gemfile.lock
 test/tmp/
 
-# Vagrant
-
-# Vagrant stuff
-acceptance_config.yml
-boxes/*
-Vagrantfile
-.vagrant
-vagrant-spec.config.rb
-*.box
+# Python
 *.pyc
-sandi_meter
+
+# Rubinius
+*.rbc
+
+# IDE junk
+.idea/*
+*.iml
+
+# Ruby Managers
+.rbenv
+.ruby-gemset
+.ruby-version
+.rvmrc
