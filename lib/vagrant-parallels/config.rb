@@ -8,7 +8,7 @@ module VagrantPlugins
       attr_accessor :name
 
       # Compatibility with virtualbox provider's syntax
-      alias_attribute :check_guest_additions, :check_guest_tools
+      alias :check_guest_additions= :check_guest_tools=
 
       def initialize
         @check_guest_tools = UNSET_VALUE
