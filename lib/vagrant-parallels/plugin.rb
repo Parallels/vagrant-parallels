@@ -56,11 +56,5 @@ module VagrantPlugins
       autoload :PD_8, File.expand_path("../driver/pd_8", __FILE__)
       autoload :PD_9, File.expand_path("../driver/pd_9", __FILE__)
     end
-
-    module Util
-      def generate_name(path, suffix='')
-        "#{path.basename.to_s.gsub(/[^-a-z0-9_]/i, '')}#{suffix}_#{Time.now.to_i}"
-      end
-    end
   end
 end

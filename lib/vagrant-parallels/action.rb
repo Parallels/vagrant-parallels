@@ -261,10 +261,8 @@ module VagrantPlugins
             # If the VM is NOT created yet, then do the setup steps
             if !env[:result]
               b2.use CheckAccessible
-              b2.use RegisterTemplate
               b2.use Customize, "pre-import"
               b2.use Import
-              b2.use UnregisterTemplate
               b2.use MatchMACAddress
             end
           end
@@ -298,13 +296,10 @@ module VagrantPlugins
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :PrepareNFSValidIds, File.expand_path("../action/prepare_nfs_valid_ids", __FILE__)
-      autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :SetName, File.expand_path("../action/set_name", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
-      autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
-
     end
   end
 end
