@@ -2,8 +2,9 @@ require_relative "../base"
 
 describe VagrantPlugins::Parallels::Driver::PD_9 do
   include_context "parallels"
+  let(:parallels_version) { "9" }
 
-  subject { VagrantPlugins::Parallels::Driver::PD_9.new(uuid) }
+  subject { described_class.new(uuid) }
 
   describe "compact" do
     it "compacts the VM disk images" do
@@ -20,8 +21,7 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
     tpl_uuid = "12345-hfgs-3456-hste"
 
     it "exports VM to template" do
-      subject.stub(:read_settings).with(tpl_name).
-        and_return({"ID" => tpl_uuid})
+      subject.stub(:read_vms).and_return({tpl_name => tpl_uuid})
 
       subprocess.should_receive(:execute).
         with("prlctl", "clone", uuid, "--name", an_instance_of(String), "--template", "--dst",

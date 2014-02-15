@@ -40,7 +40,7 @@ module VagrantPlugins
         #
         # @param [Hash] options Options to create the host only network.
         # @return [Hash] The details of the host only network, including
-        #   keys `:name`, `:ip`, and `:netmask`
+        #   keys `:name`, `:bound_to`, `:ip`, `:netmask` and `:dhcp`
         def create_host_only_network(options)
         end
 
@@ -58,8 +58,9 @@ module VagrantPlugins
         #
         # {
         #   :type     => :hostonly,
-        #   :hostonly => "vboxnet0",
-        #   :mac_address => "tubes"
+        #   :hostonly => "vagrant-vnet0",
+        #   :bound_to => "vnic2",
+        #   :nic_type => "virtio"
         # }
         #
         # This must support setting up both host only and bridged networks.
@@ -68,12 +69,15 @@ module VagrantPlugins
         def enable_adapters(adapters)
         end
 
-        # Execute a raw command straight through to VBoxManage.
+        # Execute a raw command straight through to 'prlctl' utility
+        #
+        # Accepts a :prlsrvctl as a first element of command if the command
+        # should be executed through to 'prlsrvctl' utility
         #
         # Accepts a :retryable => true option if the command should be retried
         # upon failure.
         #
-        # Raises a VBoxManage error if it fails.
+        # Raises a prlctl error if it fails.
         #
         # @param [Array] command Command to execute.
         def execute_command(command)
@@ -90,11 +94,11 @@ module VagrantPlugins
         def halt
         end
 
-        # Imports the VM from an OVF file.
+        # Imports the VM by cloning from registered template.
         #
-        # @param [String] ovf Path to the OVF file.
+        # @param [String] template_uuid Registered template UUID.
         # @return [String] UUID of the imported VM.
-        def import(ovf)
+        def import(template_uuid)
         end
 
         # Parses given block (JSON string) to object
@@ -104,7 +108,6 @@ module VagrantPlugins
         end
 
         # Returns the maximum number of network adapters.
-        # TODO: Implement the usage!
         def max_network_adapters
           16
         end
@@ -145,11 +148,16 @@ module VagrantPlugins
         def read_state
         end
 
-        # Returns a list of all UUIDs of virtual machines currently
-        # known by VirtualBox.
+        # Returns a list of all registered
+        # virtual machines and templates.
         #
-        # @return [Array<String>]
+        # @return [Hash]
         def read_vms
+        end
+
+        # Resumes the virtual machine.
+        #
+        def resume(mac)
         end
 
         # Sets the MAC address of the first network adapter.
@@ -178,9 +186,7 @@ module VagrantPlugins
 
         # Starts the virtual machine.
         #
-        # @param [String] mode Mode to boot the VM. Either "headless"
-        #   or "gui"
-        def start(mode)
+        def start
         end
 
         # Suspend the virtual machine.

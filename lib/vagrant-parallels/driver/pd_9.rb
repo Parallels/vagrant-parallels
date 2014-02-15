@@ -17,13 +17,12 @@ module VagrantPlugins
         end
 
 
-        def compact(uuid=nil)
-          uuid ||= @uuid
+        def compact(uuid)
           # TODO: VM can have more than one hdd!
           path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
           raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
             lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
+            # The progress of the compact will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
             if lines.last =~ /.+?(\d{,3}) ?%/
               yield $1.to_i if block_given?
@@ -80,7 +79,7 @@ module VagrantPlugins
         end
 
         def delete_unused_host_only_networks
-          networks = read_virtual_networks()
+          networks = read_virtual_networks
 
           # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
           # They should not be deleted anyway.
@@ -92,7 +91,7 @@ module VagrantPlugins
           read_vms_info.each do |vm|
             used_nets = vm.fetch('Hardware', {}).select { |name, _| name.start_with? 'net' }
             used_nets.each_value do |net_params|
-              networks.delete_if { |net|  net['Bound To'] == net_params.fetch('iface', nil)}
+              networks.delete_if { |net|  net['Bound To'] == net_params.fetch('iface', nil) }
             end
 
           end
@@ -155,17 +154,16 @@ module VagrantPlugins
           end
         end
 
-        def export(path, vm_name)
-          execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
+        def export(path, tpl_name)
+          execute("clone", @uuid, "--name", tpl_name, "--template", "--dst", path.to_s) do |type, data|
             lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
+            # The progress of the export will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
             if lines.last =~ /.+?(\d{,3}) ?%/
               yield $1.to_i if block_given?
             end
           end
-
-          read_settings(vm_name).fetch('ID', vm_name)
+          read_vms[tpl_name]
         end
 
         def halt(force=false)
@@ -183,7 +181,7 @@ module VagrantPlugins
               yield $1.to_i if block_given?
             end
           end
-          @uuid = read_settings(vm_name).fetch('ID', vm_name)
+          read_vms[vm_name]
         end
 
         def mac_in_use?(mac)
@@ -234,10 +232,6 @@ module VagrantPlugins
           vms_arr | templates_arr
         end
 
-        # Returns a hash of all UUIDs assigned to VMs and templates currently
-        # known by Parallels Desktop. Keys are 'Home' directories
-        #
-        # @return [Hash]
         def read_vms_paths
           list = {}
           read_vms_info.each do |item|
@@ -358,9 +352,6 @@ module VagrantPlugins
           json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
         end
 
-        # Returns the current state of this VM.
-        #
-        # @return [Symbol]
         def read_state
           vm = json({}) { execute('list', @uuid, '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
           vm.fetch('status', 'TROLOLO').to_sym
@@ -374,22 +365,20 @@ module VagrantPlugins
           execute("register", pvm_file)
         end
 
-        def registered?(path)
-          # TODO: Make this take UUID and have callers pass that instead
-          # Need a way to get the UUID from unregistered templates though (config.pvs XML parsing/regex?)
-          read_vms_paths.has_key?(path)
+        def registered?(uuid)
+          read_vms.has_value?(uuid)
         end
 
         def resume
           execute('resume', @uuid)
         end
 
-        def set_name(name)
-          execute('set', @uuid, '--name', name, :retryable => true)
-        end
-
         def set_mac_address(mac)
           execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
+        end
+
+        def set_name(name)
+          execute('set', @uuid, '--name', name, :retryable => true)
         end
 
         def execute_command(command)
@@ -419,9 +408,6 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
-        # Verifies that the driver is ready to accept work.
-        #
-        # This should raise a VagrantError if things are not ready.
         def verify!
           version
         end
