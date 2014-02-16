@@ -24,15 +24,16 @@ module VagrantPlugins
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
 
-          # Set the path to CLI utils
+          # Set the list of required CLI utils
           @cli_paths = {
             :prlctl        => "prlctl",
             :prlsrvctl     => "prlsrvctl",
-            :prl_disk_tool => "prl_disk_tool"
+            :prl_disk_tool => "prl_disk_tool",
+            :ifconfig      => "ifconfig"
           }
 
           @cli_paths.each do |name, path|
-            @logger.info("CLI #{name} path: #{path}")
+            @logger.info("CLI utility '#{name}' path: #{path}")
           end
         end
 

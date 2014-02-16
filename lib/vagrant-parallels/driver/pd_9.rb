@@ -248,17 +248,19 @@ module VagrantPlugins
         end
 
         def read_bridged_interfaces
-          net_list = read_virtual_networks()
+          net_list = read_virtual_networks
 
           # Skip 'vnicXXX' and 'Default' interfaces
           net_list.delete_if do |net|
-            net['Type'] != "bridged" or net['Bound To'] =~ /^(vnic(.+?)|Default)$/
+            net['Type'] != "bridged" or
+              net['Bound To'] =~ /^(vnic(.+?))$/ or
+              net['Network ID'] == "Default"
           end
 
           bridged_ifaces = []
           net_list.collect do |iface|
             info = {}
-            ifconfig = raw('ifconfig', iface['Bound To']).stdout
+            ifconfig = execute(:ifconfig, iface['Bound To'])
             # Assign default values
             info[:name]    = iface['Network ID'].gsub(/\s\(.*?\)$/, '')
             info[:bound_to] = iface['Bound To']
@@ -288,7 +290,7 @@ module VagrantPlugins
         end
 
         def read_host_only_interfaces
-          net_list = read_virtual_networks()
+          net_list = read_virtual_networks
           net_list.keep_if { |net| net['Type'] == "host-only" }
 
           hostonly_ifaces = []
