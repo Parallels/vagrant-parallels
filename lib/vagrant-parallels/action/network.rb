@@ -27,8 +27,11 @@ module VagrantPlugins
           # Get the list of network adapters from the configuration
           network_adapters_config = env[:machine].provider_config.network_adapters.dup
 
+          # Get maximum number of network adapters
+          max_adapters = env[:machine].provider.driver.max_network_adapters
+
           # Assign the adapter slot for each high-level network
-          available_slots = Set.new(0..7)
+          available_slots = Set.new(0...max_adapters)
           network_adapters_config.each do |slot, _data|
             available_slots.delete(slot)
           end
