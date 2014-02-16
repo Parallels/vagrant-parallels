@@ -24,12 +24,16 @@ module VagrantPlugins
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
 
-          # Set the path to prlctl
-          @prlctl_path = "prlctl"
-          @prlsrvctl_path = "prlsrvctl"
+          # Set the path to CLI utils
+          @cli_paths = {
+            :prlctl        => "prlctl",
+            :prlsrvctl     => "prlsrvctl",
+            :prl_disk_tool => "prl_disk_tool"
+          }
 
-          @logger.info("CLI prlctl path: #{@prlctl_path}")
-          @logger.info("CLI prlsrvctl path: #{@prlsrvctl_path}")
+          @cli_paths.each do |name, path|
+            @logger.info("CLI #{name} path: #{path}")
+          end
         end
 
         # Clears the shared folders that have been set on the virtual machine.
@@ -254,14 +258,10 @@ module VagrantPlugins
           # Append in the options for subprocess
           command << { :notify => [:stdout, :stderr] }
 
-          # Get the utility to execute:
-          # 'prlctl' by default and 'prlsrvctl' if it set as a first argument in command
-          if command.first == :prlsrvctl
-            cli = @prlsrvctl_path
-            command.delete_at(0)
-          else
-            cli = @prlctl_path
-          end
+          # Get the utility from the first argument:
+          # 'prlctl' by default
+          util = @cli_paths.has_key?(command.first) ? command.delete_at(0) : :prlctl
+          cli = @cli_paths[util]
 
           Vagrant::Util::Busy.busy(int_callback) do
             Vagrant::Util::Subprocess.execute(cli, *command, &block)

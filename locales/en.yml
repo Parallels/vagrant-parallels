@@ -107,7 +107,7 @@ en:
             Parallels Tools Version: %{tools_version}
             Parallels Desktop Version: %{parallels_version}
         export:
-          compacting: Compacting exported HDD...
+          compacting: Compacting exported HDDs...
         match_mac:
           generate: |-
             The specified base MAC is already in use. Generating a new unique MAC

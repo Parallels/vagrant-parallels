@@ -47,7 +47,7 @@ module VagrantPlugins
           tpl_name = "#{name}_box"
 
           # Ensure that the name is not in use
-          if @env[:machine].provider.driver.read_vms.has_key?(name)
+          if @env[:machine].provider.driver.read_vms.has_key?(tpl_name)
             tpl_name << "_#{rand(1000)}"
           end
 

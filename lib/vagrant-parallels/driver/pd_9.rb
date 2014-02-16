@@ -18,14 +18,15 @@ module VagrantPlugins
 
 
         def compact(uuid)
-          # TODO: VM can have more than one hdd!
-          path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
-          raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
-            lines = data.split("\r")
-            # The progress of the compact will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
+          used_drives = read_settings.fetch('Hardware', {}).select { |name, _| name.start_with? 'hdd' }
+          used_drives.each_value do |drive_params|
+            execute(:prl_disk_tool, 'compact', '--hdd', drive_params["image"]) do |type, data|
+              lines = data.split("\r")
+              # The progress of the compact will be in the last line. Do a greedy
+              # regular expression to find what we're looking for.
+              if lines.last =~ /.+?(\d{,3}) ?%/
+                yield $1.to_i if block_given?
+              end
             end
           end
         end
