@@ -1,6 +1,6 @@
 shared_context "parallels" do
   let(:parallels_context) { true                                }
-  let(:uuid)              { "9876-dcba-8765-hgfe"               }
+  let(:uuid)              { "1234-here-is-uuid-5678"            }
   let(:parallels_version) { "9"                                 }
   let(:subprocess)        { double("Vagrant::Util::Subprocess") }
 
@@ -24,7 +24,7 @@ shared_context "parallels" do
 
     # drivers also call vm_exists? during init;
     subprocess.stub(:execute).
-      with("prlctl", "list", kind_of(String), "--info", "--json", kind_of(Hash)).
+      with("prlctl", "list", uuid, kind_of(Hash)).
       and_return(subprocess_result(exit_code: 0))
   end
 end

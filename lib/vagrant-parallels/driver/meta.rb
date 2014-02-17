@@ -98,6 +98,7 @@ module VagrantPlugins
                        :read_host_only_interfaces,
                        :read_mac_address,
                        :read_network_interfaces,
+                       :read_settings,
                        :read_state,
                        :read_used_ports,
                        :read_virtual_networks,

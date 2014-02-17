@@ -189,14 +189,11 @@ module VagrantPlugins
         end
 
         def mac_in_use?(mac)
-          all_macs_in_use = []
-          read_vms_info.each do |vm|
-            all_macs_in_use << vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
-          end
-
           valid_mac = mac.upcase.tr('^A-F0-9', '')
-
-          all_macs_in_use.include?(valid_mac)
+          read_vms_info.each do |vm|
+            return true if valid_mac == vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
+          end
+          false
         end
 
         def read_ip_dhcp
@@ -211,10 +208,10 @@ module VagrantPlugins
 
         def read_vms
           results = {}
-          vms_arr = json({}) do
+          vms_arr = json([]) do
             execute('list', '--all', '--json', retryable: true).gsub(/^(INFO)?/, '')
           end
-          templates_arr = json({}) do
+          templates_arr = json([]) do
             execute('list', '--all', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
           end
           vms = vms_arr | templates_arr
@@ -227,10 +224,10 @@ module VagrantPlugins
 
         # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
         def read_vms_info
-          vms_arr = json({}) do
+          vms_arr = json([]) do
             execute('list', '--all','--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
           end
-          templates_arr = json({}) do
+          templates_arr = json([]) do
             execute('list', '--all','--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
           end
           vms_arr | templates_arr
@@ -353,14 +350,14 @@ module VagrantPlugins
           nics
         end
 
-        def read_settings(uuid=nil)
-          uuid ||= @uuid
-          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
+        def read_settings
+          vm = json { execute('list', @uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?/, '') }
+          vm.last
         end
 
         def read_state
-          vm = json({}) { execute('list', @uuid, '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
-          vm.fetch('status', 'TROLOLO').to_sym
+          vm = json { execute('list', @uuid, '--json', retryable: true).gsub(/^(INFO)?/, '') }
+          vm.last.fetch('status').to_sym
         end
 
         def read_virtual_networks

@@ -4,145 +4,158 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
   include_context "parallels"
   let(:parallels_version) { "9" }
 
-  subject { described_class.new(uuid) }
+  let(:vm_name) {'VM_Name'}
+  let(:vm_net0_mac) {'001C42B4B074'}
+  let(:vm_net1_mac) {'001C42EC0068'}
+  let(:vm_hdd) {'/path/to/disk1.hdd'}
 
-  describe "compact" do
-    it "compacts the VM disk images" do
-      pending "Should have possibility to compact more than one hdd"
-    end
-  end
+  let(:tpl_uuid) {'1234-some-template-uuid-5678'}
+  let(:tpl_name) {'Some_Template_Name'}
+  let(:tpl_net0_mac) {'001C42F6E500'}
+  let(:tpl_net1_mac) {'001C42AB0071'}
 
-  describe "create_host_only_network" do
-    it "creates host-only NIC"
-  end
+  subject { VagrantPlugins::Parallels::Driver::Meta.new(uuid) }
 
-  describe "export" do
-    tpl_name = "new_template_name"
-    tpl_uuid = "12345-hfgs-3456-hste"
+  it_behaves_like "parallels desktop driver"
 
-    it "exports VM to template" do
-      subject.stub(:read_vms).and_return({tpl_name => tpl_uuid})
-
-      subprocess.should_receive(:execute).
-        with("prlctl", "clone", uuid, "--name", an_instance_of(String), "--template", "--dst",
-             an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "The VM has been successfully cloned"))
-      subject.export("/path/to/template", tpl_name).should == tpl_uuid
-    end
-  end
-
-  describe "clear_shared_folders" do
-    shf_hash = {"enabled" => true, "shf_name_1" => {}, "shf_name_2" => {}}
-    it "deletes every shared folder assigned to the VM" do
-      subject.stub(:read_settings).and_return({"Host Shared Folders" => shf_hash})
-
-      subprocess.should_receive(:execute).exactly(2).times.
-        with("prlctl", "set", uuid, "--shf-host-del", an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Shared folder deleted"))
-      subject.clear_shared_folders
-    end
-  end
-
-  describe "halt" do
-    it "stops the VM" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "stop", uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM has been halted gracefully"))
-      subject.halt
+  before do
+    # Returns short info about all registered VMs
+    # `prlctl list --all --json`
+    subprocess.stub(:execute).
+      with("prlctl", "list", "--all", "--json", kind_of(Hash)) do
+        out = <<-eos
+        [
+          {
+            "uuid": "#{uuid}",
+            "status": "stopped",
+            "name": "#{vm_name}"
+          }
+        ]
+        eos
+        subprocess_result(stdout: out)
     end
 
-    it "stops the VM force" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "stop", uuid, "--kill", an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM has been halted forcibly"))
-      subject.halt(force=true)
-    end
-  end
-
-  describe "mac_in_use?" do
-    vm_1 = {
-      'Hardware' => {
-        'net0' => {'mac' => '001C42BB5901'},
-        'net1' => {'mac' => '001C42BB5902'},
-      }
-    }
-    vm_2 = {
-      'Hardware' => {
-        'net0' => {'mac' => '001C42BB5903'},
-        'net1' => {'mac' => '001C42BB5904'},
-      }
-    }
-
-    it "checks the MAC address is already in use" do
-      subject.stub(:read_vms_info).and_return([vm_1, vm_2])
-
-      subject.mac_in_use?('00:1c:42:bb:59:01').should be_true
-      subject.mac_in_use?('00:1c:42:bb:59:02').should be_false
-      subject.mac_in_use?('00:1c:42:bb:59:03').should be_true
-      subject.mac_in_use?('00:1c:42:bb:59:04').should be_false
-    end
-  end
-
-  describe "set_name" do
-    it "sets new name for the VM" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "set", uuid, '--name', an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Settings applied"))
-
-      subject.set_name('new_vm_name')
-    end
-  end
-
-  describe "set_mac_address" do
-    it "sets base MAC address to the Shared network adapter" do
-      subprocess.should_receive(:execute).exactly(2).times.
-        with("prlctl", "set", uuid, '--device-set', 'net0', '--type', 'shared', '--mac',
-           an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Settings applied"))
-
-      subject.set_mac_address('001C42DD5902')
-      subject.set_mac_address('auto')
-    end
-  end
-
-  describe "start" do
-    it "starts the VM" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "start", uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM started"))
-      subject.start
-    end
-  end
-
-  describe "suspend" do
-    it "suspends the VM" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "suspend", uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM suspended"))
-      subject.suspend
-    end
-  end
-
-  describe "unregister" do
-    it "suspends the VM" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "unregister", an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Specified VM unregistered"))
-      subject.unregister("template_or_vm_uuid")
-    end
-  end
-
-  describe "version" do
-    it "parses the version from output" do
-      subject.version.should match(/(#{parallels_version}[\d\.]+)/)
+    # Returns short info about all registered templates
+    # `prlctl list --all --json --template`
+    subprocess.stub(:execute).
+      with("prlctl", "list", "--all", "--json", "--template", kind_of(Hash)) do
+        out = <<-eos
+        [
+          {
+            "uuid": "1234-some-template-uuid-5678",
+            "name": "Some_Template_Name"
+          }
+        ]
+        eos
+        subprocess_result(stdout: out)
     end
 
-    it "rises ParallelsInstallIncomplete exception when output is invalid" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "--version", an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Some incorrect value has been returned!"))
-      expect { subject.version }.
-        to raise_error(VagrantPlugins::Parallels::Errors::ParallelsInstallIncomplete)
+
+    # Returns detailed info about specified VM or all registered VMs
+    # `prlctl list SOME-VM-UUID --info --json`
+    # `prlctl list --all --info --json`
+    subprocess.stub(:execute).
+      with("prlctl", "list", kind_of(String), "--info", "--json", kind_of(Hash))do
+        out = <<-eos
+        [
+          {
+            "ID": "#{uuid}",
+            "Name": "#{vm_name}",
+            "State": "stopped",
+            "Home": "/path/to/#{vm_name}.pvm/",
+            "GuestTools": {
+              "version": "9.0.23062"
+            },
+            "Hardware": {
+              "cpu": {
+                "cpus": 1
+              },
+              "memory": {
+                "size": "512Mb"
+              },
+              "hdd0": {
+                "enabled": true,
+                "image": "#{vm_hdd}"
+              },
+              "net0": {
+                "enabled": true,
+                "type": "shared",
+                "mac": "#{vm_net0_mac}",
+                "card": "e1000",
+                "dhcp": "yes"
+              },
+              "net1": {
+                "enabled": true,
+                "type": "bridged",
+                "iface": "vnic2",
+                "mac": "#{vm_net1_mac}",
+                "card": "e1000",
+                "ips": "33.33.33.5/255.255.255.0 "
+              }
+            },
+            "Host Shared Folders": {
+              "enabled": true,
+              "shared_folder_1": {
+                "enabled": true,
+                "path": "/path/to/shared/folder/1"
+              },
+              "shared_folder_2": {
+                "enabled": true,
+                "path": "/path/to/shared/folder/2"
+              }
+            }
+          }
+        ]
+        eos
+        subprocess_result(stdout: out)
+    end
+
+    # Returns detailed info about specified template or all registered templates
+    # `prlctl list some_vm_uuid --info --json --template`
+    # `prlctl list --all --info --json --template`
+    subprocess.stub(:execute).
+      with("prlctl", "list", kind_of(String), "--info", "--json", "--template", kind_of(Hash))do
+      out = <<-eos
+        [
+          {
+            "ID": "#{tpl_uuid}",
+            "Name": "#{tpl_name}",
+            "State": "stopped",
+            "Home": "/path/to/#{tpl_name}.pvm/",
+            "GuestTools": {
+              "version": "9.0.24172"
+            },
+            "Hardware": {
+              "cpu": {
+                "cpus": 1
+              },
+              "memory": {
+                "size": "512Mb"
+              },
+              "hdd0": {
+                "enabled": true,
+                "image": "/path/to/harddisk.hdd"
+              },
+              "net0": {
+                "enabled": true,
+                "type": "shared",
+                "mac": "#{tpl_net0_mac}",
+                "card": "e1000",
+                "dhcp": "yes"
+              },
+              "net1": {
+                "enabled": true,
+                "type": "bridged",
+                "iface": "vnic4",
+                "mac": "#{tpl_net1_mac}",
+                "card": "e1000",
+                "ips": "33.33.33.10/255.255.255.0 "
+              }
+            }
+          }
+        ]
+      eos
+      subprocess_result(stdout: out)
     end
   end
 end

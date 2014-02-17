@@ -1,5 +1,5 @@
 require "vagrant"
-require_relative "../unit/base"
+require_relative "base"
 
 require VagrantPlugins::Parallels.source_root.join('lib/vagrant-parallels/synced_folder')
 
