@@ -14,6 +14,19 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
   let(:tpl_net0_mac) {'001C42F6E500'}
   let(:tpl_net1_mac) {'001C42AB0071'}
 
+  let(:hostonly_iface) {'vnic10'}
+
+  let(:vnic_options) do {
+    :name => 'vagrant_vnic6',
+    :adapter_ip => '11.11.11.11',
+    :netmask    => '255.255.252.0',
+    :dhcp => {
+      :ip => '11.11.11.11',
+      :lower => '11.11.8.1',
+      :upper => '11.11.11.254'
+    }
+  } end
+
   subject { VagrantPlugins::Parallels::Driver::Meta.new(uuid) }
 
   it_behaves_like "parallels desktop driver"
@@ -52,7 +65,7 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
 
 
     # Returns detailed info about specified VM or all registered VMs
-    # `prlctl list SOME-VM-UUID --info --json`
+    # `prlctl list <vm_uuid> --info --json`
     # `prlctl list --all --info --json`
     subprocess.stub(:execute).
       with("prlctl", "list", kind_of(String), "--info", "--json", kind_of(Hash))do
@@ -111,7 +124,7 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
     end
 
     # Returns detailed info about specified template or all registered templates
-    # `prlctl list some_vm_uuid --info --json --template`
+    # `prlctl list <tpl_uuid> --info --json --template`
     # `prlctl list --all --info --json --template`
     subprocess.stub(:execute).
       with("prlctl", "list", kind_of(String), "--info", "--json", "--template", kind_of(Hash))do
@@ -157,5 +170,29 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
       eos
       subprocess_result(stdout: out)
     end
+
+    # Returns detailed info about virtual network interface
+    # `prlsrvctl net info <net_name>, '--json', retryable: true)
+    subprocess.stub(:execute).
+      with("prlsrvctl", "net", "info", kind_of(String), "--json", kind_of(Hash))do
+      out = <<-eos
+        {
+          "Network ID": "#{vnic_options[:name]}",
+          "Type": "host-only",
+          "Bound To": "#{hostonly_iface}",
+          "Parallels adapter": {
+            "IP address": "#{vnic_options[:adapter_ip]}",
+            "Subnet mask": "#{vnic_options[:netmask]}"
+          },
+          "DHCPv4 server": {
+            "Server address": "#{vnic_options[:dhcp][:ip] || "10.37.132.1"}",
+            "IP scope start address": "#{vnic_options[:dhcp][:lower] || "10.37.132.1"}",
+            "IP scope end address": "#{vnic_options[:dhcp][:upper] || "10.37.132.254"}"
+          }
+        }
+      eos
+      subprocess_result(stdout: out)
+    end
+
   end
 end
