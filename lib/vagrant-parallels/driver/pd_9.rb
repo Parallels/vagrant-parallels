@@ -31,6 +31,14 @@ module VagrantPlugins
           end
         end
 
+        def clear_shared_folders
+          shf = read_settings.fetch("Host Shared Folders", {}).keys
+          shf.delete("enabled")
+          shf.each do |folder|
+            execute("set", @uuid, "--shf-host-del", folder)
+          end
+        end
+
         def create_host_only_network(options)
           # Create the interface
           execute(:prlsrvctl, "net", "add", options[:name], "--type", "host-only")
@@ -59,19 +67,11 @@ module VagrantPlugins
           }
         end
 
-        def clear_shared_folders
-          shf = read_settings.fetch("Host Shared Folders", {}).keys
-          shf.delete("enabled")
-          shf.each do |folder|
-            execute("set", @uuid, "--shf-host-del", folder)
-          end
-        end
-
         def delete
           execute('delete', @uuid)
         end
 
-        def delete_adapters
+        def delete_disabled_adapters
           read_settings.fetch('Hardware', {}).each do |adapter, params|
             if adapter.start_with?('net') and !params.fetch("enabled", true)
               execute('set', @uuid, '--device-del', adapter)
@@ -155,6 +155,10 @@ module VagrantPlugins
           end
         end
 
+        def execute_command(command)
+          execute(*command)
+        end
+
         def export(path, tpl_name)
           execute("clone", @uuid, "--name", tpl_name, "--template", "--dst", path.to_s) do |type, data|
             lines = data.split("\r")
@@ -194,54 +198,6 @@ module VagrantPlugins
             return true if valid_mac == vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
           end
           false
-        end
-
-        def read_ip_dhcp
-          mac_addr = read_mac_address.downcase
-          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
-            if line.include? mac_addr
-              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
-              return ip
-            end
-          end
-        end
-
-        def read_vms
-          results = {}
-          vms_arr = json([]) do
-            execute('list', '--all', '--json', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          templates_arr = json([]) do
-            execute('list', '--all', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          vms = vms_arr | templates_arr
-          vms.each do |item|
-            results[item.fetch('name')] = item.fetch('uuid')
-          end
-
-          results
-        end
-
-        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
-        def read_vms_info
-          vms_arr = json([]) do
-            execute('list', '--all','--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          templates_arr = json([]) do
-            execute('list', '--all','--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          vms_arr | templates_arr
-        end
-
-        def read_vms_paths
-          list = {}
-          read_vms_info.each do |item|
-            if Dir.exists? item.fetch('Home')
-              list[File.realpath item.fetch('Home')] = item.fetch('ID')
-            end
-          end
-
-          list
         end
 
         def read_bridged_interfaces
@@ -317,6 +273,16 @@ module VagrantPlugins
           hostonly_ifaces
         end
 
+        def read_ip_dhcp
+          mac_addr = read_mac_address.downcase
+          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
+            if line.include? mac_addr
+              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+              return ip
+            end
+          end
+        end
+
         def read_mac_address
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
@@ -364,6 +330,44 @@ module VagrantPlugins
           json { execute(:prlsrvctl, 'net', 'list', '--json', retryable: true) }
         end
 
+        def read_vms
+          results = {}
+          vms_arr = json([]) do
+            execute('list', '--all', '--json', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          templates_arr = json([]) do
+            execute('list', '--all', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          vms = vms_arr | templates_arr
+          vms.each do |item|
+            results[item.fetch('name')] = item.fetch('uuid')
+          end
+
+          results
+        end
+
+        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
+        def read_vms_info
+          vms_arr = json([]) do
+            execute('list', '--all','--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          templates_arr = json([]) do
+            execute('list', '--all','--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
+          end
+          vms_arr | templates_arr
+        end
+
+        def read_vms_paths
+          list = {}
+          read_vms_info.each do |item|
+            if Dir.exists? item.fetch('Home')
+              list[File.realpath item.fetch('Home')] = item.fetch('ID')
+            end
+          end
+
+          list
+        end
+
         def register(pvm_file)
           execute("register", pvm_file)
         end
@@ -384,10 +388,6 @@ module VagrantPlugins
           execute('set', @uuid, '--name', name, :retryable => true)
         end
 
-        def execute_command(command)
-          execute(*command)
-        end
-
         def share_folders(folders)
           folders.each do |folder|
             # Add the shared folder
@@ -396,7 +396,7 @@ module VagrantPlugins
         end
 
         def ssh_port(expected_port)
-          22
+          expected_port
         end
 
         def start

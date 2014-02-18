@@ -104,6 +104,13 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
                 "mac": "#{vm_net1_mac}",
                 "card": "e1000",
                 "ips": "33.33.33.5/255.255.255.0 "
+              },
+              "net2": {
+                "enabled": false,
+                "type": "bridged",
+                "iface": "vnic5",
+                "mac": "001C42FFFFFF",
+                "card": "virtio"
               }
             },
             "Host Shared Folders": {

@@ -53,6 +53,10 @@ module VagrantPlugins
         def delete
         end
 
+        # Deletes all disabled network adapters from the VM configuration
+        def delete_disabled_adapters
+        end
+
         # Deletes any host only networks that aren't being used for anything.
         def delete_unused_host_only_networks
         end

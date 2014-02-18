@@ -12,6 +12,15 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "clear_shared_folders" do
+    it "deletes every shared folder assigned to the VM" do
+      subprocess.should_receive(:execute).at_least(2).times.
+        with("prlctl", "set", uuid, "--shf-host-del", an_instance_of(String), an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "Shared folder deleted"))
+      subject.clear_shared_folders
+    end
+  end
+
   describe "create_host_only_network" do
     let(:hostonly_iface) {'vnic12'}
     it "creates host-only NIC with dhcp server configured" do
@@ -48,7 +57,7 @@ shared_examples "parallels desktop driver" do |options|
       interface[:bound_to].should =~ /^(vnic(\d+))$/
     end
 
-    it "creates host-only NIC" do
+    it "creates host-only NIC without dhcp" do
       vnic_options = {
         :name => 'vagrant_vnic3',
         :adapter_ip => '22.22.22.22',
@@ -75,6 +84,24 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "delete" do
+    it "deletes the VM" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "delete", uuid, an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+      subject.delete
+    end
+  end
+
+  describe "delete_disabled_adapters" do
+    it "deletes disabled networks adapters from VM config" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, "--device-del", /^(net(\d+))$/, an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+      subject.delete_disabled_adapters
+    end
+  end
+
   describe "export" do
     tpl_name = "Some_Template_Name"
     tpl_uuid = "1234-some-template-uuid-5678"
@@ -88,27 +115,18 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
-  describe "clear_shared_folders" do
-    it "deletes every shared folder assigned to the VM" do
-      subprocess.should_receive(:execute).at_least(2).times.
-        with("prlctl", "set", uuid, "--shf-host-del", an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Shared folder deleted"))
-      subject.clear_shared_folders
-    end
-  end
-
   describe "halt" do
     it "stops the VM" do
       subprocess.should_receive(:execute).
         with("prlctl", "stop", uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM has been halted gracefully"))
+        and_return(subprocess_result(exit_code: 0))
       subject.halt
     end
 
     it "stops the VM force" do
       subprocess.should_receive(:execute).
         with("prlctl", "stop", uuid, "--kill", an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM has been halted forcibly"))
+        and_return(subprocess_result(exit_code: 0))
       subject.halt(force=true)
     end
   end
