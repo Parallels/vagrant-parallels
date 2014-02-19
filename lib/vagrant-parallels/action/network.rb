@@ -229,14 +229,14 @@ module VagrantPlugins
           dhcp_options = {}
           if options[:type] == :dhcp
             # Calculate the DHCP server IP, which is the network address
-            # with the final octet + 2. So "172.28.0.0" turns into "172.28.0.2"
+            # with the final octet + 1. So "172.28.0.0" turns into "172.28.0.1"
             dhcp_ip    = ip_parts.dup
-            dhcp_ip[3] += 2
+            dhcp_ip[3] += 1
             dhcp_options[:dhcp_ip] ||= dhcp_ip.join(".")
 
             # Calculate the lower and upper bound for the DHCP server
             dhcp_lower    = ip_parts.dup
-            dhcp_lower[3] += 3
+            dhcp_lower[3] += 2
             dhcp_options[:dhcp_lower] ||= dhcp_lower.join(".")
 
             dhcp_upper    = ip_parts.dup
