@@ -1,54 +1,41 @@
 require 'log4r'
-require 'json'
 
-require 'vagrant/util/busy'
-require "vagrant/util/network_ip"
 require 'vagrant/util/platform'
-require 'vagrant/util/retryable'
-require 'vagrant/util/subprocess'
+
+require File.expand_path("../base", __FILE__)
 
 module VagrantPlugins
   module Parallels
     module Driver
-      # Base class for all Parallels drivers.
-      #
-      # This class provides useful tools for things such as executing
-      # PrlCtl and handling SIGINTs and so on.
-      class PrlCtl
-        # Include this so we can use `Subprocess` more easily.
-        include Vagrant::Util::Retryable
-        include Vagrant::Util::NetworkIP
-
-        attr_reader :uuid
-
+      # Driver for Parallels Desktop 9.
+      class PD_9 < Base
         def initialize(uuid)
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::prlctl")
+          super()
 
-          # This flag is used to keep track of interrupted state (SIGINT)
-          @interrupted = false
-
-          # Store machine id
+          @logger = Log4r::Logger.new("vagrant::provider::parallels::pd_9")
           @uuid = uuid
-
-          # Set the path to prlctl
-          @prlctl_path = "prlctl"
-          @prlsrvctl_path = "prlsrvctl"
-
-          @logger.info("CLI prlctl path: #{@prlctl_path}")
-          @logger.info("CLI prlsrvctl path: #{@prlsrvctl_path}")
         end
 
-        def compact(uuid=nil)
-          uuid ||= @uuid
-          # TODO: VM can have more than one hdd!
-          path_to_hdd = read_settings(uuid).fetch("Hardware", {}).fetch("hdd0", {}).fetch("image", nil)
-          raw('prl_disk_tool', 'compact', '--hdd', path_to_hdd) do |type, data|
-            lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
+
+        def compact(uuid)
+          used_drives = read_settings.fetch('Hardware', {}).select { |name, _| name.start_with? 'hdd' }
+          used_drives.each_value do |drive_params|
+            execute(:prl_disk_tool, 'compact', '--hdd', drive_params["image"]) do |type, data|
+              lines = data.split("\r")
+              # The progress of the compact will be in the last line. Do a greedy
+              # regular expression to find what we're looking for.
+              if lines.last =~ /.+?(\d{,3}) ?%/
+                yield $1.to_i if block_given?
+              end
             end
+          end
+        end
+
+        def clear_shared_folders
+          shf = read_settings.fetch("Host Shared Folders", {}).keys
+          shf.delete("enabled")
+          shf.each do |folder|
+            execute("set", @uuid, "--shf-host-del", folder)
           end
         end
 
@@ -72,27 +59,19 @@ module VagrantPlugins
 
           # Return the details
           return {
-              :name => options[:name],
-              :bound_to => bound_to,
-              :ip   => options[:adapter_ip],
-              :netmask => options[:netmask],
-              :dhcp => options[:dhcp]
+            :name => options[:name],
+            :bound_to => bound_to,
+            :ip   => options[:adapter_ip],
+            :netmask => options[:netmask],
+            :dhcp => options[:dhcp]
           }
-        end
-
-        def clear_shared_folders
-          shf = read_settings.fetch("Host Shared Folders", {}).keys
-          shf.delete("enabled")
-          shf.each do |folder|
-            execute("set", @uuid, "--shf-host-del", folder)
-          end
         end
 
         def delete
           execute('delete', @uuid)
         end
 
-        def delete_adapters
+        def delete_disabled_adapters
           read_settings.fetch('Hardware', {}).each do |adapter, params|
             if adapter.start_with?('net') and !params.fetch("enabled", true)
               execute('set', @uuid, '--device-del', adapter)
@@ -101,19 +80,19 @@ module VagrantPlugins
         end
 
         def delete_unused_host_only_networks
-          networks = read_virtual_networks()
+          networks = read_virtual_networks
 
           # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
           # They should not be deleted anyway.
           networks.keep_if do |net|
             net['Type'] == "host-only" &&
-                net['Bound To'].match(/^(?>vnic|Parallels Host-Only #)(\d+)$/)[1].to_i >= 2
+              net['Bound To'].match(/^(?>vnic|Parallels Host-Only #)(\d+)$/)[1].to_i >= 2
           end
 
-          read_all_info.each do |vm|
+          read_vms_info.each do |vm|
             used_nets = vm.fetch('Hardware', {}).select { |name, _| name.start_with? 'net' }
             used_nets.each_value do |net_params|
-              networks.delete_if { |net|  net['Bound To'] == net_params.fetch('iface', nil)}
+              networks.delete_if { |net|  net['Bound To'] == net_params.fetch('iface', nil) }
             end
 
           end
@@ -176,17 +155,20 @@ module VagrantPlugins
           end
         end
 
-        def export(path, vm_name)
-          execute("clone", @uuid, "--name", vm_name, "--template", "--dst", path.to_s) do |type, data|
+        def execute_command(command)
+          execute(*command)
+        end
+
+        def export(path, tpl_name)
+          execute("clone", @uuid, "--name", tpl_name, "--template", "--dst", path.to_s) do |type, data|
             lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
+            # The progress of the export will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
             if lines.last =~ /.+?(\d{,3}) ?%/
               yield $1.to_i if block_given?
             end
           end
-
-          read_settings(vm_name).fetch('ID', vm_name)
+          read_vms[tpl_name]
         end
 
         def halt(force=false)
@@ -195,7 +177,10 @@ module VagrantPlugins
           execute(*args)
         end
 
-        def import(template_uuid, vm_name)
+        def import(template_uuid)
+          template_name = read_vms.key(template_uuid)
+          vm_name = "#{template_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+
           execute("clone", template_uuid, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
@@ -204,71 +189,31 @@ module VagrantPlugins
               yield $1.to_i if block_given?
             end
           end
-          @uuid = read_settings(vm_name).fetch('ID', vm_name)
+          read_vms[vm_name]
         end
-
-        def ip
-          mac_addr = read_mac_address.downcase
-          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
-            if line.include? mac_addr
-              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
-              return ip
-            end
-          end
-        end
-
 
         def mac_in_use?(mac)
-          all_macs_in_use = []
-          read_all_info.each do |vm|
-            all_macs_in_use << vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
-          end
-
           valid_mac = mac.upcase.tr('^A-F0-9', '')
-
-          all_macs_in_use.include?(valid_mac)
-        end
-
-        # Returns a hash of all UUIDs assigned to VMs and templates currently
-        # known by Parallels. Keys are 'name' values
-        #
-        # @return [Hash]
-        def read_all_names
-          list = {}
-          read_all_info.each do |item|
-            list[item.fetch('Name')] = item.fetch('ID')
+          read_vms_info.each do |vm|
+            return true if valid_mac == vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
           end
-
-          list
-        end
-
-        # Returns a hash of all UUIDs assigned to VMs and templates currently
-        # known by Parallels. Keys are 'Home' directories
-        #
-        # @return [Hash]
-        def read_all_paths
-          list = {}
-          read_all_info.each do |item|
-            if Dir.exists? item.fetch('Home')
-              list[File.realpath item.fetch('Home')] = item.fetch('ID')
-            end
-          end
-
-          list
+          false
         end
 
         def read_bridged_interfaces
-          net_list = read_virtual_networks()
+          net_list = read_virtual_networks
 
           # Skip 'vnicXXX' and 'Default' interfaces
           net_list.delete_if do |net|
-            net['Type'] != "bridged" or net['Bound To'] =~ /^(vnic(.+?)|Default)$/
+            net['Type'] != "bridged" or
+              net['Bound To'] =~ /^(vnic(.+?))$/ or
+              net['Network ID'] == "Default"
           end
 
           bridged_ifaces = []
           net_list.collect do |iface|
             info = {}
-            ifconfig = raw('ifconfig', iface['Bound To']).stdout
+            ifconfig = execute(:ifconfig, iface['Bound To'])
             # Assign default values
             info[:name]    = iface['Network ID'].gsub(/\s\(.*?\)$/, '')
             info[:bound_to] = iface['Bound To']
@@ -298,7 +243,7 @@ module VagrantPlugins
         end
 
         def read_host_only_interfaces
-          net_list = read_virtual_networks()
+          net_list = read_virtual_networks
           net_list.keep_if { |net| net['Type'] == "host-only" }
 
           hostonly_ifaces = []
@@ -325,7 +270,17 @@ module VagrantPlugins
             end
             hostonly_ifaces << info
           end
-        hostonly_ifaces
+          hostonly_ifaces
+        end
+
+        def read_ip_dhcp
+          mac_addr = read_mac_address.downcase
+          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
+            if line.include? mac_addr
+              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+              return ip
+            end
+          end
         end
 
         def read_mac_address
@@ -361,46 +316,76 @@ module VagrantPlugins
           nics
         end
 
-        # Returns the current state of this VM.
-        #
-        # @return [Symbol]
+        def read_settings
+          vm = json { execute('list', @uuid, '--info', '--json', retryable: true) }
+          vm.last
+        end
+
         def read_state
-          read_settings(@uuid).fetch('State', 'inaccessible').to_sym
+          vm = json { execute('list', @uuid, '--json', retryable: true) }
+          vm.last.fetch('status').to_sym
         end
 
         def read_virtual_networks
           json { execute(:prlsrvctl, 'net', 'list', '--json', retryable: true) }
         end
 
-        def ready?
-          !!guest_execute('uname') rescue false
+        def read_vms
+          results = {}
+          vms_arr = json([]) do
+            execute('list', '--all', '--json', retryable: true)
+          end
+          templates_arr = json([]) do
+            execute('list', '--all', '--json', '--template', retryable: true)
+          end
+          vms = vms_arr | templates_arr
+          vms.each do |item|
+            results[item.fetch('name')] = item.fetch('uuid')
+          end
+
+          results
+        end
+
+        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
+        def read_vms_info
+          vms_arr = json([]) do
+            execute('list', '--all','--info', '--json', retryable: true)
+          end
+          templates_arr = json([]) do
+            execute('list', '--all','--info', '--json', '--template', retryable: true)
+          end
+          vms_arr | templates_arr
+        end
+
+        def read_vms_paths
+          list = {}
+          read_vms_info.each do |item|
+            if Dir.exists? item.fetch('Home')
+              list[File.realpath item.fetch('Home')] = item.fetch('ID')
+            end
+          end
+
+          list
         end
 
         def register(pvm_file)
           execute("register", pvm_file)
         end
 
-        def registered?(path)
-          # TODO: Make this take UUID and have callers pass that instead
-          # Need a way to get the UUID from unregistered templates though (config.pvs XML parsing/regex?)
-          read_all_paths.has_key?(path)
+        def registered?(uuid)
+          read_vms.has_value?(uuid)
         end
 
         def resume
           execute('resume', @uuid)
         end
 
-        def set_name(name)
-          execute('set', @uuid, '--name', name, :retryable => true)
-        end
-
         def set_mac_address(mac)
           execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
         end
 
-        # apply custom vm setting via set parameter
-        def set_vm_settings(command)
-          raw(@prlctl_path, *command)
+        def set_name(name)
+          execute('set', @uuid, '--name', name, :retryable => true)
         end
 
         def share_folders(folders)
@@ -411,7 +396,7 @@ module VagrantPlugins
         end
 
         def ssh_port(expected_port)
-          22
+          expected_port
         end
 
         def start
@@ -426,9 +411,6 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
-        # Verifies that the driver is ready to accept work.
-        #
-        # This should raise a VagrantError if things are not ready.
         def verify!
           version
         end
@@ -441,115 +423,8 @@ module VagrantPlugins
           end
         end
 
-        private
-
-        def guest_execute(*command)
-          execute('exec', @uuid, *command)
-        end
-
-        def json(default=nil)
-          data = yield
-          JSON.parse(data) rescue default
-        end
-
-        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
-        def read_all_info
-          vms_arr = json({}) do
-            execute('list', '--info', '--json', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          templates_arr = json({}) do
-            execute('list', '--info', '--json', '--template', retryable: true).gsub(/^(INFO)?/, '')
-          end
-          vms_arr | templates_arr
-        end
-
-        def read_settings(uuid=nil)
-          uuid ||= @uuid
-          json({}) { execute('list', uuid, '--info', '--json', retryable: true).gsub(/^(INFO)?\[/, '').gsub(/\]$/, '') }
-        end
-
-        def error_detection(command_response)
-          errored = false
-          # If the command was a failure, then raise an exception that is
-          # nicely handled by Vagrant.
-          if command_response.exit_code != 0
-            if @interrupted
-              @logger.info("Exit code != 0, but interrupted. Ignoring.")
-            elsif command_response.exit_code == 126
-              # This exit code happens if PrlCtl is on the PATH,
-              # but another executable it tries to execute is missing.
-              # This is usually indicative of a corrupted Parallels install.
-              raise VagrantPlugins::Parallels::Errors::ParallelsErrorNotFoundError
-            else
-              errored = true
-            end
-          elsif command_response.stderr =~ /failed to open \/dev\/prlctl/i
-            # This catches an error message that only shows when kernel
-            # drivers aren't properly installed.
-            @logger.error("Error message about unable to open prlctl")
-            raise VagrantPlugins::Parallels::Errors::ParallelsErrorKernelModuleNotLoaded
-          elsif command_response.stderr =~ /Unable to perform/i
-            @logger.info("VM not running for command to work.")
-            errored = true
-          elsif command_response.stderr =~ /Invalid usage/i
-            @logger.info("PrlCtl error text found, assuming error.")
-            errored = true
-          end
-          errored
-        end
-
-        # Execute the given subcommand for PrlCtl and return the output.
-        def execute(*command, &block)
-          # Get the utility to execute: 'prlctl' by default and 'prlsrvctl' if it set as a first argument in command
-          if command.first == :prlsrvctl
-            cli = @prlsrvctl_path
-            command.delete_at(0)
-          else
-            cli = @prlctl_path
-          end
-
-          # Get the options hash if it exists
-          opts = {}
-          opts = command.pop if command.last.is_a?(Hash)
-
-          tries = opts[:retryable] ? 3 : 0
-
-          # Variable to store our execution result
-          r = nil
-
-          # If there is an error with PrlCtl, this gets set to true
-          errored = false
-
-          retryable(on: VagrantPlugins::Parallels::Errors::ParallelsError, tries: tries, sleep: 1) do
-            # Execute the command
-            r = raw(cli, *command, &block)
-            errored = error_detection(r)
-          end
-
-          # If there was an error running PrlCtl, show the error and the
-          # output.
-          if errored
-            raise VagrantPlugins::Parallels::Errors::ParallelsError,
-              command: command.inspect,
-              stderr:  r.stderr
-          end
-
-          r.stdout
-        end
-
-        # Executes a command and returns the raw result object.
-        def raw(cli, *command, &block)
-          int_callback = lambda do
-            @interrupted = true
-            @logger.info("Interrupted.")
-          end
-
-          # Append in the options for subprocess
-          command << { notify: [:stdout, :stderr] }
-
-          Vagrant::Util::Busy.busy(int_callback) do
-            Vagrant::Util::Subprocess.execute(cli, *command, &block)
-          end
+        def vm_exists?(uuid)
+          raw("list", uuid).exit_code == 0
         end
       end
     end

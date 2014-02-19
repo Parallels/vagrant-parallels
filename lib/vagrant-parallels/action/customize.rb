@@ -25,11 +25,13 @@ module VagrantPlugins
                 arg.to_s
               end
 
-              result = env[:machine].provider.driver.set_vm_settings(processed_command)
-              if result.exit_code != 0
+              begin
+                env[:machine].provider.driver.execute_command(
+                  processed_command + [retryable: true])
+              rescue VagrantPlugins::Parallels::Errors::PrlCtlError => e
                 raise Vagrant::Errors::VMCustomizationFailed, {
-                    :command => processed_command.inspect,
-                    :error   => result.stderr
+                  :command => command,
+                  :error   => e.inspect
                 }
               end
             end
