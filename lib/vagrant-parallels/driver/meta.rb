@@ -43,7 +43,7 @@ module VagrantPlugins
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
           driver_map   = {
             #TODO: Use customized class for each version
-            "8" => PD_9,
+            "8" => PD_8,
             "9" => PD_9,
             "10" => PD_9
           }

@@ -7,12 +7,12 @@ require File.expand_path("../base", __FILE__)
 module VagrantPlugins
   module Parallels
     module Driver
-      # Driver for Parallels Desktop 9.
-      class PD_9 < Base
+      # Driver for Parallels Desktop 8.
+      class PD_8 < Base
         def initialize(uuid)
           super()
 
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::pd_9")
+          @logger = Log4r::Logger.new("vagrant::provider::parallels::pd_8")
           @uuid = uuid
         end
 
@@ -317,12 +317,12 @@ module VagrantPlugins
         end
 
         def read_settings
-          vm = json { execute('list', @uuid, '--info', '--json', retryable: true) }
+          vm = json { execute('list', @uuid, '--info', '--json', retryable: true).gsub(/^INFO/, '') }
           vm.last
         end
 
         def read_state
-          vm = json { execute('list', @uuid, '--json', retryable: true) }
+          vm = json { execute('list', @uuid, '--json', retryable: true).gsub(/^INFO/, '') }
           vm.last.fetch('status').to_sym
         end
 
@@ -333,10 +333,10 @@ module VagrantPlugins
         def read_vms
           results = {}
           vms_arr = json([]) do
-            execute('list', '--all', '--json', retryable: true)
+            execute('list', '--all', '--json', retryable: true).gsub(/^INFO/, '')
           end
           templates_arr = json([]) do
-            execute('list', '--all', '--json', '--template', retryable: true)
+            execute('list', '--all', '--json', '--template', retryable: true).gsub(/^INFO/, '')
           end
           vms = vms_arr | templates_arr
           vms.each do |item|
@@ -349,10 +349,10 @@ module VagrantPlugins
         # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
         def read_vms_info
           vms_arr = json([]) do
-            execute('list', '--all','--info', '--json', retryable: true)
+            execute('list', '--all','--info', '--json', retryable: true).gsub(/^INFO/, '')
           end
           templates_arr = json([]) do
-            execute('list', '--all','--info', '--json', '--template', retryable: true)
+            execute('list', '--all','--info', '--json', '--template', retryable: true).gsub(/^INFO/, '')
           end
           vms_arr | templates_arr
         end
