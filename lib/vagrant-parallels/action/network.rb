@@ -282,7 +282,7 @@ module VagrantPlugins
               :mac      => config[:mac],
               :nic_type => config[:nic_type],
               :type     => :hostonly,
-              :dhcp     => interface[:dhcp],
+              :dhcp     => config[:type] == :dhcp ? interface[:dhcp] : false,
               :ip       => config[:ip],
               :netmask  => config[:netmask],
           }
