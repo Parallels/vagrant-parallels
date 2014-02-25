@@ -9,6 +9,6 @@ describe 'locales'  do
   end
 
   it 'are all present' do
-    i18n.untranslated_keys.should have(0).keys
+    i18n.missing_keys.should have(0).keys
   end
 end
