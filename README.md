@@ -53,16 +53,15 @@ source ~/.zshrc
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
-provider introduces `parallels` boxes. You can download one using this [link](https://s3-eu-west-1.amazonaws.com/vagrant-parallels/devbox.box).
+provider introduces `parallels` boxes. You can download one using this [link](http://download.parallels.com/desktop/vagrant/precise64.box).
 That directory also contains instructions on how to build a box.
 
 Download the box file, then use vagrant to add the downloaded box using this command. Remember to use `bundle exec` before `vagrant` command if you are in development mode
 
 ```
-$ wget https://s3-eu-west-1.amazonaws.com/vagrant-parallels/devbox-201312.box
-$ vagrant box add devbox devbox.box --provider=parallels
+$ vagrant box add --provider=parallels precise64 http://download.parallels.com/desktop/vagrant/precise64.box
 ```
-***updated box file to fix mac address regeneration issue #42, devbox is Ubuntu 12.04.3 LTS (GNU/Linux 3.2.0-57-generic x86_64***
+***updated box file to fix mac address regeneration issue #42, precise64 is Ubuntu 12.04.3 LTS (GNU/Linux 3.2.0-57-generic x86_64***
 
 The box format is basically just the required `metadata.json` file
 along with a `Vagrantfile` that does default settings for the
