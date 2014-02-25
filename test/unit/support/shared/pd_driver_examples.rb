@@ -131,21 +131,6 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
-  describe "mac_in_use?" do
-    let(:vm_net0_mac) {'00AABBCC01'}
-    let(:vm_net1_mac) {'00AABBCC02'}
-    let(:tpl_net0_mac) {'00AABBCC03'}
-    let(:tpl_net1_mac) {'00AABBCC04'}
-
-    it "checks the MAC address is already in use" do
-
-      subject.mac_in_use?('00:AA:BB:CC:01').should be_true
-      subject.mac_in_use?('00:AA:BB:CC:02').should be_false
-      subject.mac_in_use?('00:AA:BB:CC:03').should be_true
-      subject.mac_in_use?('00:AA:BB:CC:04').should be_false
-    end
-  end
-
   describe "read_settings" do
     it "returns a hash with detailed info about the VM" do
       subject.read_settings.should be_kind_of(Hash)

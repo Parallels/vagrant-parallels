@@ -86,7 +86,6 @@ module VagrantPlugins
                        #:forward_ports,
                        :halt,
                        :import,
-                       :mac_in_use?,
                        :read_ip_dhcp,
                        #:read_forwarded_ports,
                        :read_bridged_interfaces,

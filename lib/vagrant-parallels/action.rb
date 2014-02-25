@@ -263,7 +263,6 @@ module VagrantPlugins
               b2.use CheckAccessible
               b2.use Customize, "pre-import"
               b2.use Import
-              b2.use MatchMACAddress
             end
           end
           b.use action_start
@@ -286,7 +285,6 @@ module VagrantPlugins
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsSuspended, File.expand_path("../action/is_suspended", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
-      autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
       autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
       autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)

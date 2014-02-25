@@ -192,14 +192,6 @@ module VagrantPlugins
           read_vms[vm_name]
         end
 
-        def mac_in_use?(mac)
-          valid_mac = mac.upcase.tr('^A-F0-9', '')
-          read_vms_info.each do |vm|
-            return true if valid_mac == vm.fetch('Hardware', {}).fetch('net0',{}).fetch('mac', '')
-          end
-          false
-        end
-
         def read_bridged_interfaces
           net_list = read_virtual_networks
 
