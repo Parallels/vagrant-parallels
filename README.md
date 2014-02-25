@@ -61,7 +61,7 @@ Download the box file, then use vagrant to add the downloaded box using this com
 ```
 $ vagrant box add --provider=parallels precise64 http://download.parallels.com/desktop/vagrant/precise64.box
 ```
-***updated box file to fix mac address regeneration issue #42, precise64 is Ubuntu 12.04.3 LTS (GNU/Linux 3.2.0-57-generic x86_64***
+***updated box file to fix mac address regeneration issue #42, precise64 is Ubuntu 12.04.4 LTS (GNU/Linux 3.11.0-15-generic x86_64)***
 
 The box format is basically just the required `metadata.json` file
 along with a `Vagrantfile` that does default settings for the
