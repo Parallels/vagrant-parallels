@@ -2,7 +2,7 @@ search:
   paths:
     - "lib/"
 data:
-  adapter: yaml
+  adapter: file_system
   read:
     - "locales/%{locale}.yml"
     - "<%= %x[bundle show vagrant].chomp %>/templates/locales/%{locale}.yml"
