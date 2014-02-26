@@ -48,9 +48,15 @@ module VagrantPlugins
         # we return nil.
         return nil if state.id == :not_created
 
+        detected_ip = @machine.config.ssh.host || @driver.read_ip_dhcp
+
+        # If ip couldn't be detected then we cannot possibly SSH into it,
+        # and should return nil too.
+        return nil if detected_ip.nil?
+
         # Return ip from running machine, use ip from config if available
         return {
-          :host => @machine.config.ssh.host || @driver.read_ip_dhcp,
+          :host => detected_ip,
           :port => @driver.ssh_port(@machine.config.ssh.guest_port)
         }
       end
