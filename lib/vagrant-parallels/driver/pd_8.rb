@@ -135,14 +135,6 @@ module VagrantPlugins
               args.concat(["--type", "shared"])
             end
 
-            if adapter[:dhcp]
-              args.concat(["--dhcp", "yes"])
-            elsif adapter[:ip]
-              args.concat(["--ipdel", "all", "--ipadd", "#{adapter[:ip]}/#{adapter[:netmask]}"])
-            else
-              args.concat(["--dhcp", "no"])
-            end
-
             if adapter[:mac_address]
               args.concat(["--mac", adapter[:mac_address]])
             end
