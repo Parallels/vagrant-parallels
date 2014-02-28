@@ -53,76 +53,63 @@ source ~/.zshrc
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
-provider introduces `parallels` boxes. You can download one using this [link](https://s3-eu-west-1.amazonaws.com/vagrant-parallels/devbox.box).
-That directory also contains instructions on how to build a box.
+provider introduces `parallels` boxes. You can download one using this [link](http://download.parallels.com/desktop/vagrant/precise64.box).
 
 Download the box file, then use vagrant to add the downloaded box using this command. Remember to use `bundle exec` before `vagrant` command if you are in development mode
 
 ```
-$ wget https://s3-eu-west-1.amazonaws.com/vagrant-parallels/devbox-201312.box
-$ vagrant box add devbox devbox.box --provider=parallels
+$ vagrant box add --provider=parallels precise64 http://download.parallels.com/desktop/vagrant/precise64.box
 ```
-***updated box file to fix mac address regeneration issue #42, devbox is Ubuntu 12.04.3 LTS (GNU/Linux 3.2.0-57-generic x86_64***
 
 The box format is basically just the required `metadata.json` file
 along with a `Vagrantfile` that does default settings for the
 provider-specific configuration for this provider.
 
 ## Networking
-By default 'vagrant-parallels' uses the basic Vagrant networking approach. By default VM has one adapter assigned to the 'Shared' network in Parallels Desktop.
-But you can also add one ore more `:private_network` adapters, as described below:
+By default Vagrant Parallels provider uses the basic Vagrant networking
+approach. Initially VM has one adapter assigned to the 'Shared' network
+in Parallels Desktop.
 
-### Private Network
-It is fully compatible with basic Vagrant [Private Networks](http://docs.vagrantup.com/v2/networking/private_network.html).
-#### Available arguments:
-- `type` - IP configuration way: `:static` or `:dhcp` (exactly Symbol object). Default is `:static`. If `:dchp` is set, such interface will get an IP dynamically from default subnet "10.37.129.1/255.255.255.0".
-- `mac` - MAC address which will be assigned to this network adapter. If omitted, MAC will be automatically generated at the first `up` of VM.
-- `ip` - IP address which will be assigned to this network adapter. It is required only if type is `:static`.
-- `netmask` - network mask. Default is `"255.255.255.0"`. It is required only if type is `:static`.
-- `nic_type` - Unnecessary argument, means the type of network adapter. Can be any of `"virtio"`, `"e1000"` or `"rtl"`. Default is `"e1000"`.
-
-#### Example:
-```ruby
-Vagrant.configure("2") do |config|
-  config.vm.network :private_network, ip: "33.33.33.50", netmask: "255.255.0.0"
-  config.vm.network :private_network, type: :dhcp, nic_type: "rtl"
-end
-```
-It means that two private network adapters will be configured:
-1) The first will have static ip '33.33.33.50' and mask '255.255.0.0'. It will be represented as device `"e1000"` by default (e.g. 'Intel(R) PRO/1000 MT').
-2) The second adapter will be configured as `"rtl"` ('Realtek RTL8029AS') and get an IP from internal DHCP server, which is working on the default network "10.37.129.1/255.255.255.0".
-
-### Public Network
-It is fully compatible with basic Vagrant [Public Networks](http://docs.vagrantup.com/v2/networking/public_network.html).
-#### Available arguments (unnecessary, but provider specific):
-- `bridge` - target host's interface for bridged network. You can specify full (ex: `Wi-Fi`) or short (ex: `en0`) name of interface. If omitted, you will be asked to choose the interface during the VM boot (or if only one interface exists, it will be chosen automatically).
-_Hint:_ Full names of network interfaces are displayed in _System Preferences -> Network_ window, and short names - in the `ifconfig` command output on your Mac.
-- `mac` - MAC address which will be assigned to this network adapter. If omitted, MAC will be automatically generated at the first `up` of VM.
-- `ip` - IP address which will be assigned to this network adapter. Use it, if you want to configure adapter manually.
-- `netmask` - network mask. Default is `"255.255.255.0"`. It is used only in pair with `ip`
-- `type` - IP configuration way, only `:dhcp` is available. Use it only if your public network has a valid DHCP server. Otherwise, omit this attribute or use an `ip` and `netmask` described above.
-- `nic_type` - type of network adapter. Can be any of `"virtio"`, `"e1000"` or `"rtl"`. Default is `"e1000"`.
-
-#### Example:
-```ruby
-Vagrant.configure("2") do |config|
-  config.vm.network :public_network, bridge: "Wi-Fi", mac: "001C425FC3AB", type: :dhcp
-  config.vm.network :public_network, bridge: "en4", ip: "10.3.1.18", netmask: "255.255.252.0"
-end
-```
-It means that two public network adapters will be configured:
-1) The first will be bridged to the 'Wi-Fi' host machine's interface and will have the specified MAC address. After the VM boot it will be automatically configured to get an IP from the DHCP server, which is accessible in the 'Wi-Fi' network).
-2) The second adapter will be bridged to the interface 'en4' and will have static ip '10.3.1.18' and mask '255.255.252.0'.
+But you can also add `:private_network` and `:public_network` adapters.
+These features are working by the same way as in the basic Vagrant:
+- [Private Networks]
+(http://docs.vagrantup.com/v2/networking/private_network.html)
+- [Public Networks]
+(http://docs.vagrantup.com/v2/networking/public_network.html)
 
 ## Provider Specific Configuration
 
-Provider allows to define directives for `prlctl set` through `Vagrantfile` in same way as this done in VirtualBox provider.
+Parallels Desktop has a `prlctl` utility that can be used to make modifications
+to Parallels virtual machines from the command line.
 
-#### Example:
+
+Parallels provider exposes a way to call any command against *prlctl* just prior
+to booting the machine:
+
 ```ruby
-    config.vm.provider :parallels do |parallels|
-    parallels.name = "HipHop VM"
-    parallels.customize ["set", :id, "--memsize", "1024"]
+config.vm.provider "parallels" do |v|
+  v.customize ["set", :id, "--device-set", "cdrom0", "--image",
+               "/path/to/disk.iso", "--connect"]
+end
+```
+
+In the example above, the VM is modified to have a specified iso image attached
+to it's virtual media device (cdrom). Some details:
+
+* The `:id` special parameter is replaced with the ID of the virtual
+  machine being created, so when a *prlctl* command requires an ID, you
+  can pass this special parameter.
+
+* Multiple `customize` directives can be used. They will be executed in the
+  order given.
+
+There are some convenience shortcuts for memory and CPU settings:
+
+```ruby
+config.vm.provider "parallels" do |v|
+  v.memory = 1024
+  v.cpus = 2
+end
 ```
 
 ## Development
@@ -180,10 +167,12 @@ So, now that you have your own plugin installed, check it with the command `vagr
 
 A great thanks to the people who helping this project stand on its feet, thank you
 
-* Kevin Kaland `@wizonesolutions`
+* Youssef Shahin `@yshahin` - plugin's author
 * Mikhail Zholobov `@legal90`
+* Kevin Kaland `@wizonesolutions`
+* Konstantin Nazarov `@racktear`
 * Dmytro Vasylenko `@odi-um`
 * Thomas Koschate `@koschate`
 
-and to all the people who are using and testing this tool
+and to all the people who are using and testing this provider
 
