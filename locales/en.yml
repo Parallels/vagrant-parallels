@@ -3,6 +3,8 @@ en:
     parallels:
       checking_guest_tools: |-
         Checking for Parallels Tools installed on the VM...
+      network_adapter: |-
+        Adapter %{adapter}: %{type}%{extra}
 #-------------------------------------------------------------------------------
 # Translations for exception classes
 #-------------------------------------------------------------------------------
