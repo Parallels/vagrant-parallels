@@ -3,10 +3,18 @@ shared_examples "parallels desktop driver" do |options|
     raise ArgumentError, "Need parallels context to use these shared examples." unless defined? parallels_context
   end
 
+  # Accessor to the delegate object
+  let(:driver) { subject.instance_variable_get("@driver") }
+
   describe "compact" do
+    settings = {"Hardware" => {"hdd0" => {"image" => "/path/to/disk0.hdd"},
+                               "hdd1" => {"image" => "/path/to/disk1.hdd"}}}
     it "compacts the VM disk drives" do
-      subprocess.should_receive(:execute).
-        with("prl_disk_tool", 'compact', '--hdd', vm_hdd, an_instance_of(Hash)).
+      driver.should_receive(:read_settings).and_return(settings)
+
+      subprocess.should_receive(:execute).exactly(2).times.
+        with("prl_disk_tool", 'compact', '--hdd', /^\/path\/to\/disk(0|1).hdd$/,
+             an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
       subject.compact(uuid)
     end
@@ -15,8 +23,9 @@ shared_examples "parallels desktop driver" do |options|
   describe "clear_shared_folders" do
     it "deletes every shared folder assigned to the VM" do
       subprocess.should_receive(:execute).at_least(2).times.
-        with("prlctl", "set", uuid, "--shf-host-del", an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Shared folder deleted"))
+        with("prlctl", "set", uuid, "--shf-host-del", an_instance_of(String),
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
       subject.clear_shared_folders
     end
   end
@@ -24,7 +33,7 @@ shared_examples "parallels desktop driver" do |options|
   describe "create_host_only_network" do
     let(:hostonly_iface) {'vnic12'}
     it "creates host-only NIC with dhcp server configured" do
-      vnic_options = {
+      vnic_opts = {
         :name => 'vagrant_vnic8',
         :adapter_ip => '11.11.11.11',
         :netmask    => '255.255.252.0',
@@ -36,23 +45,24 @@ shared_examples "parallels desktop driver" do |options|
       }
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "add", vnic_options[:name], "--type", "host-only", an_instance_of(Hash)).
+        with("prlsrvctl", "net", "add", vnic_opts[:name],
+             "--type", "host-only", an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "set", vnic_options[:name],
-             "--ip", "#{vnic_options[:adapter_ip]}/#{vnic_options[:netmask]}",
-             "--dhcp-ip", vnic_options[:dhcp][:ip],
-             "--ip-scope-start", vnic_options[:dhcp][:lower],
-             "--ip-scope-end", vnic_options[:dhcp][:upper], an_instance_of(Hash)).
+        with("prlsrvctl", "net", "set", vnic_opts[:name],
+             "--ip", "#{vnic_opts[:adapter_ip]}/#{vnic_opts[:netmask]}",
+             "--dhcp-ip", vnic_opts[:dhcp][:ip],
+             "--ip-scope-start", vnic_opts[:dhcp][:lower],
+             "--ip-scope-end", vnic_opts[:dhcp][:upper], an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
-      interface = subject.create_host_only_network(vnic_options)
+      interface = subject.create_host_only_network(vnic_opts)
 
-      interface.should include(:name => vnic_options[:name])
-      interface.should include(:ip => vnic_options[:adapter_ip])
-      interface.should include(:netmask => vnic_options[:netmask])
-      interface.should include(:dhcp => vnic_options[:dhcp])
+      interface.should include(:name => vnic_opts[:name])
+      interface.should include(:ip => vnic_opts[:adapter_ip])
+      interface.should include(:netmask => vnic_opts[:netmask])
+      interface.should include(:dhcp => vnic_opts[:dhcp])
       interface.should include(:bound_to => hostonly_iface)
       interface[:bound_to].should =~ /^(vnic(\d+))$/
     end
@@ -65,12 +75,14 @@ shared_examples "parallels desktop driver" do |options|
       }
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "add", vnic_options[:name], "--type", "host-only", an_instance_of(Hash)).
+        with("prlsrvctl", "net", "add", vnic_options[:name],
+             "--type", "host-only", an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
       subprocess.should_receive(:execute).
         with("prlsrvctl", "net", "set", vnic_options[:name],
-             "--ip", "#{vnic_options[:adapter_ip]}/#{vnic_options[:netmask]}", an_instance_of(Hash)).
+             "--ip", "#{vnic_options[:adapter_ip]}/#{vnic_options[:netmask]}",
+             an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
       interface = subject.create_host_only_network(vnic_options)
@@ -95,8 +107,12 @@ shared_examples "parallels desktop driver" do |options|
 
   describe "delete_disabled_adapters" do
     it "deletes disabled networks adapters from VM config" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "set", uuid, "--device-del", /^(net(\d+))$/, an_instance_of(Hash)).
+      settings = {"Hardware" => {"net0" => {"enabled" => false},
+                                 "net1" => {"enabled" => false}}}
+      driver.should_receive(:read_settings).and_return(settings)
+      subprocess.should_receive(:execute).exactly(2).times.
+        with("prlctl", "set", uuid, "--device-del", /^net(0|1)$/,
+             an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
       subject.delete_disabled_adapters
     end
@@ -108,8 +124,9 @@ shared_examples "parallels desktop driver" do |options|
 
     it "exports VM to template" do
       subprocess.should_receive(:execute).
-        with("prlctl", "clone", uuid, "--name", an_instance_of(String), "--template", "--dst",
-             an_instance_of(String), an_instance_of(Hash)).
+        with("prlctl", "clone", uuid, "--name", an_instance_of(String),
+             "--template", "--dst", an_instance_of(String),
+             an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
       subject.export("/path/to/template", tpl_name).should == tpl_uuid
     end
@@ -154,30 +171,31 @@ shared_examples "parallels desktop driver" do |options|
       subject.read_vms_info.should have_at_least(2).items
 
       # It should include info about current VM
-      vm_settings = subject.send(:read_settings)
+      vm_settings = driver.send(:read_settings)
       subject.read_vms_info.should include(vm_settings)
-    end
-  end
-
-  describe "set_name" do
-    it "sets new name for the VM" do
-      subprocess.should_receive(:execute).
-        with("prlctl", "set", uuid, '--name', an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Settings applied"))
-
-      subject.set_name('new_vm_name')
     end
   end
 
   describe "set_mac_address" do
     it "sets base MAC address to the Shared network adapter" do
       subprocess.should_receive(:execute).exactly(2).times.
-        with("prlctl", "set", uuid, '--device-set', 'net0', '--type', 'shared', '--mac',
-             an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Settings applied"))
+        with("prlctl", "set", uuid, '--device-set', 'net0', '--type', 'shared',
+             '--mac', an_instance_of(String), an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
 
       subject.set_mac_address('001C42DD5902')
       subject.set_mac_address('auto')
+    end
+  end
+
+  describe "set_name" do
+    it "sets new name for the VM" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, '--name', an_instance_of(String),
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.set_name('new_vm_name')
     end
   end
 
@@ -185,7 +203,7 @@ shared_examples "parallels desktop driver" do |options|
     it "starts the VM" do
       subprocess.should_receive(:execute).
         with("prlctl", "start", uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM started"))
+        and_return(subprocess_result(exit_code: 0))
       subject.start
     end
   end
@@ -194,7 +212,7 @@ shared_examples "parallels desktop driver" do |options|
     it "suspends the VM" do
       subprocess.should_receive(:execute).
         with("prlctl", "suspend", uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "VM suspended"))
+        and_return(subprocess_result(exit_code: 0))
       subject.suspend
     end
   end
@@ -202,8 +220,9 @@ shared_examples "parallels desktop driver" do |options|
   describe "unregister" do
     it "suspends the VM" do
       subprocess.should_receive(:execute).
-        with("prlctl", "unregister", an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Specified VM unregistered"))
+        with("prlctl", "unregister", an_instance_of(String),
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
       subject.unregister("template_or_vm_uuid")
     end
   end
@@ -216,7 +235,7 @@ shared_examples "parallels desktop driver" do |options|
     it "rises ParallelsInstallIncomplete exception when output is invalid" do
       subprocess.should_receive(:execute).
         with("prlctl", "--version", an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: "Some incorrect value has been returned!"))
+        and_return(subprocess_result(exit_code: 0))
       expect { subject.version }.
         to raise_error(VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion)
     end
