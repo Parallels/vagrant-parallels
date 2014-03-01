@@ -324,10 +324,7 @@ module VagrantPlugins
             :bound_to => interface[:bound_to],
             :mac      => config[:mac],
             :nic_type => config[:nic_type],
-            :type     => :hostonly,
-            :dhcp     => config[:type] == :dhcp ? interface[:dhcp] : false,
-            :ip       => config[:ip],
-            :netmask  => config[:netmask],
+            :type     => :hostonly
           }
         end
 
