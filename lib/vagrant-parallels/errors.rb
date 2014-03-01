@@ -30,6 +30,10 @@ module VagrantPlugins
       class VMInaccessible < VagrantParallelsError
         error_key(:vm_inaccessible)
       end
+
+      class MacOSXRequired < VagrantParallelsError
+        error_key(:mac_os_x_required)
+      end
     end
   end
 end

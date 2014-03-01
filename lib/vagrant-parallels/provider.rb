@@ -10,6 +10,10 @@ module VagrantPlugins
         @logger = Log4r::Logger.new("vagrant::provider::parallels")
         @machine = machine
 
+        if !Vagrant::Util::Platform.darwin?
+          raise Errors::MacOSXRequired
+        end
+
         # This method will load in our driver, so we call it now to
         # initialize it.
         machine_id_changed

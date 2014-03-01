@@ -9,6 +9,8 @@ en:
 # Translations for exception classes
 #-------------------------------------------------------------------------------
     errors:
+      mac_os_x_required: |-
+        Parallels provider only works on OS X (or Mac OS X).
       prlctl_error: |-
         There was an error while executing `prlctl`, a CLI used by Vagrant
         for controlling Parallels Desktop. The command and stderr is shown below.
