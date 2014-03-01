@@ -307,6 +307,7 @@ module VagrantPlugins
 
         def read_state
           vm = json { execute('list', @uuid, '--json', retryable: true) }
+          return nil if !vm.last
           vm.last.fetch('status').to_sym
         end
 
