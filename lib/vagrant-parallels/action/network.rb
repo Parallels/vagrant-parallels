@@ -153,9 +153,9 @@ module VagrantPlugins
 
             # Search for a matching bridged interface
             bridgedifs.each do |interface|
-              if [interface[:name].downcase, interface[:bound_to]].include? config[:bridge].downcase
+              if interface[:name].downcase == config[:bridge].downcase
                 @logger.debug("Specific bridge found as configured in the Vagrantfile. Using it.")
-                chosen_bridge = interface
+                chosen_bridge = interface[:name]
                 break
               end
             end
@@ -174,7 +174,7 @@ module VagrantPlugins
           if !chosen_bridge
             if bridgedifs.length == 1
               # One bridgable interface? Just use it.
-              chosen_bridge = bridgedifs[0]
+              chosen_bridge = bridgedifs[0][:name]
               @logger.debug("Only one bridged interface available. Using it by default.")
             else
               # More than one bridgable interface requires a user decision, so
@@ -196,18 +196,17 @@ module VagrantPlugins
                 choice = choice.to_i
               end
 
-              chosen_bridge = bridgedifs[choice - 1]
+              chosen_bridge = bridgedifs[choice - 1][:name]
             end
           end
 
-          @logger.info("Bridging adapter #{config[:adapter]} to #{chosen_bridge[:name]} (#{chosen_bridge[:bound_to]})")
+          @logger.info("Bridging adapter #{config[:adapter]} to #{chosen_bridge}")
 
           # Given the choice we can now define the adapter we're using
           return {
             :adapter     => config[:adapter],
             :type        => :bridged,
-            :bridge      => chosen_bridge[:name],
-            :bound_to    => chosen_bridge[:bound_to],
+            :bridge      => chosen_bridge,
             :mac_address => config[:mac],
             :nic_type    => config[:nic_type]
           }
@@ -321,7 +320,6 @@ module VagrantPlugins
           return {
             :adapter  => config[:adapter],
             :hostonly => interface[:name],
-            :bound_to => interface[:bound_to],
             :mac      => config[:mac],
             :nic_type => config[:nic_type],
             :type     => :hostonly
@@ -392,7 +390,7 @@ module VagrantPlugins
         end
 
         # This determines the next free network name
-        def next_network_name
+        def next_network_id
           # Get the list of numbers
           net_nums = []
           @env[:machine].provider.driver.read_virtual_networks.each do |net|
@@ -416,7 +414,7 @@ module VagrantPlugins
         # This creates a host only network for the given configuration.
         def hostonly_create_network(config)
           options = {
-              :name       => next_network_name,
+              :network_id => next_network_id,
               :adapter_ip => config[:adapter_ip],
               :netmask    => config[:netmask],
           }
