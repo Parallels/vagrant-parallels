@@ -131,7 +131,7 @@ module VagrantPlugins
               args.concat(["--type", "bridged", "--iface", adapter[:bound_to]])
             end
 
-            if adapter[:shared]
+            if adapter[:type] == :shared
               args.concat(["--type", "shared"])
             end
 
