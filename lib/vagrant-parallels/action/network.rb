@@ -24,11 +24,15 @@ module VagrantPlugins
 
         def call(env)
           @env = env
+
           # Get the list of network adapters from the configuration
           network_adapters_config = env[:machine].provider_config.network_adapters.dup
 
+          # Get maximum number of network adapters
+          max_adapters = env[:machine].provider.driver.max_network_adapters
+
           # Assign the adapter slot for each high-level network
-          available_slots = Set.new(0..7)
+          available_slots = Set.new(0...max_adapters)
           network_adapters_config.each do |slot, _data|
             available_slots.delete(slot)
           end
@@ -56,10 +60,10 @@ module VagrantPlugins
             data = nil
             if type == :private_network
               # private_network = hostonly
-              data        = [:hostonly, options]
+              data = [:hostonly, options]
             elsif type == :public_network
               # public_network = bridged
-              data        = [:bridged, options]
+              data = [:bridged, options]
             end
 
             # Store it!
@@ -69,6 +73,7 @@ module VagrantPlugins
 
           @logger.info("Determining adapters and compiling network configuration...")
           adapters = []
+          networks = []
           network_adapters_config.each do |slot, data|
             type    = data[0]
             options = data[1]
@@ -84,29 +89,53 @@ module VagrantPlugins
             adapter = send("#{type}_adapter", config)
             adapters << adapter
             @logger.debug("Adapter configuration: #{adapter.inspect}")
+
+            # Get the network configuration
+            network = send("#{type}_network_config", config)
+            network[:auto_config] = config[:auto_config]
+            networks << network
           end
 
           if !adapters.empty?
             # Enable the adapters
             @logger.info("Enabling adapters...")
-            env[:ui].info I18n.t("vagrant.actions.vm.network.preparing")
+            env[:ui].info(I18n.t("vagrant.actions.vm.network.preparing"))
+            adapters.each do |adapter|
+              env[:ui].info(I18n.t(
+                "vagrant_parallels.parallels.network_adapter",
+                adapter: adapter[:adapter].to_s,
+                type: adapter[:type].to_s,
+                extra: "",
+              ))
+            end
+
             env[:machine].provider.driver.enable_adapters(adapters)
           end
 
           # Continue the middleware chain.
           @app.call(env)
 
+          # If we have networks to configure, then we configure it now, since
+          # that requires the machine to be up and running.
+          if !adapters.empty? && !networks.empty?
+            assign_interface_numbers(networks, adapters)
+
+            # Only configure the networks the user requested us to configure
+            networks_to_configure = networks.select { |n| n[:auto_config] }
+            if !networks_to_configure.empty?
+              env[:ui].info I18n.t("vagrant.actions.vm.network.configuring")
+              env[:machine].guest.capability(:configure_networks, networks_to_configure)
+            end
+          end
         end
 
         def bridged_config(options)
-          if options[:type] and options[:type].to_sym == :dhcp
-            options[:dhcp] = true
-          end
-
           return {
-              :bridge    => nil,
-              :mac       => nil,
-              :nic_type  => "e1000",
+            :auto_config                     => true,
+            :bridge                          => nil,
+            :mac                             => nil,
+            :nic_type                        => nil,
+            :use_dhcp_assigned_default_route => false
           }.merge(options || {})
         end
 
@@ -175,24 +204,40 @@ module VagrantPlugins
 
           # Given the choice we can now define the adapter we're using
           return {
-              :adapter     => config[:adapter],
-              :type        => :bridged,
-              :bridge      => chosen_bridge[:name],
-              :bound_to    => chosen_bridge[:bound_to],
-              :mac_address => config[:mac],
-              :dhcp        => config[:dhcp],
-              :ip          => config[:ip],
-              :netmask     => config[:netmask],
-              :nic_type    => config[:nic_type]
+            :adapter     => config[:adapter],
+            :type        => :bridged,
+            :bridge      => chosen_bridge[:name],
+            :bound_to    => chosen_bridge[:bound_to],
+            :mac_address => config[:mac],
+            :nic_type    => config[:nic_type]
+          }
+        end
+
+        def bridged_network_config(config)
+          if config[:ip]
+            options = {
+                :auto_config => true,
+                :mac         => nil,
+                :netmask     => "255.255.255.0",
+                :type        => :static
+            }.merge(config)
+            options[:type] = options[:type].to_sym
+            return options
+          end
+
+          return {
+            :type => :dhcp,
+            :use_dhcp_assigned_default_route => config[:use_dhcp_assigned_default_route]
           }
         end
 
         def hostonly_config(options)
           options = {
-              :mac         => nil,
-              :nic_type    => "e1000",
-              :netmask     => "255.255.255.0",
-              :type        => :static
+            :auto_config => true,
+            :mac         => nil,
+            :nic_type    => nil,
+            :netmask     => "255.255.255.0",
+            :type        => :static
           }.merge(options)
 
           # Make sure the type is a symbol
@@ -229,14 +274,14 @@ module VagrantPlugins
           dhcp_options = {}
           if options[:type] == :dhcp
             # Calculate the DHCP server IP, which is the network address
-            # with the final octet + 2. So "172.28.0.0" turns into "172.28.0.2"
+            # with the final octet + 1. So "172.28.0.0" turns into "172.28.0.1"
             dhcp_ip    = ip_parts.dup
-            dhcp_ip[3] += 2
+            dhcp_ip[3] += 1
             dhcp_options[:dhcp_ip] ||= dhcp_ip.join(".")
 
             # Calculate the lower and upper bound for the DHCP server
             dhcp_lower    = ip_parts.dup
-            dhcp_lower[3] += 3
+            dhcp_lower[3] += 2
             dhcp_options[:dhcp_lower] ||= dhcp_lower.join(".")
 
             dhcp_upper    = ip_parts.dup
@@ -245,12 +290,13 @@ module VagrantPlugins
           end
 
           return {
-              :adapter_ip  => options[:adapter_ip],
-              :ip          => options[:ip],
-              :mac         => options[:mac],
-              :netmask     => options[:netmask],
-              :nic_type    => options[:nic_type],
-              :type        => options[:type],
+            :adapter_ip  => options[:adapter_ip],
+            :auto_config => options[:auto_config],
+            :ip          => options[:ip],
+            :mac         => options[:mac],
+            :netmask     => options[:netmask],
+            :nic_type    => options[:nic_type],
+            :type        => options[:type]
           }.merge(dhcp_options)
         end
 
@@ -273,35 +319,78 @@ module VagrantPlugins
           end
 
           return {
-              :adapter  => config[:adapter],
-              :hostonly => interface[:name],
-              :bound_to => interface[:bound_to],
-              :mac      => config[:mac],
-              :nic_type => config[:nic_type],
-              :type     => :hostonly,
-              :dhcp     => interface[:dhcp],
-              :ip       => config[:ip],
-              :netmask  => config[:netmask],
+            :adapter  => config[:adapter],
+            :hostonly => interface[:name],
+            :bound_to => interface[:bound_to],
+            :mac      => config[:mac],
+            :nic_type => config[:nic_type],
+            :type     => :hostonly
           }
         end
 
+        def hostonly_network_config(config)
+          return {
+            :type       => config[:type],
+            :adapter_ip => config[:adapter_ip],
+            :ip         => config[:ip],
+            :netmask    => config[:netmask]
+          }
+        end
+
+
         def shared_config(options)
-          return  {}
+          return {
+            :auto_config => false
+          }
         end
 
         def shared_adapter(config)
           return {
-              :adapter => config[:adapter],
-              :shared  => "Shared",
-              :type    => :shared,
-              :dhcp     => true,
-              :nic_type => "e1000"
+            :adapter => config[:adapter],
+            :type    => :shared
           }
+        end
+
+        def shared_network_config(config)
+          return {}
         end
 
         #-----------------------------------------------------------------
         # Misc. helpers
         #-----------------------------------------------------------------
+        # Assigns the actual interface number of a network based on the
+        # enabled NICs on the virtual machine.
+        #
+        # This interface number is used by the guest to configure the
+        # NIC on the guest VM.
+        #
+        # The networks are modified in place by adding an ":interface"
+        # field to each.
+        def assign_interface_numbers(networks, adapters)
+          current = 0
+          adapter_to_interface = {}
+
+          # Make a first pass to assign interface numbers by adapter location
+          vm_adapters = @env[:machine].provider.driver.read_network_interfaces
+          vm_adapters.sort.each do |number, adapter|
+            if adapter[:type] != :none
+              # Not used, so assign the interface number and increment
+              adapter_to_interface[number] = current
+              current += 1
+            end
+          end
+
+          # Make a pass through the adapters to assign the :interface
+          # key to each network configuration.
+          adapters.each_index do |i|
+            adapter = adapters[i]
+            network = networks[i]
+
+            # Figure out the interface number by simple lookup
+            network[:interface] = adapter_to_interface[adapter[:adapter]]
+          end
+        end
+
         # This determines the next free network name
         def next_network_name
           # Get the list of numbers

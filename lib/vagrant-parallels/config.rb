@@ -1,12 +1,17 @@
 module VagrantPlugins
   module Parallels
     class Config < Vagrant.plugin("2", :config)
+      attr_accessor :check_guest_tools
       attr_reader :customizations
       attr_accessor :destroy_unused_network_interfaces
       attr_reader :network_adapters
       attr_accessor :name
 
+      # Compatibility with virtualbox provider's syntax
+      alias :check_guest_additions= :check_guest_tools=
+
       def initialize
+        @check_guest_tools = UNSET_VALUE
         @customizations   = []
         @destroy_unused_network_interfaces = UNSET_VALUE
         @network_adapters  = {}
@@ -21,8 +26,8 @@ module VagrantPlugins
         @customizations << [event, command]
       end
 
-      def network_adapter(slot, type, *args)
-        @network_adapters[slot] = [type, args]
+      def network_adapter(slot, type, **opts)
+        @network_adapters[slot] = [type, opts]
       end
 
       # @param size [Integer, String] the memory size in MB
@@ -35,6 +40,10 @@ module VagrantPlugins
       end
 
       def finalize!
+        if @check_guest_tools == UNSET_VALUE
+          @check_guest_tools = true
+        end
+
         if @destroy_unused_network_interfaces == UNSET_VALUE
           @destroy_unused_network_interfaces = true
         end

@@ -1,9 +1,16 @@
 en:
   vagrant_parallels:
+    parallels:
+      checking_guest_tools: |-
+        Checking for Parallels Tools installed on the VM...
+      network_adapter: |-
+        Adapter %{adapter}: %{type}%{extra}
 #-------------------------------------------------------------------------------
 # Translations for exception classes
 #-------------------------------------------------------------------------------
     errors:
+      mac_os_x_required: |-
+        Parallels provider only works on OS X (or Mac OS X).
       prlctl_error: |-
         There was an error while executing `prlctl`, a CLI used by Vagrant
         for controlling Parallels Desktop. The command and stderr is shown below.
@@ -11,18 +18,15 @@ en:
         Command: %{command}
 
         Stderr: %{stderr}
-      prlctl_not_found_error: |-
-        The "prlctl" command or one of its dependencies could not
-        be found. Please verify Parallels Desktop is properly installed. You can verify
-        everything is okay by running "prlctl --version" and verifying
-        that the Parallels Desktop version is outputted.
-      parallels_kernel_module_not_loaded: |-
-        Parallels Desktop is complaining that the kernel module is not loaded. Please
-        run `prlctl --version` or open the Parallels Desktop GUI to see the error
-        message which should contain instructions on how to fix this error.
       parallels_install_incomplete: |-
         Parallels Desktop is complaining that the installation is incomplete.
         Try to reinstall Parallels Desktop or contact Parallels support.
+      parallels_invalid_version: |-
+        Vagrant has detected that you have a version of Parallels Desktop installed
+        that is not supported. Please install or upgrade to one of the supported
+        versions listed below to use Vagrant:
+
+        %{supported_versions}
       parallels_no_room_for_high_level_network: |-
         There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"
@@ -30,6 +34,21 @@ en:
         Parallels Desktop VM. Parallels Desktop limits the number of slots to 8, and it
         appears that every slot is in use. Please lower the number of used
         network adapters.
+      parallels_not_detected: |-
+        Vagrant could not detect Parallels Desktop! Make sure it is properly installed.
+        Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
+        this to be available on the PATH. If Parallels Desktop is installed, please find
+        the `prlctl` binary and add it to the PATH environmental variable.
+      vm_inaccessible: |-
+        Your VM has become "inaccessible." Unfortunately, this is a critical error
+        with Parallels Desktop that Vagrant can not cleanly recover from.
+        Please open VirtualBox and clear out your inaccessible virtual machines
+        or find a way to fix them.
+      vm_name_exists: |-
+        Parallels Desktop virtual machine with the name '%{name}' already exists.
+        Please use another name or delete the machine with the existing
+        name, and try again.
+
 #-------------------------------------------------------------------------------
 # Translations for config validation errors
 #-------------------------------------------------------------------------------
@@ -69,7 +88,7 @@ en:
           suspend the virtual machine. In either case, to restart it again,
           simply run `vagrant up`.
 #-------------------------------------------------------------------------------
-# Translations for Vagrant middleware acions
+# Translations for Vagrant middleware actions
 #-------------------------------------------------------------------------------
     actions:
       vm:
@@ -92,9 +111,4 @@ en:
             Parallels Tools Version: %{tools_version}
             Parallels Desktop Version: %{parallels_version}
         export:
-          compacting: Compacting exported HDD...
-        match_mac:
-          generate: |-
-            The specified base MAC is already in use. Generating a new unique MAC
-            address for Shared network...
-          matching: Matching MAC address for Shared network...
+          compacting: Compacting exported HDDs...

@@ -6,10 +6,10 @@ Gem::Specification.new do |spec|
   spec.name          = "vagrant-parallels"
   spec.version       = VagrantPlugins::Parallels::VERSION
   spec.platform      = Gem::Platform::RUBY
-  spec.authors       = ["Youssef Shahin"]
-  spec.email         = ["yshahin@gmail.com"]
-  spec.description   = %q{Enables Vagrant to manage Parallels machines.}
-  spec.summary       = %q{Enables Vagrant to manage Parallels machines.}
+  spec.authors       = ["Mikhail Zholobov", "Youssef Shahin"]
+  spec.email         = ["mzholobov@parallels.com", "yshahin@gmail.com"]
+  spec.summary       = %q{Parallels provider for Vagrant.}
+  spec.description   = %q{Enables Vagrant to manage Parallels virtual machines.}
   spec.homepage      = "http://github.com/Parallels/vagrant-parallels"
   spec.license       = "MIT"
 
@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.5.2"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 2.14.0"
-  spec.add_development_dependency "i18n-tasks", "~> 0.2.14"
+  spec.add_development_dependency "i18n-tasks", "~> 0.2.21"
 
   # The following block of code determines the files that should be included
   # in the gem. It does this by reading all the files in the directory where

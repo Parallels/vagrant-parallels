@@ -28,8 +28,8 @@ module VagrantPlugins
           end
 
           # Verify the name is not taken
-          vms_names = env[:machine].provider.driver.read_all_names
-          raise Vagrant::Errors::VMNameExists, :name => name if \
+          vms_names = env[:machine].provider.driver.read_vms
+          raise VagrantPlugins::Parallels::Errors::VMNameExists, :name => name if \
             vms_names.has_key?(name) && vms_names[name] != env[:machine].id
 
           if vms_names.has_key?(name)

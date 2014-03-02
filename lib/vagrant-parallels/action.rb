@@ -261,11 +261,8 @@ module VagrantPlugins
             # If the VM is NOT created yet, then do the setup steps
             if !env[:result]
               b2.use CheckAccessible
-              b2.use RegisterTemplate
               b2.use Customize, "pre-import"
               b2.use Import
-              b2.use UnregisterTemplate
-              b2.use MatchMACAddress
             end
           end
           b.use action_start
@@ -288,7 +285,6 @@ module VagrantPlugins
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsSuspended, File.expand_path("../action/is_suspended", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
-      autoload :MatchMACAddress, File.expand_path("../action/match_mac_address", __FILE__)
       autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
       autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
       autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
@@ -298,13 +294,10 @@ module VagrantPlugins
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
       autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :PrepareNFSValidIds, File.expand_path("../action/prepare_nfs_valid_ids", __FILE__)
-      autoload :RegisterTemplate, File.expand_path("../action/register_template", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :SetName, File.expand_path("../action/set_name", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
-      autoload :UnregisterTemplate, File.expand_path("../action/unregister_template", __FILE__)
-
     end
   end
 end

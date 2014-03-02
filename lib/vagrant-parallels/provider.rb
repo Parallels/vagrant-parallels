@@ -9,7 +9,14 @@ module VagrantPlugins
       def initialize(machine)
         @logger = Log4r::Logger.new("vagrant::provider::parallels")
         @machine = machine
-        @driver = Parallels::Driver::PrlCtl.new(machine.id)
+
+        if !Vagrant::Util::Platform.darwin?
+          raise Errors::MacOSXRequired
+        end
+
+        # This method will load in our driver, so we call it now to
+        # initialize it.
+        machine_id_changed
       end
 
       # @see Vagrant::Plugin::V2::Provider#action
@@ -22,15 +29,38 @@ module VagrantPlugins
         nil
       end
 
+      # If the machine ID changed, then we need to rebuild our underlying
+      # driver.
+      def machine_id_changed
+        id = @machine.id
+
+        begin
+          @logger.debug("Instantiating the driver for machine ID: #{@machine.id.inspect}")
+          @driver = VagrantPlugins::Parallels::Driver::Meta.new(id)
+        rescue VagrantPlugins::Parallels::Driver::Meta::VMNotFound
+          # The virtual machine doesn't exist, so we probably have a stale
+          # ID. Just clear the id out of the machine and reload it.
+          @logger.debug("VM not found! Clearing saved machine ID and reloading.")
+          id = nil
+          retry
+        end
+      end
+
       # Returns the SSH info for accessing the Parallels VM.
       def ssh_info
         # If the VM is not created then we cannot possibly SSH into it, so
         # we return nil.
         return nil if state.id == :not_created
 
+        detected_ip = @machine.config.ssh.host || @driver.read_ip_dhcp
+
+        # If ip couldn't be detected then we cannot possibly SSH into it,
+        # and should return nil too.
+        return nil if detected_ip.nil?
+
         # Return ip from running machine, use ip from config if available
         return {
-          :host => @machine.config.ssh.host || @driver.ip,
+          :host => detected_ip,
           :port => @driver.ssh_port(@machine.config.ssh.guest_port)
         }
       end

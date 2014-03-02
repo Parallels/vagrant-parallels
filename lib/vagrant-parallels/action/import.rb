@@ -2,41 +2,17 @@ module VagrantPlugins
   module Parallels
     module Action
       class Import
-
-        include Util
-
         def initialize(app, env)
           @app = app
+          @logger = Log4r::Logger.new("vagrant::plugins::parallels::import")
         end
 
-        #TODO: Clean up registered VM on interupt
         def call(env)
-          env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
-                               :name => env[:machine].box.name)
-
-          vm_name = generate_name(env[:root_path])
-
-          # Verify the name is not taken
-          if env[:machine].provider.driver.read_all_names.has_key?(vm_name)
-            raise Vagrant::Errors::VMNameExists, :name => vm_name
-          end
-
-          # Import the virtual machine
-          template_path = File.realpath(Pathname.glob(env[:machine].box.directory.join('*.pvm')).first)
-          template_uuid = env[:machine].provider.driver.read_all_paths[template_path]
-
-          env[:machine].id = env[:machine].provider.driver.import(template_uuid, vm_name) do |progress|
-            env[:ui].clear_line
-            env[:ui].report_progress(progress, 100, false)
-          end
-
-          # Clear the line one last time since the progress meter doesn't disappear
-          # immediately.
-          env[:ui].clear_line
-
-          # If we got interrupted, then the import could have been
-          # interrupted and its not a big deal. Just return out.
-          return if env[:interrupted]
+          @env = env
+          @template_path = File.realpath(Pathname.glob(env[:machine].box.directory.join('*.pvm')).first)
+          @template_uuid = register_template
+          import
+          unregister_template
 
           # Flag as erroneous and return if import failed
           raise Vagrant::Errors::VMImportFailure if !env[:machine].id
@@ -46,8 +22,13 @@ module VagrantPlugins
         end
 
         def recover(env)
+          @env = env
+          # We should to unregister template
+          unregister_template
+
           if env[:machine].provider.state.id != :not_created
             return if env["vagrant.error"].is_a?(Vagrant::Errors::VagrantError)
+            return if env["vagrant_parallels.error"].is_a?(VagrantPlugins::Parallels::Errors::VagrantParallelsError)
 
             # If we're not supposed to destroy on error then just return
             return if !env[:destroy_on_error]
@@ -59,6 +40,44 @@ module VagrantPlugins
             destroy_env[:config_validate] = false
             destroy_env[:force_confirm_destroy] = true
             env[:action_runner].run(Action.action_destroy, destroy_env)
+          end
+        end
+
+        protected
+
+        def register_template
+          if !@env[:machine].provider.driver.read_vms_paths.has_key?(@template_path)
+            @logger.info("Register the box template: '#{@template_path}'")
+            @env[:machine].provider.driver.register(@template_path)
+          end
+
+          # Return the uuid of registered template
+          @env[:machine].provider.driver.read_vms_paths[@template_path]
+        end
+
+        def import
+          @env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
+                               :name => @env[:machine].box.name)
+
+          # Import the virtual machine
+          @env[:machine].id = @env[:machine].provider.driver.import(@template_uuid) do |progress|
+            @env[:ui].clear_line
+            @env[:ui].report_progress(progress, 100, false)
+
+            # # If we got interrupted, then the import could have been interrupted.
+            # Just rise an exception and then 'recover' will be called to cleanup.
+            raise Vagrant::Errors::VagrantInterrupt if @env[:interrupted]
+          end
+
+          # Clear the line one last time since the progress meter doesn't disappear
+          # immediately.
+          @env[:ui].clear_line
+        end
+
+        def unregister_template
+          if @env[:machine].provider.driver.registered?(@template_uuid)
+            @logger.info("Unregister the box template: '#{@template_uuid}'")
+            @env[:machine].provider.driver.unregister(@template_uuid)
           end
         end
       end
