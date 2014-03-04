@@ -140,7 +140,7 @@ $ git clone https://github.com/Parallels/vagrant-parallels
 $ cd vagrant-parallels
 ```
 
-Use [Bundler](http://gembundler.com) to get the dependencies:
+Use [Bundler](http://gembundler.com) to get the dependencies (Ruby 2.0 is needed):
 
 ```
 $ bundle
@@ -193,6 +193,12 @@ So, now that you have your own plugin installed, check it with the command
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a pull request from your `my-new-feature` branch into master
 
+## Getting help
+Having problems while using our provider? Ask your question to our mailing list:
+[Google Group](https://groups.google.com/group/vagrant-parallels)
+
+If you've got a strange error while using Parallels provider, or found a bug
+there  - please, report it on [IssueTracker](https://github.com/Parallels/vagrant-parallels).
 
 ## Credits
 Great thanks to *Youssef Shahin* `@yshahin` for having initiated the development
