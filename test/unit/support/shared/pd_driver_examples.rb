@@ -34,7 +34,7 @@ shared_examples "parallels desktop driver" do |options|
     let(:hostonly_iface) {'vnic12'}
     it "creates host-only NIC with dhcp server configured" do
       vnic_opts = {
-        :name => 'vagrant_vnic8',
+        :network_id => 'vagrant_vnic8',
         :adapter_ip => '11.11.11.11',
         :netmask    => '255.255.252.0',
         :dhcp => {
@@ -45,12 +45,12 @@ shared_examples "parallels desktop driver" do |options|
       }
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "add", vnic_opts[:name],
+        with("prlsrvctl", "net", "add", vnic_opts[:network_id],
              "--type", "host-only", an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "set", vnic_opts[:name],
+        with("prlsrvctl", "net", "set", vnic_opts[:network_id],
              "--ip", "#{vnic_opts[:adapter_ip]}/#{vnic_opts[:netmask]}",
              "--dhcp-ip", vnic_opts[:dhcp][:ip],
              "--ip-scope-start", vnic_opts[:dhcp][:lower],
@@ -59,40 +59,38 @@ shared_examples "parallels desktop driver" do |options|
 
       interface = subject.create_host_only_network(vnic_opts)
 
-      interface.should include(:name => vnic_opts[:name])
       interface.should include(:ip => vnic_opts[:adapter_ip])
       interface.should include(:netmask => vnic_opts[:netmask])
       interface.should include(:dhcp => vnic_opts[:dhcp])
-      interface.should include(:bound_to => hostonly_iface)
-      interface[:bound_to].should =~ /^(vnic(\d+))$/
+      interface.should include(:name => hostonly_iface)
+      interface[:name].should =~ /^(vnic(\d+))$/
     end
 
     it "creates host-only NIC without dhcp" do
       vnic_options = {
-        :name => 'vagrant_vnic3',
+        :network_id => 'vagrant_vnic3',
         :adapter_ip => '22.22.22.22',
         :netmask    => '255.255.254.0',
       }
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "add", vnic_options[:name],
+        with("prlsrvctl", "net", "add", vnic_options[:network_id],
              "--type", "host-only", an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
       subprocess.should_receive(:execute).
-        with("prlsrvctl", "net", "set", vnic_options[:name],
+        with("prlsrvctl", "net", "set", vnic_options[:network_id],
              "--ip", "#{vnic_options[:adapter_ip]}/#{vnic_options[:netmask]}",
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
       interface = subject.create_host_only_network(vnic_options)
 
-      interface.should include(:name => vnic_options[:name])
       interface.should include(:ip => vnic_options[:adapter_ip])
       interface.should include(:netmask => vnic_options[:netmask])
       interface.should include(:dhcp => nil)
-      interface.should include(:bound_to => hostonly_iface)
-      interface[:bound_to].should =~ /^(vnic(\d+))$/
+      interface.should include(:name => hostonly_iface)
+      interface[:name].should =~ /^(vnic(\d+))$/
     end
   end
 

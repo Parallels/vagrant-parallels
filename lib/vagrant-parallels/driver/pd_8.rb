@@ -41,7 +41,7 @@ module VagrantPlugins
 
         def create_host_only_network(options)
           # Create the interface
-          execute(:prlsrvctl, "net", "add", options[:name], "--type", "host-only")
+          execute(:prlsrvctl, "net", "add", options[:network_id], "--type", "host-only")
 
           # Configure it
           args = ["--ip", "#{options[:adapter_ip]}/#{options[:netmask]}"]
@@ -51,16 +51,15 @@ module VagrantPlugins
                          "--ip-scope-end", options[:dhcp][:upper]])
           end
 
-          execute(:prlsrvctl, "net", "set", options[:name], *args)
+          execute(:prlsrvctl, "net", "set", options[:network_id], *args)
 
           # Determine interface to which it has been bound
-          net_info = json { execute(:prlsrvctl, 'net', 'info', options[:name], '--json', retryable: true) }
-          bound_to = net_info['Bound To']
+          net_info = json { execute(:prlsrvctl, 'net', 'info', options[:network_id], '--json', retryable: true) }
+          iface_name = net_info['Bound To']
 
           # Return the details
           return {
-            :name => options[:name],
-            :bound_to => bound_to,
+            :name => iface_name,
             :ip   => options[:adapter_ip],
             :netmask => options[:netmask],
             :dhcp => options[:dhcp]
@@ -123,15 +122,15 @@ module VagrantPlugins
               args.concat(["--device-add", "net"])
             end
 
-            if adapter[:hostonly] or adapter[:bridge]
+            if adapter[:type] == :hostonly
               # Oddly enough, but there is a 'bridge' anyway.
               # The only difference is the destination interface:
               # - in host-only (private) network it will be bridged to the 'vnicX' device
               # - in real bridge (public) network it will be bridged to the assigned device
-              args.concat(["--type", "bridged", "--iface", adapter[:bound_to]])
-            end
-
-            if adapter[:type] == :shared
+              args.concat(["--type", "bridged", "--iface", adapter[:hostonly]])
+            elsif adapter[:type] == :bridge
+              args.concat(["--type", "bridged", "--iface", adapter[:bridge]])
+            elsif adapter[:type] == :shared
               args.concat(["--type", "shared"])
             end
 
@@ -199,8 +198,7 @@ module VagrantPlugins
             info = {}
             ifconfig = execute(:ifconfig, iface['Bound To'])
             # Assign default values
-            info[:name]    = iface['Network ID'].gsub(/\s\(.*?\)$/, '')
-            info[:bound_to] = iface['Bound To']
+            info[:name]    = iface['Bound To']
             info[:ip]      = "0.0.0.0"
             info[:netmask] = "0.0.0.0"
             info[:status]  = "Down"
@@ -235,8 +233,7 @@ module VagrantPlugins
             info = {}
             net_info = json { execute(:prlsrvctl, 'net', 'info', iface['Network ID'], '--json') }
             # Really we need to work with bounded virtual interface
-            info[:name]     = net_info['Network ID']
-            info[:bound_to] = net_info['Bound To']
+            info[:name]     = net_info['Bound To']
             info[:ip]       = net_info['Parallels adapter']['IP address']
             info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
             # Such interfaces are always in 'Up'
