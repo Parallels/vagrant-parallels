@@ -24,7 +24,7 @@ First of all make sure that you have [Parallels Desktop for Mac](http://www.para
 and [Vagrant](http://www.vagrantup.com/downloads) properly installed.
 We recommend that you use the latest versions of these products.
 
-Since Parallels provider is a Vagrant plugin, installing is so easy:
+Since Parallels provider is a Vagrant plugin, installing is easy:
 
 ```
 $ vagrant plugin install vagrant-parallels
@@ -198,11 +198,11 @@ Having problems while using our provider? Ask your question to our mailing list:
 [Google Group](https://groups.google.com/group/vagrant-parallels)
 
 If you've got a strange error while using Parallels provider, or found a bug
-there  - please, report it on [IssueTracker](https://github.com/Parallels/vagrant-parallels).
+there  - please, report it on [Issue Tracker](https://github.com/Parallels/vagrant-parallels).
 
 ## Credits
 Great thanks to *Youssef Shahin* `@yshahin` for having initiated the development
-of this provider. You've made a great job, Youssef!
+of this provider. You've done a great job, Youssef!
 
 Also, thanks to the people who helping this project stand on its feet, thank you
 
