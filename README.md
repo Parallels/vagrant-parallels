@@ -75,8 +75,13 @@ There is a list of popular base boxes for Parallels provider:
 (http://download.parallels.com/desktop/vagrant/saucy64.box)
 
 - CentOS 6.5 x86_64:-
-[http://download.parallels.com/desktop/vagrant/centos64.box]
-(http://download.parallels.com/desktop/vagrant/centos64.box)
+[http://download.parallels.com/desktop/vagrant/CentOS-6.5-x86_64.box]
+(http://download.parallels.com/desktop/vagrant/CentOS-6.5-x86_64.box)
+
+- CentOS 5.9 x86_64:-
+[http://download.parallels.com/desktop/vagrant/CentOS-5.9-x86_64.box]
+(http://download.parallels.com/desktop/vagrant/CentOS-5.9-x86_64.box)
+
 
 You can add one of these boxes using the next command:
 
