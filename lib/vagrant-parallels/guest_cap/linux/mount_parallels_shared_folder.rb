@@ -27,6 +27,12 @@ module VagrantPlugins
 
             # finally make the symlink
             comm.sudo("ln -s \"/media/psf/#{name}\" \"#{expanded_guest_path}\"")
+
+            # Emit an upstart event if we can
+            if comm.test("test -x /sbin/initctl")
+              comm.sudo(
+                "/sbin/initctl emit --no-wait vagrant-mounted MOUNTPOINT=#{expanded_guest_path}")
+            end
           end
         end
       end
