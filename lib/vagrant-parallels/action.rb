@@ -203,6 +203,7 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use CheckParallels
           b.use ConfigValidate
+          b.use BoxCheckOutdated
           b.use Call, IsRunning do |env, b2|
             # If the VM is running, then our work here is done, exit
             if env[:result]
@@ -252,7 +253,7 @@ module VagrantPlugins
           # works fine.
           b.use Call, Created do |env, b2|
             if !env[:result]
-              b2.use HandleBoxUrl
+              b2.use HandleBox
             end
           end
 
