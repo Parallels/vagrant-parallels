@@ -9,7 +9,7 @@ based virtual machines.
 
 ### Requirements
 - Parallels Desktop for Mac 8 or 9
-- Vagrant v1.4 or higher
+- Vagrant v1.5 or higher
 
 If you're just getting started with Vagrant, it is highly recommended that you
 read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
@@ -30,6 +30,15 @@ Since the Parallels provider is a Vagrant plugin, installing it is easy:
 
 ```
 $ vagrant plugin install vagrant-parallels
+```
+
+#### Compatibility with Vagrant 1.4
+We recommend that you to use the latest version of [Vagrant](http://www.vagrantup.com/downloads.html).
+If for any reason you want to use a previous version of Vagrant (1.4.x), you
+should install a compatible version of the Parallels provider as described below:
+
+```
+$ vagrant plugin install vagrant-parallels --plugin-version 0.2.2
 ```
 
 ## Usage
@@ -68,32 +77,24 @@ Every provider in Vagrant must introduce a custom box format.
 As with every provider, the Parallels provider has a custom box format.
 The following base boxes for Parallels provider are available:
 
-- Ubuntu 12.04 x86_64:
-[http://download.parallels.com/desktop/vagrant/precise64.box]
-(http://download.parallels.com/desktop/vagrant/precise64.box)
+- Ubuntu 12.04 x86_64: `parallels/ubuntu-12.04`
 
-- Ubuntu 13.10 x86_64:
-[http://download.parallels.com/desktop/vagrant/saucy64.box]
-(http://download.parallels.com/desktop/vagrant/saucy64.box)
+- Ubuntu 13.10 x86_64: `parallels/ubuntu-13.10`
 
-- CentOS 6.5 x86_64:-
-[http://download.parallels.com/desktop/vagrant/CentOS-6.5-x86_64.box]
-(http://download.parallels.com/desktop/vagrant/CentOS-6.5-x86_64.box)
+- CentOS 6.5 x86_64: `parallels/centos-5.9`
 
-- CentOS 5.9 x86_64:-
-[http://download.parallels.com/desktop/vagrant/CentOS-5.9-x86_64.box]
-(http://download.parallels.com/desktop/vagrant/CentOS-5.9-x86_64.box)
+- CentOS 5.9 x86_64: `parallels/centos-6.5`
 
 You can add one of these boxes using the next command:
 
 ```
-$ vagrant box add --provider=parallels precise64 http://download.parallels.com/desktop/vagrant/precise64.box
+$ vagrant box add parallels/centos-6.5
 ```
 
 ## Networking
 By default, The Parallels provider uses the basic Vagrant networking
-approach. Initially, a virtual machine has one adapter assigned to the 'Shared' network
-in Parallels Desktop.
+approach. Initially, a virtual machine has one adapter assigned to the 'Shared'
+network in Parallels Desktop.
 
 In addition, you can add `:private_network` and `:public_network` adapters.
 These features are working the same way as in the basic Vagrant:
@@ -104,12 +105,12 @@ These features are working the same way as in the basic Vagrant:
 
 ## Provider Specific Configuration
 
-Parallels Desktop has the `prlctl` command-line utility that can be used to make modifications
-to Parallels virtual machines.
+Parallels Desktop has the `prlctl` command-line utility that can be used to make
+modifications to Parallels virtual machines.
 
 
-The Parallels provider allows to execute the prlctl command with any of avialable options just prior
-to starting a virtual machine:
+The Parallels provider allows to execute the prlctl command with any of
+avialable options just prior to starting a virtual machine:
 
 ```ruby
 config.vm.provider "parallels" do |v|
@@ -118,8 +119,9 @@ config.vm.provider "parallels" do |v|
 end
 ```
 
-In the example above, the virtual machine is modified to have a specified ISO image mounted
-on it's virtual media device (cdrom). The `:id` parameter is replaced with the actual virtual machine ID.
+In the example above, the virtual machine is modified to have a specified ISO
+image mounted on it's virtual media device (cdrom). The `:id` parameter is
+replaced with the actual virtual machine ID.
 
 Multiple `customize` directives can be used. They will be executed in the
 given order.
@@ -156,8 +158,8 @@ $ bundle exec rake
 
 If they pass, you're ready to start developing the plugin. You can test
 the plugin without installing it into your Vagrant environment by simply
-creating a `Vagrantfile` in the top level of this directory (it is added to *.gitignore*)
-and add the following line to your `Vagrantfile`
+creating a `Vagrantfile` in the top level of this directory (it is added
+to *.gitignore*) and add the following line to your `Vagrantfile`
 
 ```ruby
 Vagrant.require_plugin "vagrant-parallels"
@@ -173,7 +175,8 @@ $ bundle exec vagrant up --provider=parallels
 
 ###Installing Parallels Provider From Source
 
-If you want to globally install your locally built plugin from source, use the following method:
+If you want to globally install your locally built plugin from source, use the
+following method:
 
 ```
 $ cd vagrant-parallels
