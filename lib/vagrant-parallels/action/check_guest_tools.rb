@@ -13,7 +13,7 @@ module VagrantPlugins
             return @app.call(env)
           end
 
-          env[:ui].info(I18n.t("vagrant_parallels.parallels.checking_guest_tools"))
+          env[:ui].output(I18n.t("vagrant_parallels.parallels.checking_guest_tools"))
 
           tools_version = env[:machine].provider.driver.read_guest_tools_version
           if !tools_version
