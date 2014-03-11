@@ -220,6 +220,17 @@ module VagrantPlugins
           bridged_ifaces
         end
 
+        def read_guest_ip
+          mac_addr = read_mac_address.downcase
+          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
+            if line.include? mac_addr
+              return line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+            end
+          end
+
+          nil
+        end
+
         def read_guest_tools_version
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
@@ -252,16 +263,6 @@ module VagrantPlugins
             hostonly_ifaces << info
           end
           hostonly_ifaces
-        end
-
-        def read_ip_dhcp
-          mac_addr = read_mac_address.downcase
-          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
-            if line.include? mac_addr
-              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
-              return ip
-            end
-          end
         end
 
         def read_mac_address
