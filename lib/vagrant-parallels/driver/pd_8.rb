@@ -184,21 +184,18 @@ module VagrantPlugins
         end
 
         def read_bridged_interfaces
-          net_list = read_virtual_networks
-
-          # Skip 'vnicXXX' and 'Default' interfaces
-          net_list.delete_if do |net|
-            net['Type'] != "bridged" or
-              net['Bound To'] =~ /^(vnic(.+?))$/ or
-              net['Network ID'] == "Default"
+          host_hw_info = read_host_info.fetch("Hardware info")
+          net_list = host_hw_info.select do |name, attrs|
+            # Get all network interfaces except 'vnicXXX'
+            attrs.fetch("type") == "net" and name !~ /^(vnic(.+?))$/
           end
 
           bridged_ifaces = []
-          net_list.collect do |iface|
+          net_list.keys.each do |iface|
             info = {}
-            ifconfig = execute(:ifconfig, iface['Bound To'])
+            ifconfig = execute(:ifconfig, iface)
             # Assign default values
-            info[:name]    = iface['Bound To']
+            info[:name]    = iface
             info[:ip]      = "0.0.0.0"
             info[:netmask] = "0.0.0.0"
             info[:status]  = "Down"
@@ -238,13 +235,13 @@ module VagrantPlugins
         def read_host_info
           json { execute('server', 'info', '--json', retryable: true) }
         end
-        
+
         def read_host_only_interfaces
           net_list = read_virtual_networks
           net_list.keep_if { |net| net['Type'] == "host-only" }
 
           hostonly_ifaces = []
-          net_list.collect do |iface|
+          net_list.each do |iface|
             info = {}
             net_info = json { execute(:prlsrvctl, 'net', 'info', iface['Network ID'], '--json') }
             # Really we need to work with bounded virtual interface
