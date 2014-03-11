@@ -7,6 +7,10 @@ module VagrantPlugins
         error_namespace("vagrant_parallels.errors")
       end
 
+      class DhcpLeasesNotAccessible < VagrantParallelsError
+        error_key(:dhcp_leases_file_not_accessible)
+      end
+
       class PrlCtlError < VagrantParallelsError
         error_key(:prlctl_error)
       end

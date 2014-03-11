@@ -219,10 +219,13 @@ module VagrantPlugins
 
         def read_guest_ip
           mac_addr = read_mac_address.downcase
-          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
-            if line.include? mac_addr
+          leases_file = "/Library/Preferences/Parallels/parallels_dhcp_leases"
+          begin
+            File.open(leases_file).grep(/#{mac_addr}/) do |line|
               return line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
             end
+          rescue Errno::EACCES
+            raise Errors::DhcpLeasesNotAccessible, :leases_file => leases_file.to_s
           end
 
           nil
