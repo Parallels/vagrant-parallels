@@ -184,21 +184,18 @@ module VagrantPlugins
         end
 
         def read_bridged_interfaces
-          net_list = read_virtual_networks
-
-          # Skip 'vnicXXX' and 'Default' interfaces
-          net_list.delete_if do |net|
-            net['Type'] != "bridged" or
-              net['Bound To'] =~ /^(vnic(.+?))$/ or
-              net['Network ID'] == "Default"
+          host_hw_info = read_host_info.fetch("Hardware info")
+          net_list = host_hw_info.select do |name, attrs|
+            # Get all network interfaces except 'vnicXXX'
+            attrs.fetch("type") == "net" and name !~ /^(vnic(.+?))$/
           end
 
           bridged_ifaces = []
-          net_list.collect do |iface|
+          net_list.keys.each do |iface|
             info = {}
-            ifconfig = execute(:ifconfig, iface['Bound To'])
+            ifconfig = execute(:ifconfig, iface)
             # Assign default values
-            info[:name]    = iface['Bound To']
+            info[:name]    = iface
             info[:ip]      = "0.0.0.0"
             info[:netmask] = "0.0.0.0"
             info[:status]  = "Down"
@@ -220,8 +217,26 @@ module VagrantPlugins
           bridged_ifaces
         end
 
+        def read_guest_ip
+          mac_addr = read_mac_address.downcase
+          leases_file = "/Library/Preferences/Parallels/parallels_dhcp_leases"
+          begin
+            File.open(leases_file).grep(/#{mac_addr}/) do |line|
+              return line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+            end
+          rescue Errno::EACCES
+            raise Errors::DhcpLeasesNotAccessible, :leases_file => leases_file.to_s
+          end
+
+          nil
+        end
+
         def read_guest_tools_version
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
+        end
+
+        def read_host_info
+          json { execute('server', 'info', '--json', retryable: true) }
         end
 
         def read_host_only_interfaces
@@ -229,7 +244,7 @@ module VagrantPlugins
           net_list.keep_if { |net| net['Type'] == "host-only" }
 
           hostonly_ifaces = []
-          net_list.collect do |iface|
+          net_list.each do |iface|
             info = {}
             net_info = json { execute(:prlsrvctl, 'net', 'info', iface['Network ID'], '--json') }
             # Really we need to work with bounded virtual interface
@@ -252,16 +267,6 @@ module VagrantPlugins
             hostonly_ifaces << info
           end
           hostonly_ifaces
-        end
-
-        def read_ip_dhcp
-          mac_addr = read_mac_address.downcase
-          File.foreach("/Library/Preferences/Parallels/parallels_dhcp_leases") do |line|
-            if line.include? mac_addr
-              ip = line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
-              return ip
-            end
-          end
         end
 
         def read_mac_address

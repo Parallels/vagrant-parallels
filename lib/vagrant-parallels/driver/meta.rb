@@ -73,7 +73,6 @@ module VagrantPlugins
         end
 
         def_delegators :@driver,
-                       #:clear_forwarded_ports,
                        :clear_shared_folders,
                        :compact,
                        :create_host_only_network,
@@ -83,11 +82,8 @@ module VagrantPlugins
                        :enable_adapters,
                        :execute_command,
                        :export,
-                       #:forward_ports,
                        :halt,
                        :import,
-                       :read_ip_dhcp,
-                       #:read_forwarded_ports,
                        :read_bridged_interfaces,
                        :read_guest_tools_version,
                        :read_guest_ip,

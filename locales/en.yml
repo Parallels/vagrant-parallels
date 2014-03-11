@@ -9,6 +9,12 @@ en:
 # Translations for exception classes
 #-------------------------------------------------------------------------------
     errors:
+      dhcp_leases_file_not_accessible: |-
+        Parallels DHCP leases file is not accessible. The Parallels provider
+        uses it to detect an IP address of virtual machine. This file must be
+        readable for the user that is running Vagrant.
+
+        Parallels DHCP leases file: %{leases_file}
       mac_os_x_required: |-
         Parallels provider only works on OS X (or Mac OS X).
       prlctl_error: |-

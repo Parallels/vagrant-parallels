@@ -40,6 +40,11 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
+      provider_capability("parallels", "public_address") do
+        require_relative "cap/public_address"
+        Cap::PublicAddress
+      end
+
       synced_folder(:parallels) do
         require File.expand_path("../synced_folder", __FILE__)
         SyncedFolder
