@@ -235,6 +235,10 @@ module VagrantPlugins
           read_settings.fetch('GuestTools', {}).fetch('version', nil)
         end
 
+        def read_host_info
+          json { execute('server', 'info', '--json', retryable: true) }
+        end
+
         def read_host_only_interfaces
           net_list = read_virtual_networks
           net_list.keep_if { |net| net['Type'] == "host-only" }
