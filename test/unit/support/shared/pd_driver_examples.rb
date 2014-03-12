@@ -146,6 +146,26 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "read_guest_ip" do
+    let(:content) {'10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
+
+    it "returns an IP address assigned to the specified MAC" do
+      driver.should_receive(:read_mac_address).and_return("001C420000FF")
+      File.should_receive(:open).with(an_instance_of(String)).
+        and_return(StringIO.new(content))
+
+      subject.read_guest_ip.should == "10.200.0.99"
+    end
+
+    it "rises DhcpLeasesNotAccessible exception when file is not accessible" do
+      File.stub(:open).and_call_original
+      File.should_receive(:open).with(an_instance_of(String)).
+        and_raise(Errno::EACCES)
+      expect { subject.read_guest_ip }.
+        to raise_error(VagrantPlugins::Parallels::Errors::DhcpLeasesNotAccessible)
+    end
+  end
+
   describe "read_settings" do
     it "returns a hash with detailed info about the VM" do
       subject.read_settings.should be_kind_of(Hash)
@@ -230,7 +250,7 @@ shared_examples "parallels desktop driver" do |options|
       subject.version.should match(/(#{parallels_version}[\d\.]+)/)
     end
 
-    it "rises ParallelsInstallIncomplete exception when output is invalid" do
+    it "rises ParallelsInvalidVersion exception when output is invalid" do
       subprocess.should_receive(:execute).
         with("prlctl", "--version", an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
