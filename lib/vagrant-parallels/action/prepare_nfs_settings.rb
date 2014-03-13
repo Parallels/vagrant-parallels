@@ -48,7 +48,7 @@ module VagrantPlugins
           @machine.provider.driver.read_network_interfaces.each do |adapter, opts|
             if opts[:type] == :hostonly
               @machine.provider.driver.read_host_only_interfaces.each do |interface|
-                if interface[:bound_to] == opts[:hostonly]
+                if interface[:name] == opts[:hostonly]
                   return adapter, interface[:ip]
                 end
               end
