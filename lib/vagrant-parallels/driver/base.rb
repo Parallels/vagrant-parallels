@@ -45,7 +45,7 @@ module VagrantPlugins
         #
         # @param [Hash] options Options to create the host only network.
         # @return [Hash] The details of the host only network, including
-        #   keys `:name`, `:bound_to`, `:ip`, `:netmask` and `:dhcp`
+        #   keys `:name`, `:ip`, `:netmask` and `:dhcp`
         def create_host_only_network(options)
         end
 
@@ -68,7 +68,7 @@ module VagrantPlugins
         # {
         #   :type     => :hostonly,
         #   :hostonly => "vagrant-vnet0",
-        #   :bound_to => "vnic2",
+        #   :name     => "vnic2",
         #   :nic_type => "virtio"
         # }
         #
