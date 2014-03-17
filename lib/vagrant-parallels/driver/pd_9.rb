@@ -226,6 +226,10 @@ module VagrantPlugins
             end
           rescue Errno::EACCES
             raise Errors::DhcpLeasesNotAccessible, :leases_file => leases_file.to_s
+          rescue Errno::ENOENT
+            # File does not exist
+            # Perhaps, it is the fist start of Parallels Desktop
+            return nil
           end
 
           nil
