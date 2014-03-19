@@ -45,6 +45,11 @@ module VagrantPlugins
         Cap::PublicAddress
       end
 
+      provider_capability("parallels", "host_address") do
+        require_relative "cap/host_address"
+        Cap::HostAddress
+      end
+
       synced_folder(:parallels) do
         require File.expand_path("../synced_folder", __FILE__)
         SyncedFolder
