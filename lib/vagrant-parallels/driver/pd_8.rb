@@ -311,6 +311,30 @@ module VagrantPlugins
           vm.last
         end
 
+        def read_shared_interface
+          # There should be only one Shared interface
+          shared_net = read_virtual_networks.detect { |net| net['Type'] == 'shared' }
+          return nil if !shared_net
+
+          net_info = json { execute(:prlsrvctl, 'net', 'info', shared_net['Network ID'], '--json') }
+          info = {
+            name:    net_info['Bound To'],
+            ip:      net_info['Parallels adapter']['IP address'],
+            netmask: net_info['Parallels adapter']['Subnet mask'],
+            status:  "Up"
+          }
+
+          if net_info.key?('DHCPv4 server')
+            info[:dhcp] = {
+              ip:    net_info['DHCPv4 server']['Server address'],
+              lower: net_info['DHCPv4 server']['IP scope start address'],
+              upper: net_info['DHCPv4 server']['IP scope end address']
+            }
+          end
+
+          info
+        end
+
         def read_state
           vm = json { execute('list', @uuid, '--json', retryable: true).gsub(/^INFO/, '') }
           return nil if !vm.last
