@@ -34,7 +34,9 @@ module VagrantPlugins
           mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
 
           # Clear prior symlink if exists
-          machine.communicate.sudo("test -L #{expanded_guest_path} && rm -f #{expanded_guest_path}")
+          if machine.communicate.test("test -L #{expanded_guest_path}")
+            machine.communicate.sudo("rm #{expanded_guest_path}")
+          end
 
           # Create the guest path if it doesn't exist
           machine.communicate.sudo("mkdir -p #{expanded_guest_path}")
