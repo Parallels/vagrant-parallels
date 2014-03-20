@@ -226,6 +226,10 @@ module VagrantPlugins
             end
           rescue Errno::EACCES
             raise Errors::DhcpLeasesNotAccessible, :leases_file => leases_file.to_s
+          rescue Errno::ENOENT
+            # File does not exist
+            # Perhaps, it is the fist start of Parallels Desktop
+            return nil
           end
 
           nil
@@ -305,6 +309,30 @@ module VagrantPlugins
         def read_settings
           vm = json { execute('list', @uuid, '--info', '--json', retryable: true) }
           vm.last
+        end
+
+        def read_shared_interface
+          # There should be only one Shared interface
+          shared_net = read_virtual_networks.detect { |net| net['Type'] == 'shared' }
+          return nil if !shared_net
+
+          net_info = json { execute(:prlsrvctl, 'net', 'info', shared_net['Network ID'], '--json') }
+          info = {
+            name:    net_info['Bound To'],
+            ip:      net_info['Parallels adapter']['IP address'],
+            netmask: net_info['Parallels adapter']['Subnet mask'],
+            status:  "Up"
+          }
+
+          if net_info.key?('DHCPv4 server')
+            info[:dhcp] = {
+              ip:    net_info['DHCPv4 server']['Server address'],
+              lower: net_info['DHCPv4 server']['IP scope start address'],
+              upper: net_info['DHCPv4 server']['IP scope end address']
+            }
+          end
+
+          info
         end
 
         def read_state

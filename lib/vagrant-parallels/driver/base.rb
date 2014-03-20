@@ -151,6 +151,12 @@ module VagrantPlugins
         def read_network_interfaces
         end
 
+        # Returns info about shared network interface.
+        #
+        # @return [Hash]
+        def read_shared_interface
+        end
+
         # Returns the current state of this VM.
         #
         # @return [Symbol]
