@@ -168,7 +168,6 @@ module VagrantPlugins
               b2.use EnvSet, :port_collision_repair => false
               b2.use Resume
               b2.use WaitForCommunicator, [:resuming, :running]
-              b2.use ForcePrlFsMount
             else
               b2.use MessageNotCreated
             end
@@ -284,7 +283,6 @@ module VagrantPlugins
       autoload :DestroyUnusedNetworkInterfaces, File.expand_path("../action/destroy_unused_network_interfaces", __FILE__)
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
-      autoload :ForcePrlFsMount, File.expand_path("../action/force_prl_fs_mount", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
       autoload :IsSuspended, File.expand_path("../action/is_suspended", __FILE__)
       autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
