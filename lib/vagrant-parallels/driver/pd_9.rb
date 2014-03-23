@@ -32,10 +32,9 @@ module VagrantPlugins
         end
 
         def clear_shared_folders
-          shf = read_settings.fetch("Host Shared Folders", {}).keys
-          shf.delete("enabled")
-          shf.each do |folder|
-            execute("set", @uuid, "--shf-host-del", folder)
+          share_ids = read_shared_folders.keys
+          share_ids.each do |id|
+            execute("set", @uuid, "--shf-host-del", id)
           end
         end
 
@@ -333,6 +332,16 @@ module VagrantPlugins
           end
 
           info
+        end
+
+        def read_shared_folders
+          shf_info = read_settings.fetch("Host Shared Folders", {})
+          list = {}
+          shf_info.delete_if {|k,v| k == "enabled"}.each do |id, data|
+            list[id] = data.fetch("path")
+          end
+
+          list
         end
 
         def read_state

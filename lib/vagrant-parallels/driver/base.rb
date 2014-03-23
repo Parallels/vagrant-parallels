@@ -157,6 +157,13 @@ module VagrantPlugins
         def read_shared_interface
         end
 
+        # Returns a list of shared folders in format:
+        # { id => hostpath, ... }
+        #
+        # @return [Hash]
+        def read_shared_folders
+        end
+
         # Returns the current state of this VM.
         #
         # @return [Symbol]
