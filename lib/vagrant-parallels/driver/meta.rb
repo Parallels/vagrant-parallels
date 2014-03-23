@@ -92,6 +92,7 @@ module VagrantPlugins
                        :read_mac_address,
                        :read_network_interfaces,
                        :read_shared_interface,
+                       :read_shared_folders,
                        :read_settings,
                        :read_state,
                        :read_used_ports,

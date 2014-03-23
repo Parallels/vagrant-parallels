@@ -4,16 +4,16 @@
 # Vagrant stuff
 acceptance_config.yml
 boxes/*
-/Vagrantfile
-/.vagrant
-/vagrant-spec.config.rb
+Vagrantfile
+.vagrant
+vagrant-spec.config.rb
 
 # Bundler/Rubygems
 *.gem
 .bundle
 pkg/*
 tags
-/Gemfile.lock
+Gemfile.lock
 test/tmp/
 
 # Python

@@ -4,7 +4,7 @@ module VagrantPlugins
   module Parallels
     class SyncedFolder < Vagrant.plugin("2", :synced_folder)
       def usable?(machine)
-        # These synced folders only work if the provider if VirtualBox
+        # These synced folders only work if the provider is Parallels
         machine.provider_name == :parallels
       end
 
@@ -21,6 +21,9 @@ module VagrantPlugins
           }
         end
 
+        # We should prepare only folders with unique hostpath values.
+        # Anyway, duplicates will be mounted later.
+        defs.uniq! { |d| d[:hostpath] }
         driver(machine).share_folders(defs)
       end
 
@@ -35,10 +38,16 @@ module VagrantPlugins
           end
         end
 
+        shf_config = driver(machine).read_shared_folders
+
         # Go through each folder and mount
         machine.ui.output(I18n.t("vagrant.actions.vm.share_folders.mounting"))
-        folders.each do |id, data|
-          if data[:guestpath]
+        folders.each do |_ , data|
+          # Parallels specific: get id from the VM setting
+          # It allows to mount one host folder more then one time [GH-105]
+          id = shf_config.key(data[:hostpath])
+
+          if data[:guestpath] and id
             id = Pathname.new(id).to_s.split('/').drop_while{|i| i.empty?}.join('_')
 
             # Guest path specified, so mount the folder to specified point

@@ -41,6 +41,10 @@ module VagrantPlugins
         def clear_shared_folders
         end
 
+        # Compacts all disk drives of virtual machine
+        def compact
+        end
+
         # Creates a host only network with the given options.
         #
         # @param [Hash] options Options to create the host only network.
@@ -100,7 +104,7 @@ module VagrantPlugins
         end
 
         # Halts the virtual machine (pulls the plug).
-        def halt
+        def halt(force)
         end
 
         # Imports the VM by cloning from registered template.
@@ -157,6 +161,13 @@ module VagrantPlugins
         def read_shared_interface
         end
 
+        # Returns a list of shared folders in format:
+        # { id => hostpath, ... }
+        #
+        # @return [Hash]
+        def read_shared_folders
+        end
+
         # Returns the current state of this VM.
         #
         # @return [Symbol]
@@ -170,9 +181,13 @@ module VagrantPlugins
         def read_vms
         end
 
+        # Registers the virtual machine
+        def register(pvm_file)
+        end
+
         # Resumes the virtual machine.
         #
-        def resume(mac)
+        def resume
         end
 
         # Sets the MAC address of the first network adapter.
@@ -181,7 +196,7 @@ module VagrantPlugins
         def set_mac_address(mac)
         end
 
-        # Sets the VM name.
+        # Sets the name of the virtual machine.
         #
         # @param [String] name New VM name.
         def set_name(name)
