@@ -15,7 +15,7 @@ If you're just getting started with Vagrant, it is highly recommended that you
 read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
 
 ## Features
-The Parallels provider supports all basic Vagrant features, except one:
+The Parallels provider supports all basic Vagrant features, except the next:
 **"Forwarded ports" configuration is not available yet**.
 
 It might be implemented in the future, after the next release of Parallels
@@ -32,110 +32,17 @@ Since the Parallels provider is a Vagrant plugin, installing it is easy:
 $ vagrant plugin install vagrant-parallels
 ```
 
-#### Compatibility with Vagrant 1.4
-We recommend that you to use the latest version of [Vagrant](http://www.vagrantup.com/downloads.html).
-If for any reason you want to use a previous version of Vagrant (1.4.x), you
-should install a compatible version of the Parallels provider as described below:
+## Provider Documentation
 
-```
-$ vagrant plugin install vagrant-parallels --plugin-version 0.2.2
-```
+More information about the Parallels provider is available in
+[Vagrant Parallels Documentation](http://parallels.github.io/vagrant-parallels/docs/)
 
-## Usage
-Parallels provider is used just like any other provider. Please read the general
-[basic usage](http://docs.vagrantup.com/v2/providers/basic_usage.html) page for
-providers.
+We recommend you to start from these pages:
+* [Usage](http://parallels.github.io/vagrant-parallels/docs/usage.html)
+* [Getting Started](http://parallels.github.io/vagrant-parallels/docs/getting-started.html)
+* [Boxes](http://parallels.github.io/vagrant-parallels/docs/boxes/index.html)
 
-The value to use for the `--provider` flag is `parallels`:
-
-```
-$ vagrant init
-$ vagrant up --provider=parallels
-...
-```
-
-You need a Parallels compatible box specified in your `Vagrantfile`
-before doing `vagrant up`, please refer to the *Boxes* section for instructions.
-
-### Default Provider
-
-You can use `VAGRANT_DEFAULT_PROVIDER` environment variable to specify the
-default provider. Just set it to `parallels` and then it will not be necessary
-to add the `--provider` flag to vagrant commands.
-
-```
-export VAGRANT_DEFAULT_PROVIDER=parallels
-```
-
-You can also add this command to the `~/.bashrc` file
-(or `~/.zshrc` if your shell is Zsh) to make this setting permanent.
-
-## Boxes
-
-Every provider in Vagrant must introduce a custom box format.
-
-As with every provider, the Parallels provider has a custom box format.
-The following base boxes for Parallels provider are available:
-
-- Ubuntu 12.04 x86_64: `parallels/ubuntu-12.04`
-
-- Ubuntu 13.10 x86_64: `parallels/ubuntu-13.10`
-
-- CentOS 6.5 x86_64: `parallels/centos-5.9`
-
-- CentOS 5.9 x86_64: `parallels/centos-6.5`
-
-You can add one of these boxes using the next command:
-
-```
-$ vagrant box add parallels/centos-6.5
-```
-
-## Networking
-By default, The Parallels provider uses the basic Vagrant networking
-approach. Initially, a virtual machine has one adapter assigned to the 'Shared'
-network in Parallels Desktop.
-
-In addition, you can add `:private_network` and `:public_network` adapters.
-These features are working the same way as in the basic Vagrant:
-- [Private Networks]
-(http://docs.vagrantup.com/v2/networking/private_network.html)
-- [Public Networks]
-(http://docs.vagrantup.com/v2/networking/public_network.html)
-
-## Provider Specific Configuration
-
-Parallels Desktop has the `prlctl` command-line utility that can be used to make
-modifications to Parallels virtual machines.
-
-
-The Parallels provider allows to execute the prlctl command with any of
-avialable options just prior to starting a virtual machine:
-
-```ruby
-config.vm.provider "parallels" do |v|
-  v.customize ["set", :id, "--device-set", "cdrom0", "--image",
-               "/path/to/disk.iso", "--connect"]
-end
-```
-
-In the example above, the virtual machine is modified to have a specified ISO
-image mounted on it's virtual media device (cdrom). The `:id` parameter is
-replaced with the actual virtual machine ID.
-
-Multiple `customize` directives can be used. They will be executed in the
-given order.
-
-The virtual machine memory and CPU settings can be modified easily:
-
-```ruby
-config.vm.provider "parallels" do |v|
-  v.memory = 1024
-  v.cpus = 2
-end
-```
-
-## Development
+## Contributing to the Parallels Provider
 
 To work on the `vagrant-parallels` plugin development, clone this repository:
 
@@ -144,61 +51,53 @@ $ git clone https://github.com/Parallels/vagrant-parallels
 $ cd vagrant-parallels
 ```
 
-Use [Bundler](http://gembundler.com) to get the dependencies (Ruby 2.0 is needed):
+Use [Bundler](http://bundler.io/) to get the dependencies (Ruby 2.0 is needed)
+and rake to run the unit test suit:
 
 ```
-$ bundle
+$ bundle install
+$ rake
 ```
 
-Once you have the dependencies, verify the unit tests pass with `rake`:
-
-```
-$ bundle exec rake
-```
-
-If they pass, you're ready to start developing the plugin. You can test
-the plugin without installing it into your Vagrant environment by simply
-creating a `Vagrantfile` in the top level of this directory (it is added
-to *.gitignore*) and add the following line to your `Vagrantfile`
-
-```ruby
-Vagrant.require_plugin "vagrant-parallels"
-```
-
-You need a compatible box file installed. Refer to the *Boxes* section.
-
-Use bundler to execute Vagrant:
+If it passes successfully, you're ready to start developing the plugin. Use
+bundler to execute Vagrant and test the plugin without installing:
 
 ```
 $ bundle exec vagrant up --provider=parallels
 ```
 
-###Installing Parallels Provider From Source
-
-If you want to globally install your locally built plugin from source, use the
-following method:
+### Building Provider from Source
+To build a `vagrant-parallels` gem just run this command:
 
 ```
-$ cd vagrant-parallels
-$ bundle install
-...
-$ bundle exec rake build
-...
+$ rake build
+```
+
+The built "gem" package will appear in the `./pkg` folder.
+
+Then, if you want to install plugin from your locally built "gem", use the
+following commands:
+
+```
+$ vagrant plugin uninstall vagrant-parallels
 $ vagrant plugin install pkg/vagrant-parallels-<version>.gem
-...
 ```
+
 Now that you have your own plugin installed, check it with the command
 `vagrant plugin list`
 
-## Contributing
+### Sending a Pull Request
+If you're ready to send your changes, please follow the next steps:
 
-1. Fork it.
+1. Fork the 'vagrant-parallels' repository and ad it as a new remote (`git add
+remote my-fork <fork_url>`)
 2. Create a branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am "Added a sweet feature"`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a pull request from your `my-new-feature` branch into master
+4. Push the branch to your fork (`git push fork my-new-feature`)
+5. Create a pull request from your `my-new-feature` branch into `master` of
+`vagrant-parallels` repo
 
-## Getting help
+## Getting Help
 Having problems while using the provider? Ask your question to our mailing list:
 [Google Group](https://groups.google.com/group/vagrant-parallels)
 
