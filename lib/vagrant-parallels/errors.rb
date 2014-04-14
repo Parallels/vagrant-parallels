@@ -11,6 +11,10 @@ module VagrantPlugins
         error_key(:dhcp_leases_file_not_accessible)
       end
 
+      class MacOSXRequired < VagrantParallelsError
+        error_key(:mac_os_x_required)
+      end
+
       class PrlCtlError < VagrantParallelsError
         error_key(:prlctl_error)
       end
@@ -35,8 +39,8 @@ module VagrantPlugins
         error_key(:vm_inaccessible)
       end
 
-      class MacOSXRequired < VagrantParallelsError
-        error_key(:mac_os_x_required)
+      class VMNameExists < VagrantParallelsError
+        error_key(:vm_name_exists)
       end
     end
   end
