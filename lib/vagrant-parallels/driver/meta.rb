@@ -42,7 +42,6 @@ module VagrantPlugins
           # Instantiate the proper version driver for VirtualBox
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
           driver_map   = {
-            #TODO: Use customized class for each version
             "8" => PD_8,
             "9" => PD_9,
             "10" => PD_9
@@ -57,9 +56,14 @@ module VagrantPlugins
           end
 
           if !driver_klass
-            supported_versions = driver_map.keys.sort.join(", ")
+            supported_versions = driver_map.keys.sort
+
+            # TODO: Remove this after PD 10 release
+            # Don't show unreleased version in the error message
+            supported_versions.delete("10")
+
             raise VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion,
-                  supported_versions: supported_versions
+                  supported_versions: supported_versions.join(", ")
           end
 
           @logger.info("Using Parallels driver: #{driver_klass}")
