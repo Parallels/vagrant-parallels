@@ -121,11 +121,14 @@ module VagrantPlugins
         def read_version
           # The version string is usually in one of the following formats:
           #
-          # * 8.0.12345.123456
-          # * 9.0.12345.123456
+          # * prlctl version 8.0.12345.123456
+          # * prlctl version 9.0.12345.123456
+          # * prlctl version 10.0.0 (12345) rev 123456
+          #
+          # But we need exactly the first 3 numbers: "x.x.x"
 
-          if execute('--version', retryable: true) =~ /prlctl version ([\d\.]+)/
-            return $1.downcase
+          if execute('--version', retryable: true) =~ /prlctl version (\d+\.\d+.\d+)/
+            return $1
           else
             return nil
           end

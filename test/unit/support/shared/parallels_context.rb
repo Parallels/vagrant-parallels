@@ -20,7 +20,7 @@ shared_context "parallels" do
     # Parallels Desktop version, so wire this stub in automatically
     subprocess.stub(:execute).
       with("prlctl", "--version", an_instance_of(Hash)).
-      and_return(subprocess_result(stdout: "prlctl version #{parallels_version}.23456.987654"))
+      and_return(subprocess_result(stdout: "prlctl version #{parallels_version}.0.98765"))
 
     # drivers also call vm_exists? during init;
     subprocess.stub(:execute).
