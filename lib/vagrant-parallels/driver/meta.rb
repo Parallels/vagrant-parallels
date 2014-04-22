@@ -107,6 +107,7 @@ module VagrantPlugins
                        :register,
                        :registered?,
                        :resume,
+                       :set_power_consumption_mode,
                        :set_mac_address,
                        :set_name,
                        :share_folders,

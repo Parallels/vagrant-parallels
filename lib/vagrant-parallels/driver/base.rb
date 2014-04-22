@@ -202,6 +202,13 @@ module VagrantPlugins
         def set_name(name)
         end
 
+        # Sets Power Consumption method.
+        #
+        # @param [Boolean] optimized Use "Longer Battery Life"
+        # instead "Better Performance"
+        def set_power_consumption_mode(optimized)
+        end
+
         # Share a set of folders on this VM.
         #
         # @param [Array<Hash>] folders

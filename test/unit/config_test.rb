@@ -9,6 +9,7 @@ describe VagrantPlugins::Parallels::Config do
 
     its(:check_guest_tools) { should be_true }
     its(:name) { should be_nil }
+    its(:optimize_power_consumption) { should be_true }
 
     it "should have one Shared adapter" do
       expect(subject.network_adapters).to eql({
