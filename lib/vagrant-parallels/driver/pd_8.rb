@@ -443,15 +443,7 @@ module VagrantPlugins
         end
 
         def verify!
-          version
-        end
-
-        def version
-          if execute('--version', retryable: true) =~ /prlctl version ([\d\.]+)/
-            $1.downcase
-          else
-            raise VagrantPlugins::Parallels::Errors::ParallelsInstallIncomplete
-          end
+          execute('--version', retryable: true)
         end
 
         def vm_exists?(uuid)
