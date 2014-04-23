@@ -10,6 +10,8 @@ if Vagrant::VERSION < "1.5.0"
   raise "The Vagrant Parallels plugin is only compatible with Vagrant 1.5+"
 end
 
+require_relative "version"
+
 module VagrantPlugins
   module Parallels
 
