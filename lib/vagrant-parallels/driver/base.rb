@@ -182,7 +182,11 @@ module VagrantPlugins
         end
 
         # Registers the virtual machine
-        def register(pvm_file)
+        #
+        # @param [String] pvm_file Path to the machine image (*.pvm)
+        # @param [Boolean] regen_src_uuid Regenerate SourceVmUuid to avoid
+        # SMBIOS UUID collision
+        def register(pvm_file, regen_src_uuid)
         end
 
         # Resumes the virtual machine.

@@ -392,8 +392,10 @@ module VagrantPlugins
           list
         end
 
-        def register(pvm_file)
-          execute("register", pvm_file)
+        def register(pvm_file, regen_src_uuid=false)
+          args = ['register', pvm_file]
+          args << '--regenerate-src-uuid' if regen_src_uuid
+          execute(*args)
         end
 
         def registered?(uuid)

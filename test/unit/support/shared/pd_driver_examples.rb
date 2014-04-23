@@ -194,6 +194,25 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "register" do
+    it "registers specified virtual machine or template" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "register", an_instance_of(String), an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.register("/path/to/vm_image.pvm")
+    end
+
+    it "registers specified virtual machine or template and regen src uuid" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "register", an_instance_of(String),
+             "--regenerate-src-uuid", an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.register("/path/to/vm_image.pvm", regen_src_uuid=true)
+    end
+  end
+
   describe "set_mac_address" do
     it "sets base MAC address to the Shared network adapter" do
       subprocess.should_receive(:execute).exactly(2).times.
