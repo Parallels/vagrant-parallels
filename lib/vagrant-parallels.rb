@@ -1,6 +1,7 @@
 require "pathname"
 
 require "vagrant-parallels/plugin"
+require "vagrant-parallels/version"
 
 module VagrantPlugins
   module Parallels
