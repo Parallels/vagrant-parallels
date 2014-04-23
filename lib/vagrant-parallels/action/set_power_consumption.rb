@@ -8,6 +8,12 @@ module VagrantPlugins
         end
 
         def call(env)
+          pd_version = env[:machine].provider.driver.version
+          if Gem::Version.new(pd_version) < Gem::Version.new("9")
+            @logger.info("Power consumption management is available only for Parallels Desktop >= 9")
+            return @app.call(env)
+          end
+
           # Optimization of power consumption is defined by "Longer Battery Life" state.
           vm_settings = env[:machine].provider.driver.read_settings
 
@@ -20,10 +26,8 @@ module VagrantPlugins
           end
 
           mode = new_val ? "Longer battery life" : "Better Performance"
-
-          env[:ui].info I18n.t(
-                          "vagrant_parallels.parallels.power_consumption.set_mode",
-                          mode: mode)
+          env[:ui].info I18n.t("vagrant_parallels.parallels.power_consumption.set_mode",
+                               mode: mode)
           env[:machine].provider.driver.set_power_consumption_mode(new_val)
 
           @app.call(env)
