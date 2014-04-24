@@ -52,6 +52,11 @@ module VagrantPlugins
           end
           vms_arr | templates_arr
         end
+
+        def set_power_consumption_mode(optimized)
+          state = optimized ? 'on' : 'off'
+          execute('set', @uuid, '--longer-battery-life', state)
+        end
       end
     end
   end

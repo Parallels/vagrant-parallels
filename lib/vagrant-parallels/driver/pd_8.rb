@@ -415,11 +415,6 @@ module VagrantPlugins
           execute('set', @uuid, '--name', name, :retryable => true)
         end
 
-        def set_power_consumption_mode(optimized)
-          state = optimized ? 'on' : 'off'
-          execute('set', @uuid, '--longer-battery-life', state)
-        end
-
         def share_folders(folders)
           folders.each do |folder|
             # Add the shared folder
