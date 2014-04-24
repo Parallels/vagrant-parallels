@@ -20,7 +20,7 @@ module VagrantPlugins
             env[:ui].warn I18n.t("vagrant_parallels.actions.vm.check_guest_tools.not_detected")
           else
             pd_version = env[:machine].provider.driver.version
-            unless pd_version.start_with? tools_version
+            if Gem::Version.new(pd_version) != Gem::Version.new(tools_version)
               env[:ui].warn(I18n.t("vagrant_parallels.actions.vm.check_guest_tools.version_mismatch",
                                    :tools_version => tools_version,
                                    :parallels_version => pd_version))

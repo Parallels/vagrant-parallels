@@ -235,7 +235,8 @@ module VagrantPlugins
         end
 
         def read_guest_tools_version
-          read_settings.fetch('GuestTools', {}).fetch('version', nil)
+          tools_version = read_settings.fetch('GuestTools', {}).fetch('version', '')
+          tools_version[/(^\d+\.\d+.\d+)/]
         end
 
         def read_host_info
