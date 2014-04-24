@@ -2,20 +2,23 @@ module VagrantPlugins
   module Parallels
     class Config < Vagrant.plugin("2", :config)
       attr_accessor :check_guest_tools
-      attr_reader :customizations
+      attr_reader   :customizations
       attr_accessor :destroy_unused_network_interfaces
-      attr_reader :network_adapters
+      attr_accessor :optimize_power_consumption
       attr_accessor :name
+      attr_reader   :network_adapters
+
 
       # Compatibility with virtualbox provider's syntax
       alias :check_guest_additions= :check_guest_tools=
 
       def initialize
         @check_guest_tools = UNSET_VALUE
-        @customizations   = []
+        @customizations    = []
         @destroy_unused_network_interfaces = UNSET_VALUE
         @network_adapters  = {}
-        @name             = UNSET_VALUE
+        @name              = UNSET_VALUE
+        @optimize_power_consumption = UNSET_VALUE
 
         network_adapter(0, :shared)
       end
@@ -46,6 +49,10 @@ module VagrantPlugins
 
         if @destroy_unused_network_interfaces == UNSET_VALUE
           @destroy_unused_network_interfaces = true
+        end
+
+        if @optimize_power_consumption == UNSET_VALUE
+          @optimize_power_consumption = true
         end
 
         @name = nil if @name == UNSET_VALUE

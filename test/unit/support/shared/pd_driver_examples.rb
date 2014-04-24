@@ -146,6 +146,21 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "read_guest_tools_version" do
+    let(:tools_version) {'9.0.23062.123456-something-else'}
+
+    it "returns Guest Tools version in semantic format: 'x.y.z'" do
+      subject.read_guest_tools_version.should match(/^\d+.\d+\.\d+$/)
+      subject.read_guest_tools_version.should == "9.0.23062"
+    end
+
+    it "returns nil if Guest Tools version is invalid" do
+      settings = {"GuestTools" => {"vesion" => "something_wrong"}}
+      driver.should_receive(:read_settings).and_return(settings)
+      subject.read_guest_tools_version.should be_nil
+    end
+  end
+
   describe "read_guest_ip" do
     let(:content) {'10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
 
@@ -191,6 +206,25 @@ shared_examples "parallels desktop driver" do |options|
       # It should include info about current VM
       vm_settings = driver.send(:read_settings)
       subject.read_vms_info.should include(vm_settings)
+    end
+  end
+
+  describe "register" do
+    it "registers specified virtual machine or template" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "register", an_instance_of(String), an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.register("/path/to/vm_image.pvm")
+    end
+
+    it "registers specified virtual machine or template and regen src uuid" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "register", an_instance_of(String),
+             "--regenerate-src-uuid", an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.register("/path/to/vm_image.pvm", regen_src_uuid=true)
     end
   end
 
@@ -247,13 +281,13 @@ shared_examples "parallels desktop driver" do |options|
 
   describe "version" do
     it "parses the version from output" do
-      subject.version.should match(/(#{parallels_version}[\d\.]+)/)
+      subject.version.should match(/^#{parallels_version}.\d+\.\d+$/)
     end
 
-    it "rises ParallelsInvalidVersion exception when output is invalid" do
+    it "rises ParallelsInvalidVersion exception for unsupported version" do
       subprocess.should_receive(:execute).
         with("prlctl", "--version", an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
+        and_return(subprocess_result(stdout: "prlctl version 7.0.12345"))
       expect { subject.version }.
         to raise_error(VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion)
     end

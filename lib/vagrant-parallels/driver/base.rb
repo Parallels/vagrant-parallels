@@ -182,7 +182,11 @@ module VagrantPlugins
         end
 
         # Registers the virtual machine
-        def register(pvm_file)
+        #
+        # @param [String] pvm_file Path to the machine image (*.pvm)
+        # @param [Boolean] regen_src_uuid Regenerate SourceVmUuid to avoid
+        # SMBIOS UUID collision
+        def register(pvm_file, regen_src_uuid)
         end
 
         # Resumes the virtual machine.
@@ -200,6 +204,13 @@ module VagrantPlugins
         #
         # @param [String] name New VM name.
         def set_name(name)
+        end
+
+        # Sets Power Consumption method.
+        #
+        # @param [Boolean] optimized Use "Longer Battery Life"
+        # instead "Better Performance"
+        def set_power_consumption_mode(optimized)
         end
 
         # Share a set of folders on this VM.

@@ -42,7 +42,6 @@ module VagrantPlugins
           # Instantiate the proper version driver for VirtualBox
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
           driver_map   = {
-            #TODO: Use customized class for each version
             "8" => PD_8,
             "9" => PD_9,
             "10" => PD_9
@@ -57,9 +56,14 @@ module VagrantPlugins
           end
 
           if !driver_klass
-            supported_versions = driver_map.keys.sort.join(", ")
+            supported_versions = driver_map.keys.sort
+
+            # TODO: Remove this after PD 10 release
+            # Don't show unreleased version in the error message
+            supported_versions.delete("10")
+
             raise VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion,
-                  supported_versions: supported_versions
+                  supported_versions: supported_versions.join(", ")
           end
 
           @logger.info("Using Parallels driver: #{driver_klass}")
@@ -103,6 +107,7 @@ module VagrantPlugins
                        :register,
                        :registered?,
                        :resume,
+                       :set_power_consumption_mode,
                        :set_mac_address,
                        :set_name,
                        :share_folders,
@@ -121,11 +126,14 @@ module VagrantPlugins
         def read_version
           # The version string is usually in one of the following formats:
           #
-          # * 8.0.12345.123456
-          # * 9.0.12345.123456
+          # * prlctl version 8.0.12345.123456
+          # * prlctl version 9.0.12345.123456
+          # * prlctl version 10.0.0 (12345) rev 123456
+          #
+          # But we need exactly the first 3 numbers: "x.x.x"
 
-          if execute('--version', retryable: true) =~ /prlctl version ([\d\.]+)/
-            return $1.downcase
+          if execute('--version', retryable: true) =~ /prlctl version (\d+\.\d+.\d+)/
+            return $1
           else
             return nil
           end

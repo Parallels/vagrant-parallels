@@ -9,6 +9,8 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
   let(:tpl_uuid) {'1234-some-template-uuid-5678'}
   let(:tpl_name) {'Some_Template_Name'}
 
+  let(:tools_version) {'9.0.23062.123456'}
+
   let(:hostonly_iface) {'vnic10'}
 
   let(:vnic_options) do {
@@ -73,7 +75,7 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
     "State": "stopped",
     "Home": "/path/to/#{vm_name}.pvm/",
     "GuestTools": {
-      "version": "9.0.23062"
+      "version": "#{tools_version}"
     },
     "Hardware": {
       "cpu": {
@@ -133,7 +135,7 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
     "State": "stopped",
     "Home": "/path/to/#{tpl_name}.pvm/",
     "GuestTools": {
-      "version": "9.0.24172"
+      "version": "#{tools_version}"
     },
     "Hardware": {
       "cpu": {
@@ -192,5 +194,25 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
       subprocess_result(stdout: out)
     end
 
+  end
+
+  describe "set_power_consumption_mode" do
+    it "turns 'longer-battery-life' on" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, "--longer-battery-life", "on",
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.set_power_consumption_mode(true)
+    end
+
+    it "turns 'longer-battery-life' off" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, "--longer-battery-life", "off",
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.set_power_consumption_mode(false)
+    end
   end
 end

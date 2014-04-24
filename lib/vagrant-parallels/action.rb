@@ -12,6 +12,7 @@ module VagrantPlugins
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use CheckAccessible
+          b.use SetPowerConsumption
           b.use SetName
           # b.use ClearForwardedPorts
           b.use Provision
@@ -298,6 +299,7 @@ module VagrantPlugins
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :SetName, File.expand_path("../action/set_name", __FILE__)
+      autoload :SetPowerConsumption, File.expand_path("../action/set_power_consumption", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
     end
   end

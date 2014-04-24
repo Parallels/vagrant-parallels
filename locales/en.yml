@@ -3,6 +3,9 @@ en:
     parallels:
       checking_guest_tools: |-
         Checking for Parallels Tools installed on the VM...
+      power_consumption:
+        set_mode: |-
+          Setting power consumption mode: "%{mode}"
       network_adapter: |-
         Adapter %{adapter}: %{type}%{extra}
 #-------------------------------------------------------------------------------
