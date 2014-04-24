@@ -146,6 +146,21 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "read_guest_tools_version" do
+    let(:tools_version) {'9.0.23062.123456-something-else'}
+
+    it "returns Guest Tools version in semantic format: 'x.y.z'" do
+      subject.read_guest_tools_version.should match(/^\d+.\d+\.\d+$/)
+      subject.read_guest_tools_version.should == "9.0.23062"
+    end
+
+    it "returns nil if Guest Tools version is invalid" do
+      settings = {"GuestTools" => {"vesion" => "something_wrong"}}
+      driver.should_receive(:read_settings).and_return(settings)
+      subject.read_guest_tools_version.should be_nil
+    end
+  end
+
   describe "read_guest_ip" do
     let(:content) {'10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
 
