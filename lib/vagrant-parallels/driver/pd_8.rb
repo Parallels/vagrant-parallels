@@ -127,7 +127,7 @@ module VagrantPlugins
               # - in host-only (private) network it will be bridged to the 'vnicX' device
               # - in real bridge (public) network it will be bridged to the assigned device
               args.concat(["--type", "bridged", "--iface", adapter[:hostonly]])
-            elsif adapter[:type] == :bridge
+            elsif adapter[:type] == :bridged
               args.concat(["--type", "bridged", "--iface", adapter[:bridge]])
             elsif adapter[:type] == :shared
               args.concat(["--type", "shared"])
