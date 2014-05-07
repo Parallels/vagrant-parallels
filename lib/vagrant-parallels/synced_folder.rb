@@ -14,8 +14,7 @@ module VagrantPlugins
           hostpath = Vagrant::Util::Platform.cygwin_windows_path(data[:hostpath])
 
           defs << {
-              # Escape special symbols (Parallels Shared Folders specific)
-              name: id.split('/').delete_if{|i| i.empty?}.join('_'),
+              name: os_friendly_id(id),
               hostpath: hostpath.to_s,
               transient: data[:transient],
           }
@@ -48,8 +47,6 @@ module VagrantPlugins
           id = shf_config.key(data[:hostpath])
 
           if data[:guestpath] and id
-            id = Pathname.new(id).to_s.split('/').drop_while{|i| i.empty?}.join('_')
-
             # Guest path specified, so mount the folder to specified point
             machine.ui.detail(I18n.t("vagrant.actions.vm.share_folders.mounting_entry",
                                      guestpath: data[:guestpath],
@@ -65,7 +62,8 @@ module VagrantPlugins
 
             # Mount the actual folder
             machine.guest.capability(
-                :mount_parallels_shared_folder, id, data[:guestpath], data)
+                :mount_parallels_shared_folder,
+                os_friendly_id(id), data[:guestpath], data)
           else
             # If no guest path is specified, then automounting is disabled
             machine.ui.detail(I18n.t("vagrant.actions.vm.share_folders.nomount_entry",
@@ -83,6 +81,10 @@ module VagrantPlugins
       # This is here so that we can stub it for tests
       def driver(machine)
         machine.provider.driver
+      end
+
+      def os_friendly_id(id)
+        id.gsub(/[\/]/,'_').sub(/^_/, '')
       end
     end
   end
