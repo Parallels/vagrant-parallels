@@ -277,6 +277,18 @@ module VagrantPlugins
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
 
+        def read_mac_addresses
+          macs = {}
+          read_settings.fetch('Hardware', {}).each do |device, params|
+            if device =~ /^net(\d+)$/
+              adapter = $1
+              mac = params.fetch('mac')
+              macs[adapter] = mac
+            end
+          end
+          macs
+        end
+
         def read_network_interfaces
           nics = {}
 
