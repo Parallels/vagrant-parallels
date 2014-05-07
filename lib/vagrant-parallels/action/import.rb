@@ -26,7 +26,7 @@ module VagrantPlugins
           # We should to unregister template
           unregister_template
 
-          if env[:machine].provider.state.id != :not_created
+          if env[:machine].state.id != :not_created
             return if env["vagrant.error"].is_a?(Vagrant::Errors::VagrantError)
             return if env["vagrant_parallels.error"].is_a?(VagrantPlugins::Parallels::Errors::VagrantParallelsError)
 
