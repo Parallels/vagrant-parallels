@@ -6,6 +6,19 @@ module VagrantPlugins
     class Provider < Vagrant.plugin("2", :provider)
       attr_reader :driver
 
+      def self.usable?(raise_error=false)
+        # Instantiate the driver, which will determine the Parallels Desktop
+        # version and all that, which checks for Parallels Desktop being present
+        Driver::Meta.new
+        true
+      rescue VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion
+        raise if raise_error
+        return false
+      rescue VagrantPlugins::Parallels::Errors::ParallelsNotDetected
+        raise if raise_error
+        return false
+      end
+
       def initialize(machine)
         @logger = Log4r::Logger.new("vagrant::provider::parallels")
         @machine = machine
