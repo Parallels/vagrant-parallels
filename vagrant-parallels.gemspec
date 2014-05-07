@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.required_rubygems_version = ">= 1.3.6"
   spec.rubyforge_project         = "vagrant-parallels"
 
-  spec.add_development_dependency "bundler", "~> 1.5.2"
+  spec.add_development_dependency "bundler", ">= 1.5.2", "< 1.7.0" 
   spec.add_development_dependency "rake"
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "rspec", "~> 2.14.0"
