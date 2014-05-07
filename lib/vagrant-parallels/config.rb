@@ -4,6 +4,7 @@ module VagrantPlugins
       attr_accessor :check_guest_tools
       attr_reader   :customizations
       attr_accessor :destroy_unused_network_interfaces
+      attr_accessor :functional_psf
       attr_accessor :optimize_power_consumption
       attr_accessor :name
       attr_reader   :network_adapters
@@ -16,6 +17,7 @@ module VagrantPlugins
         @check_guest_tools = UNSET_VALUE
         @customizations    = []
         @destroy_unused_network_interfaces = UNSET_VALUE
+        @functional_psf = UNSET_VALUE
         @network_adapters  = {}
         @name              = UNSET_VALUE
         @optimize_power_consumption = UNSET_VALUE
@@ -49,6 +51,10 @@ module VagrantPlugins
 
         if @destroy_unused_network_interfaces == UNSET_VALUE
           @destroy_unused_network_interfaces = true
+        end
+
+        if @functional_psf == UNSET_VALUE
+          @functional_psf = true
         end
 
         if @optimize_power_consumption == UNSET_VALUE

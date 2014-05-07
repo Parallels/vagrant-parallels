@@ -3,9 +3,10 @@ require "vagrant/util/platform"
 module VagrantPlugins
   module Parallels
     class SyncedFolder < Vagrant.plugin("2", :synced_folder)
-      def usable?(machine)
+      def usable?(machine, raise_errors=false)
         # These synced folders only work if the provider is Parallels
-        machine.provider_name == :parallels
+        machine.provider_name == :parallels &&
+          machine.provider_config.functional_psf
       end
 
       def prepare(machine, folders, _opts)
