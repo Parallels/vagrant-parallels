@@ -40,14 +40,19 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
-      provider_capability("parallels", "public_address") do
+      provider_capability(:parallels, :public_address) do
         require_relative "cap/public_address"
         Cap::PublicAddress
       end
 
-      provider_capability("parallels", "host_address") do
+      provider_capability(:parallels, :host_address) do
         require_relative "cap/host_address"
         Cap::HostAddress
+      end
+
+      provider_capability(:parallels, :nic_mac_addresses) do
+        require_relative "cap/nic_mac_addresses"
+        Cap::NicMacAddresses
       end
 
       synced_folder(:parallels) do

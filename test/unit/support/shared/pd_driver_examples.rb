@@ -181,6 +181,14 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "read_mac_addresses" do
+    it "returns MAC addresses of all network interface cards" do
+      subject.read_mac_addresses.should be_kind_of(Hash)
+      subject.read_mac_addresses.should include("0")
+      subject.read_mac_addresses["0"].should be_kind_of(String)
+    end
+  end
+
   describe "read_settings" do
     it "returns a hash with detailed info about the VM" do
       subject.read_settings.should be_kind_of(Hash)
