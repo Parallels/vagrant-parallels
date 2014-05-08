@@ -25,6 +25,10 @@ module VagrantPlugins
             comm.sudo("ln -s \"/Volumes/SharedFolders/#{name}\" \"#{guestpath}\"")
           end
         end
+
+        def self.unmount_parallels_shared_folder(machine, guestpath, options)
+          machine.communicate.sudo("rm #{guestpath}", error_check: false)
+        end
       end
     end
   end

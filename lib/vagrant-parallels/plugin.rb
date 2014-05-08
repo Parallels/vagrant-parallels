@@ -35,19 +35,34 @@ module VagrantPlugins
         GuestDarwinCap::MountParallelsSharedFolder
       end
 
+      guest_capability(:darwin, :unmount_parallels_shared_folder) do
+        require_relative "guest_cap/darwin/mount_parallels_shared_folder"
+        GuestDarwinCap::MountParallelsSharedFolder
+      end
+
       guest_capability(:linux, :mount_parallels_shared_folder) do
         require_relative "guest_cap/linux/mount_parallels_shared_folder"
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
-      provider_capability("parallels", "public_address") do
+      guest_capability(:linux, :unmount_virtualbox_shared_folder) do
+        require_relative "guest_cap/linux/mount_virtualbox_shared_folder"
+        GuestLinuxCap::MountParallelsSharedFolder
+      end
+
+      provider_capability(:parallels, :public_address) do
         require_relative "cap/public_address"
         Cap::PublicAddress
       end
 
-      provider_capability("parallels", "host_address") do
+      provider_capability(:parallels, :host_address) do
         require_relative "cap/host_address"
         Cap::HostAddress
+      end
+
+      provider_capability(:parallels, :nic_mac_addresses) do
+        require_relative "cap/nic_mac_addresses"
+        Cap::NicMacAddresses
       end
 
       synced_folder(:parallels) do

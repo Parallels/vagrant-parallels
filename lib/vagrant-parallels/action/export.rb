@@ -9,7 +9,7 @@ module VagrantPlugins
 
         def call(env)
           @env = env
-          if env[:machine].provider.state.id != :stopped
+          if env[:machine].state.id != :stopped
             raise Vagrant::Errors::VMPowerOffToPackage
           end
 

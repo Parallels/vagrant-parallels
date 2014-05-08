@@ -6,6 +6,19 @@ module VagrantPlugins
     class Provider < Vagrant.plugin("2", :provider)
       attr_reader :driver
 
+      def self.usable?(raise_error=false)
+        # Instantiate the driver, which will determine the Parallels Desktop
+        # version and all that, which checks for Parallels Desktop being present
+        Driver::Meta.new
+        true
+      rescue VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion
+        raise if raise_error
+        return false
+      rescue VagrantPlugins::Parallels::Errors::ParallelsNotDetected
+        raise if raise_error
+        return false
+      end
+
       def initialize(machine)
         @logger = Log4r::Logger.new("vagrant::provider::parallels")
         @machine = machine
@@ -48,9 +61,8 @@ module VagrantPlugins
 
       # Returns the SSH info for accessing the Parallels VM.
       def ssh_info
-        # If the VM is not created then we cannot possibly SSH into it, so
-        # we return nil.
-        return nil if state.id == :not_created
+        # If the VM is not running that we can't possibly SSH into it
+        return nil if state.id != :running
 
         detected_ip = @driver.read_guest_ip
 
@@ -79,6 +91,11 @@ module VagrantPlugins
         # Translate into short/long descriptions
         short = state_id.to_s.gsub("_", " ")
         long  = I18n.t("vagrant_parallels.commands.status.#{state_id}")
+
+        # If machine is not created, then specify the special ID flag
+        if state_id == :not_created
+          state_id = Vagrant::MachineState::NOT_CREATED_ID
+        end
 
         # Return the state
         Vagrant::MachineState.new(state_id, short, long)

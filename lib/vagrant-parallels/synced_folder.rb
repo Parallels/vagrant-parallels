@@ -3,21 +3,25 @@ require "vagrant/util/platform"
 module VagrantPlugins
   module Parallels
     class SyncedFolder < Vagrant.plugin("2", :synced_folder)
-      def usable?(machine)
+      def usable?(machine, raise_errors=false)
         # These synced folders only work if the provider is Parallels
-        machine.provider_name == :parallels
+        machine.provider_name == :parallels &&
+          machine.provider_config.functional_psf
       end
 
-      def prepare(machine, folders, _opts)
+      def enable(machine, folders, _opts)
+        # Export the shared folders to the VM
         defs = []
         folders.each do |id, data|
-          hostpath = Vagrant::Util::Platform.cygwin_windows_path(data[:hostpath])
+          hostpath = data[:hostpath]
+          if !data[:hostpath_exact]
+            hostpath = Vagrant::Util::Platform.cygwin_windows_path(hostpath)
+          end
+
 
           defs << {
-              # Escape special symbols (Parallels Shared Folders specific)
-              name: id.split('/').delete_if{|i| i.empty?}.join('_'),
+              name: os_friendly_id(id),
               hostpath: hostpath.to_s,
-              transient: data[:transient],
           }
         end
 
@@ -25,9 +29,7 @@ module VagrantPlugins
         # Anyway, duplicates will be mounted later.
         defs.uniq! { |d| d[:hostpath] }
         driver(machine).share_folders(defs)
-      end
 
-      def enable(machine, folders, _opts)
         # short guestpaths first, so we don't step on ourselves
         folders = folders.sort_by do |id, data|
           if data[:guestpath]
@@ -48,8 +50,6 @@ module VagrantPlugins
           id = shf_config.key(data[:hostpath])
 
           if data[:guestpath] and id
-            id = Pathname.new(id).to_s.split('/').drop_while{|i| i.empty?}.join('_')
-
             # Guest path specified, so mount the folder to specified point
             machine.ui.detail(I18n.t("vagrant.actions.vm.share_folders.mounting_entry",
                                      guestpath: data[:guestpath],
@@ -74,6 +74,20 @@ module VagrantPlugins
         end
       end
 
+      def disable(machine, folders, _opts)
+        if machine.guest.capability?(:unmount_parallels_shared_folder)
+          folders.each do |id, data|
+            machine.guest.capability(
+              :unmount_parallels_shared_folder,
+              data[:guestpath], data)
+          end
+        end
+
+        # Remove the shared folders from the VM metadata
+        names = folders.map { |id, _data| os_friendly_id(id) }
+        driver(machine).unshare_folders(names)
+      end
+
       def cleanup(machine, opts)
         driver(machine).clear_shared_folders if machine.id && machine.id != ""
       end
@@ -83,6 +97,10 @@ module VagrantPlugins
       # This is here so that we can stub it for tests
       def driver(machine)
         machine.provider.driver
+      end
+
+      def os_friendly_id(id)
+        id.gsub(/[\/]/,'_').sub(/^_/, '')
       end
     end
   end

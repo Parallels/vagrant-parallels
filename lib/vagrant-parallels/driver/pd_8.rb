@@ -277,6 +277,18 @@ module VagrantPlugins
           read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
         end
 
+        def read_mac_addresses
+          macs = {}
+          read_settings.fetch('Hardware', {}).each do |device, params|
+            if device =~ /^net(\d+)$/
+              adapter = $1
+              mac = params.fetch('mac')
+              macs[adapter] = mac
+            end
+          end
+          macs
+        end
+
         def read_network_interfaces
           nics = {}
 
@@ -436,6 +448,12 @@ module VagrantPlugins
 
         def unregister(uuid)
           execute("unregister", uuid)
+        end
+
+        def unshare_folders(names)
+          names.each do |name|
+            execute("set", @uuid, "--shf-host-del", name)
+          end
         end
 
         def verify!

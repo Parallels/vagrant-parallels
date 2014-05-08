@@ -94,6 +94,7 @@ module VagrantPlugins
                        :read_guest_property,
                        :read_host_only_interfaces,
                        :read_mac_address,
+                       :read_mac_addresses,
                        :read_network_interfaces,
                        :read_shared_interface,
                        :read_shared_folders,
