@@ -92,6 +92,11 @@ module VagrantPlugins
         short = state_id.to_s.gsub("_", " ")
         long  = I18n.t("vagrant_parallels.commands.status.#{state_id}")
 
+        # If machine is not created, then specify the special ID flag
+        if state_id == :not_created
+          state_id = Vagrant::MachineState::NOT_CREATED_ID
+        end
+
         # Return the state
         Vagrant::MachineState.new(state_id, short, long)
       end
