@@ -61,9 +61,8 @@ module VagrantPlugins
 
       # Returns the SSH info for accessing the Parallels VM.
       def ssh_info
-        # If the VM is not created then we cannot possibly SSH into it, so
-        # we return nil.
-        return nil if state.id == :not_created
+        # If the VM is not running that we can't possibly SSH into it
+        return nil if state.id != :running
 
         detected_ip = @driver.read_guest_ip
 
