@@ -9,15 +9,19 @@ module VagrantPlugins
           machine.provider_config.functional_psf
       end
 
-      def prepare(machine, folders, _opts)
+      def enable(machine, folders, _opts)
+        # Export the shared folders to the VM
         defs = []
         folders.each do |id, data|
-          hostpath = Vagrant::Util::Platform.cygwin_windows_path(data[:hostpath])
+          hostpath = data[:hostpath]
+          if !data[:hostpath_exact]
+            hostpath = Vagrant::Util::Platform.cygwin_windows_path(hostpath)
+          end
+
 
           defs << {
               name: os_friendly_id(id),
               hostpath: hostpath.to_s,
-              transient: data[:transient],
           }
         end
 
@@ -25,9 +29,7 @@ module VagrantPlugins
         # Anyway, duplicates will be mounted later.
         defs.uniq! { |d| d[:hostpath] }
         driver(machine).share_folders(defs)
-      end
 
-      def enable(machine, folders, _opts)
         # short guestpaths first, so we don't step on ourselves
         folders = folders.sort_by do |id, data|
           if data[:guestpath]
@@ -63,14 +65,27 @@ module VagrantPlugins
 
             # Mount the actual folder
             machine.guest.capability(
-                :mount_parallels_shared_folder,
-                os_friendly_id(id), data[:guestpath], data)
+                :mount_parallels_shared_folder, id, data[:guestpath], data)
           else
             # If no guest path is specified, then automounting is disabled
             machine.ui.detail(I18n.t("vagrant.actions.vm.share_folders.nomount_entry",
                                    :hostpath => data[:hostpath]))
           end
         end
+      end
+
+      def disable(machine, folders, _opts)
+        if machine.guest.capability?(:unmount_parallels_shared_folder)
+          folders.each do |id, data|
+            machine.guest.capability(
+              :unmount_parallels_shared_folder,
+              data[:guestpath], data)
+          end
+        end
+
+        # Remove the shared folders from the VM metadata
+        names = folders.map { |id, _data| os_friendly_id(id) }
+        driver(machine).unshare_folders(names)
       end
 
       def cleanup(machine, opts)

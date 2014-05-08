@@ -450,6 +450,12 @@ module VagrantPlugins
           execute("unregister", uuid)
         end
 
+        def unshare_folders(names)
+          names.each do |name|
+            execute("set", @uuid, "--shf-host-del", name)
+          end
+        end
+
         def verify!
           execute('--version', retryable: true)
         end
