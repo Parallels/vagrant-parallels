@@ -35,8 +35,18 @@ module VagrantPlugins
         GuestDarwinCap::MountParallelsSharedFolder
       end
 
+      guest_capability(:darwin, :unmount_parallels_shared_folder) do
+        require_relative "guest_cap/darwin/mount_parallels_shared_folder"
+        GuestDarwinCap::MountParallelsSharedFolder
+      end
+
       guest_capability(:linux, :mount_parallels_shared_folder) do
         require_relative "guest_cap/linux/mount_parallels_shared_folder"
+        GuestLinuxCap::MountParallelsSharedFolder
+      end
+
+      guest_capability(:linux, :unmount_virtualbox_shared_folder) do
+        require_relative "guest_cap/linux/mount_virtualbox_shared_folder"
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
