@@ -318,11 +318,11 @@ module VagrantPlugins
           end
 
           return {
-            :adapter  => config[:adapter],
-            :hostonly => interface[:name],
-            :mac      => config[:mac],
-            :nic_type => config[:nic_type],
-            :type     => :hostonly
+            :adapter     => config[:adapter],
+            :hostonly    => interface[:name],
+            :mac_address => config[:mac],
+            :nic_type    => config[:nic_type],
+            :type        => :hostonly
           }
         end
 
