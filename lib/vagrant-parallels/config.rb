@@ -44,6 +44,14 @@ module VagrantPlugins
         customize("pre-boot", ["set", :id, "--cpus", count.to_i])
       end
 
+      def merge(other)
+        super.tap do |result|
+          c = customizations.dup
+          c += other.customizations
+          result.instance_variable_set(:@customizations, c)
+        end
+      end
+
       def finalize!
         if @check_guest_tools == UNSET_VALUE
           @check_guest_tools = true
