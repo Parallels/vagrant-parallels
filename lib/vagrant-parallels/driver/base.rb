@@ -244,12 +244,6 @@ module VagrantPlugins
         def unshare_folders(names)
         end
 
-        # Verifies that the driver is ready to accept work.
-        #
-        # This should raise a VagrantError if things are not ready.
-        def verify!
-        end
-
         # Checks if a VM with the given UUID exists.
         #
         # @return [Boolean]

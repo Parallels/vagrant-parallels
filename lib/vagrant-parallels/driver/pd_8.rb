@@ -456,10 +456,6 @@ module VagrantPlugins
           end
         end
 
-        def verify!
-          execute('--version', retryable: true)
-        end
-
         def vm_exists?(uuid)
           raw("list", uuid).exit_code == 0
         end

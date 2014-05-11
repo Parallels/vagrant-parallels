@@ -116,7 +116,6 @@ module VagrantPlugins
                        :start,
                        :suspend,
                        :unregister,
-                       :verify!,
                        :vm_exists?
 
         protected
