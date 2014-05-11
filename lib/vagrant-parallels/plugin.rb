@@ -45,7 +45,7 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
-      guest_capability(:linux, :unmount_virtualbox_shared_folder) do
+      guest_capability(:linux, :unmount_parallels_shared_folder) do
         require_relative "guest_cap/linux/mount_virtualbox_shared_folder"
         GuestLinuxCap::MountParallelsSharedFolder
       end
