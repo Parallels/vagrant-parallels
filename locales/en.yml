@@ -48,11 +48,6 @@ en:
         Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
         this to be available on the PATH. If Parallels Desktop is installed, please find
         the `prlctl` binary and add it to the PATH environmental variable.
-      vm_inaccessible: |-
-        Your VM has become "inaccessible." Unfortunately, this is a critical error
-        with Parallels Desktop that Vagrant can not cleanly recover from.
-        Please open VirtualBox and clear out your inaccessible virtual machines
-        or find a way to fix them.
       vm_name_exists: |-
         Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing

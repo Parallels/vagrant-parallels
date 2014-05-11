@@ -35,10 +35,6 @@ module VagrantPlugins
         error_key(:parallels_no_room_for_high_level_network)
       end
 
-      class VMInaccessible < VagrantParallelsError
-        error_key(:vm_inaccessible)
-      end
-
       class VMNameExists < VagrantParallelsError
         error_key(:vm_name_exists)
       end
