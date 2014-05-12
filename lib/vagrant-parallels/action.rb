@@ -11,7 +11,6 @@ module VagrantPlugins
       # a bootup (i.e. not saved).
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
-          b.use SetPowerConsumption
           b.use SetName
           b.use Provision
           b.use PrepareNFSValidIds
@@ -21,7 +20,11 @@ module VagrantPlugins
           b.use Network
           b.use ClearNetworkInterfaces
           b.use SetHostname
-          # b.use SaneDefaults
+          b.use Call, IsDriverVersion, '>= 9' do |env1, b1|
+            if env1[:result]
+              b1.use SetPowerConsumption
+            end
+          end
           b.use Customize, "pre-boot"
           b.use Boot
           b.use Customize, "post-boot"

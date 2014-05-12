@@ -1,6 +1,8 @@
 module VagrantPlugins
   module Parallels
     module Action
+      # Important: It works only with Parallels Desktop >= 9 !
+      # Use "IsDriverVersion" middleware to wrap it.
       class SetPowerConsumption
         def initialize(app, env)
           @logger = Log4r::Logger.new("vagrant::plugins::parallels::power_consumption")
@@ -8,12 +10,6 @@ module VagrantPlugins
         end
 
         def call(env)
-          pd_version = env[:machine].provider.driver.version
-          if Gem::Version.new(pd_version) < Gem::Version.new("9")
-            @logger.info("Power consumption management is available only for Parallels Desktop >= 9")
-            return @app.call(env)
-          end
-
           # Optimization of power consumption is defined by "Longer Battery Life" state.
           vm_settings = env[:machine].provider.driver.read_settings
 
