@@ -146,18 +146,16 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
-  describe "read_guest_tools_version" do
-    let(:tools_version) {'9.0.23062.123456-something-else'}
+  describe "read_guest_tools_state" do
+    let(:tools_state) {'outdated'}
 
-    it "returns Guest Tools version in semantic format: 'x.y.z'" do
-      subject.read_guest_tools_version.should match(/^\d+.\d+\.\d+$/)
-      subject.read_guest_tools_version.should == "9.0.23062"
+    it "returns Guest Tools state as a symbol" do
+      subject.read_guest_tools_state.should be(:outdated)
     end
 
-    it "returns nil if Guest Tools version is invalid" do
-      settings = {"GuestTools" => {"vesion" => "something_wrong"}}
-      driver.should_receive(:read_settings).and_return(settings)
-      subject.read_guest_tools_version.should be_nil
+    it "returns :not_installed if Guest Tools state can't be reached" do
+      driver.should_receive(:read_settings).and_return(exit_code: 0)
+      subject.read_guest_tools_state.should be(:not_installed)
     end
   end
 

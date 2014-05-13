@@ -8,6 +8,7 @@ module VagrantPlugins
       attr_accessor :optimize_power_consumption
       attr_accessor :name
       attr_reader   :network_adapters
+      attr_accessor :update_guest_tools
 
 
       # Compatibility with virtualbox provider's syntax
@@ -21,6 +22,7 @@ module VagrantPlugins
         @network_adapters  = {}
         @name              = UNSET_VALUE
         @optimize_power_consumption = UNSET_VALUE
+        @update_guest_tools = UNSET_VALUE
 
         network_adapter(0, :shared)
       end
@@ -70,6 +72,10 @@ module VagrantPlugins
         end
 
         @name = nil if @name == UNSET_VALUE
+
+        if @update_guest_tools == UNSET_VALUE
+          @update_guest_tools = false
+        end
       end
 
       def validate(machine)

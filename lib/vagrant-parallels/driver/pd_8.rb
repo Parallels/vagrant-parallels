@@ -258,9 +258,10 @@ module VagrantPlugins
           iso_path
         end
 
-        def read_guest_tools_version
-          tools_version = read_settings.fetch('GuestTools', {}).fetch('version', '')
-          tools_version[/(^\d+\.\d+.\d+)/]
+        def read_guest_tools_state
+          state = read_settings.fetch('GuestTools', {}).fetch('state', nil)
+          state = "not_installed" if !state
+          state.to_sym
         end
 
         def read_host_info

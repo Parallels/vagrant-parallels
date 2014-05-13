@@ -1,8 +1,6 @@
 en:
   vagrant_parallels:
     parallels:
-      checking_guest_tools: |-
-        Checking for Parallels Tools installed on the VM...
       power_consumption:
         set_mode: |-
           Setting power consumption mode: "%{mode}"
@@ -101,23 +99,26 @@ en:
 #-------------------------------------------------------------------------------
     actions:
       vm:
-        check_guest_tools:
+        handle_guest_tools:
+          cant_install: |-
+            Vagrant doesn't support installing Parallels Tools for the guest OS
+            running in the machine. Vagrant attempt to continue, assuming that
+            Parallels Tools will be installed later.
+          checking: |-
+            Checking for Parallels Tools installed on the VM...
+          installing: |-
+            Installing the proper version of Parallels Tools. This may take a few minutes...
           not_detected: |-
-            No Parallels Tools were detected on the base box for this VM! Parallels
-            Tools are required for forwarded ports, shared folders, host only
-            networking, and more. If SSH fails on this machine, please install
-            the Parallels Tools and repackage the box to continue.
-
-            This is not an error message; everything may continue to work properly,
-            in which case you may ignore this message.
-          version_mismatch: |-
-            The Parallels Tools on this VM do not match the installed version of
-            Parallels Desktop! In most cases this is fine, but in rare cases it can
-            cause things such as shared folders to not work properly. If you see
-            shared folder errors, please update the Parallels Tools within the
-            virtual machine and reload your VM.
-
-            Parallels Tools Version: %{tools_version}
-            Parallels Desktop Version: %{parallels_version}
+            Parallels Tools were not detected on this VM! They are required
+            for forwarded ports, shared folders, host only networking and more.
+            If SSH fails or shared folders are not working on this machine,
+            please install Parallels Tools within the virtual machine and
+            reload your VM.
+          outdated: |-
+            Parallels Tools installed on this VM are outdated! In most cases
+            this is fine but in rare cases it can cause things such as shared
+            folders to not work properly. If you see shared folder errors,
+            please update Parallels Tools within the virtual machine and 
+            reload your VM.
         export:
           compacting: Compacting exported HDDs...

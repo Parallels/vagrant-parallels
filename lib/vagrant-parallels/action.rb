@@ -26,7 +26,7 @@ module VagrantPlugins
           b.use Boot
           b.use Customize, "post-boot"
           b.use WaitForCommunicator, [:starting, :running]
-          b.use CheckGuestTools
+          b.use HandleGuestTools
         end
       end
 
@@ -277,7 +277,7 @@ module VagrantPlugins
       end
 
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
-      autoload :CheckGuestTools, File.expand_path("../action/check_guest_tools", __FILE__)
+      autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
       autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
