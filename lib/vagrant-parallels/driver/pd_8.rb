@@ -237,6 +237,27 @@ module VagrantPlugins
           nil
         end
 
+        def read_guest_tools_iso_path(guest_os)
+          guest_os = guest_os.to_sym
+          iso_name ={
+            :linux   => "prl-tools-lin.iso",
+            :darwin  => "prl-tools-mac.iso",
+            :windows => "prl-tools-win.iso"
+          }
+          return nil if !iso_name[guest_os]
+
+          bundle_id =  'com.parallels.desktop.console'
+          bundle_path = execute('mdfind', "kMDItemCFBundleIdentifier == #{bundle_id}")
+          iso_path = File.expand_path("./Contents/Resources/Tools/#{iso_name[guest_os]}",
+                                      bundle_path.split("\n")[0])
+
+          if !File.exist?(iso_path)
+            raise Errors::ParallelsToolsIsoNotFound, :iso_path => iso_path
+          end
+
+          iso_path
+        end
+
         def read_guest_tools_version
           tools_version = read_settings.fetch('GuestTools', {}).fetch('version', '')
           tools_version[/(^\d+\.\d+.\d+)/]

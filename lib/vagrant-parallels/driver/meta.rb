@@ -90,6 +90,7 @@ module VagrantPlugins
                        :import,
                        :read_bridged_interfaces,
                        :read_guest_tools_version,
+                       :read_guest_tools_iso_path,
                        :read_guest_ip,
                        :read_guest_property,
                        :read_host_only_interfaces,

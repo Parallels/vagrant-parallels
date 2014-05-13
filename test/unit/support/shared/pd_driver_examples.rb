@@ -181,6 +181,32 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe "read_guest_tools_iso_path" do
+    before do
+      subprocess.stub(:execute).
+        with("mdfind", /^kMDItemCFBundleIdentifier ==/, an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "/Applications/Parallels Desktop.app"))
+    end
+
+    it "returns a valid path to the ISO" do
+      File.stub(:exist?).and_return(true)
+      iso_path = subject.read_guest_tools_iso_path("linux")
+      iso_path.should be_kind_of(String)
+      iso_path.should match(/prl-tools-lin\.iso$/)
+    end
+
+    it "raises an exception if ISO file does not exists" do
+      File.stub(:exist?).and_return(false)
+      expect { subject.read_guest_tools_iso_path("windows") }.
+        to raise_error(VagrantPlugins::Parallels::Errors::ParallelsToolsIsoNotFound)
+    end
+
+    it "returns nil if guest OS is unsupported or invalid" do
+      subject.read_guest_tools_iso_path("").should be_nil
+      subject.read_guest_tools_iso_path("bolgenos").should be_nil
+    end
+  end
+
   describe "read_mac_addresses" do
     it "returns MAC addresses of all network interface cards" do
       subject.read_mac_addresses.should be_kind_of(Hash)

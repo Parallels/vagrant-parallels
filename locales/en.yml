@@ -47,6 +47,12 @@ en:
         Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
         this to be available on the PATH. If Parallels Desktop is installed, please find
         the `prlctl` binary and add it to the PATH environmental variable.
+      parallels_tools_iso_not_found: |-
+        Parallels Tools ISO file does not exists. The Parallels provider uses it
+        to install or update Parallels Tools in the guest machine. Try to
+        reinstall Parallels Desktop.
+
+        Expected ISO path: "%{iso_path}"
       vm_name_exists: |-
         Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing

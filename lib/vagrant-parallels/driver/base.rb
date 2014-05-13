@@ -124,6 +124,13 @@ module VagrantPlugins
         def read_bridged_interfaces
         end
 
+        # Returns path to the Parallels Tools ISO file.
+        #
+        # @param [String] guest_os Guest os type: "linux", "darwin" or "windows"
+        # @return [String] Path to the ISO.
+        def read_guest_tools_iso_path(guest_os)
+        end
+
         # Returns the guest tools version that is installed on this VM.
         #
         # @return [String]

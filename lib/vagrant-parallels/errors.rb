@@ -35,6 +35,10 @@ module VagrantPlugins
         error_key(:parallels_no_room_for_high_level_network)
       end
 
+      class ParallelsToolsIsoNotFound < VagrantParallelsError
+        error_key(:parallels_tools_iso_not_found)
+      end
+
       class VMNameExists < VagrantParallelsError
         error_key(:vm_name_exists)
       end
