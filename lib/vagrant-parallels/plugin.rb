@@ -50,6 +50,11 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
+      guest_capability(:linux, :install_parallels_tools) do
+        require_relative "guest_cap/linux/install_parallels_tools"
+        GuestLinuxCap::InstallParallelsTools
+      end
+
       provider_capability(:parallels, :public_address) do
         require_relative "cap/public_address"
         Cap::PublicAddress
