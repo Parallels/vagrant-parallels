@@ -26,8 +26,7 @@ module VagrantPlugins
               end
 
               begin
-                env[:machine].provider.driver.execute_command(
-                  processed_command + [retryable: true])
+                env[:machine].provider.driver.execute_prlctl(*processed_command)
               rescue VagrantPlugins::Parallels::Errors::PrlCtlError => e
                 raise Vagrant::Errors::VMCustomizationFailed, {
                   :command => command,

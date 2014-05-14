@@ -18,9 +18,11 @@ module VagrantPlugins
 
 
         def compact(uuid)
-          used_drives = read_settings.fetch('Hardware', {}).select { |name, _| name.start_with? 'hdd' }
+          used_drives = read_settings.fetch('Hardware', {}).select do |name, _|
+            name.start_with? 'hdd'
+          end
           used_drives.each_value do |drive_params|
-            execute(:prl_disk_tool, 'compact', '--hdd', drive_params["image"]) do |type, data|
+            execute('prl_disk_tool', 'compact', '--hdd', drive_params['image']) do |type, data|
               lines = data.split("\r")
               # The progress of the compact will be in the last line. Do a greedy
               # regular expression to find what we're looking for.
@@ -34,13 +36,13 @@ module VagrantPlugins
         def clear_shared_folders
           share_ids = read_shared_folders.keys
           share_ids.each do |id|
-            execute("set", @uuid, "--shf-host-del", id)
+            execute_prlctl('set', @uuid, '--shf-host-del', id)
           end
         end
 
         def create_host_only_network(options)
           # Create the interface
-          execute(:prlsrvctl, "net", "add", options[:network_id], "--type", "host-only")
+          execute_prlsrvctl('net', 'add', options[:network_id], '--type', 'host-only')
 
           # Configure it
           args = ["--ip", "#{options[:adapter_ip]}/#{options[:netmask]}"]
@@ -50,10 +52,10 @@ module VagrantPlugins
                          "--ip-scope-end", options[:dhcp][:upper]])
           end
 
-          execute(:prlsrvctl, "net", "set", options[:network_id], *args)
+          execute_prlsrvctl('net', 'set', options[:network_id], *args)
 
           # Determine interface to which it has been bound
-          net_info = json { execute(:prlsrvctl, 'net', 'info', options[:network_id], '--json', retryable: true) }
+          net_info = json { execute_prlsrvctl('net', 'info', options[:network_id], '--json') }
           iface_name = net_info['Bound To']
 
           # Return the details
@@ -66,13 +68,13 @@ module VagrantPlugins
         end
 
         def delete
-          execute('delete', @uuid)
+          execute_prlctl('delete', @uuid)
         end
 
         def delete_disabled_adapters
           read_settings.fetch('Hardware', {}).each do |adapter, params|
-            if adapter.start_with?('net') and !params.fetch("enabled", true)
-              execute('set', @uuid, '--device-del', adapter)
+            if adapter.start_with?('net') and !params.fetch('enabled', true)
+              execute_prlctl('set', @uuid, '--device-del', adapter)
             end
           end
         end
@@ -97,19 +99,21 @@ module VagrantPlugins
 
           networks.each do |net|
             # Delete the actual host only network interface.
-            execute(:prlsrvctl, "net", "del", net["Network ID"])
+            execute_prlsrvctl('net', 'del', net['Network ID'])
           end
         end
 
         def enable_adapters(adapters)
           # Get adapters which have already configured for this VM
           # Such adapters will be just overridden
-          existing_adapters = read_settings.fetch('Hardware', {}).keys.select { |name| name.start_with? 'net' }
+          existing_adapters = read_settings.fetch('Hardware', {}).keys.select do |name|
+            name.start_with? 'net'
+          end
 
           # Disable all previously existing adapters (except shared 'vnet0')
           existing_adapters.each do |adapter|
             if adapter != 'vnet0'
-              execute('set', @uuid, '--device-set', adapter, '--disable')
+              execute_prlctl('set', @uuid, '--device-set', adapter, '--disable')
             end
           end
 
@@ -141,16 +145,15 @@ module VagrantPlugins
               args.concat(["--adapter-type", adapter[:nic_type].to_s])
             end
 
-            execute("set", @uuid, *args)
+            execute_prlctl("set", @uuid, *args)
           end
         end
 
-        def execute_command(command)
-          execute(*command)
-        end
-
         def export(path, tpl_name)
-          execute("clone", @uuid, "--name", tpl_name, "--template", "--dst", path.to_s) do |type, data|
+          execute_prlctl('clone', @uuid,
+                         '--name', tpl_name,
+                         '--template',
+                         '--dst', path.to_s) do |type, data|
             lines = data.split("\r")
             # The progress of the export will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
@@ -162,7 +165,7 @@ module VagrantPlugins
         end
 
         def halt(force=false)
-          args = ['stop', @uuid]
+          args = ['prlctl', 'stop', @uuid]
           args << '--kill' if force
           execute(*args)
         end
@@ -171,7 +174,7 @@ module VagrantPlugins
           template_name = read_vms.key(template_uuid)
           vm_name = "#{template_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
 
-          execute("clone", template_uuid, '--name', vm_name) do |type, data|
+          execute_prlctl('clone', template_uuid, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
@@ -192,7 +195,7 @@ module VagrantPlugins
           bridged_ifaces = []
           net_list.keys.each do |iface|
             info = {}
-            ifconfig = execute(:ifconfig, iface)
+            ifconfig = execute('ifconfig', iface)
             # Assign default values
             info[:name]    = iface
             info[:ip]      = "0.0.0.0"
@@ -240,7 +243,7 @@ module VagrantPlugins
         end
 
         def read_host_info
-          json { execute('server', 'info', '--json', retryable: true) }
+          json { execute_prlctl('server', 'info', '--json') }
         end
 
         def read_host_only_interfaces
@@ -250,7 +253,7 @@ module VagrantPlugins
           hostonly_ifaces = []
           net_list.each do |iface|
             info = {}
-            net_info = json { execute(:prlsrvctl, 'net', 'info', iface['Network ID'], '--json') }
+            net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
             # Really we need to work with bounded virtual interface
             info[:name]     = net_info['Bound To']
             info[:ip]       = net_info['Parallels adapter']['IP address']
@@ -261,7 +264,8 @@ module VagrantPlugins
             # There may be a fake DHCPv4 parameters
             # We can trust them only if adapter IP and DHCP IP are in the same subnet
             dhcp_ip = net_info['DHCPv4 server']['Server address']
-            if network_address(info[:ip], info[:netmask]) == network_address(dhcp_ip, info[:netmask])
+            if network_address(info[:ip], info[:netmask]) ==
+              network_address(dhcp_ip, info[:netmask])
               info[:dhcp] = {
                 :ip      => dhcp_ip,
                 :lower   => net_info['DHCPv4 server']['IP scope start address'],
@@ -319,7 +323,7 @@ module VagrantPlugins
         end
 
         def read_settings
-          vm = json { execute('list', @uuid, '--info', '--json', retryable: true).gsub(/^INFO/, '') }
+          vm = json { execute_prlctl('list', @uuid, '--info', '--json').gsub(/^INFO/, '') }
           vm.last
         end
 
@@ -328,7 +332,9 @@ module VagrantPlugins
           shared_net = read_virtual_networks.detect { |net| net['Type'] == 'shared' }
           return nil if !shared_net
 
-          net_info = json { execute(:prlsrvctl, 'net', 'info', shared_net['Network ID'], '--json') }
+          net_info = json do
+            execute_prlsrvctl('net', 'info', shared_net['Network ID'], '--json')
+          end
           info = {
             name:    net_info['Bound To'],
             ip:      net_info['Parallels adapter']['IP address'],
@@ -358,22 +364,22 @@ module VagrantPlugins
         end
 
         def read_state
-          vm = json { execute('list', @uuid, '--json', retryable: true).gsub(/^INFO/, '') }
+          vm = json { execute_prlctl('list', @uuid, '--json').gsub(/^INFO/, '') }
           return nil if !vm.last
           vm.last.fetch('status').to_sym
         end
 
         def read_virtual_networks
-          json { execute(:prlsrvctl, 'net', 'list', '--json', retryable: true) }
+          json { execute_prlsrvctl('net', 'list', '--json') }
         end
 
         def read_vms
           results = {}
           vms_arr = json([]) do
-            execute('list', '--all', '--json', retryable: true).gsub(/^INFO/, '')
+            execute_prlctl('list', '--all', '--json').gsub(/^INFO/, '')
           end
           templates_arr = json([]) do
-            execute('list', '--all', '--json', '--template', retryable: true).gsub(/^INFO/, '')
+            execute_prlctl('list', '--all', '--json', '--template').gsub(/^INFO/, '')
           end
           vms = vms_arr | templates_arr
           vms.each do |item|
@@ -383,13 +389,14 @@ module VagrantPlugins
           results
         end
 
-        # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
+        # Parse the JSON from *all* VMs and templates.
+        # Then return an array of objects (without duplicates)
         def read_vms_info
           vms_arr = json([]) do
-            execute('list', '--all','--info', '--json', retryable: true).gsub(/^INFO/, '')
+            execute_prlctl('list', '--all','--info', '--json').gsub(/^INFO/, '')
           end
           templates_arr = json([]) do
-            execute('list', '--all','--info', '--json', '--template', retryable: true).gsub(/^INFO/, '')
+            execute_prlctl('list', '--all','--info', '--json', '--template').gsub(/^INFO/, '')
           end
           vms_arr | templates_arr
         end
@@ -406,7 +413,7 @@ module VagrantPlugins
         end
 
         def register(pvm_file, regen_src_uuid=false)
-          args = ['register', pvm_file]
+          args = ['prlctl', 'register', pvm_file]
           args << '--regenerate-src-uuid' if regen_src_uuid
           execute(*args)
         end
@@ -416,21 +423,26 @@ module VagrantPlugins
         end
 
         def resume
-          execute('resume', @uuid)
+          execute_prlctl('resume', @uuid)
         end
 
         def set_mac_address(mac)
-          execute('set', @uuid, '--device-set', 'net0', '--type', 'shared', '--mac', mac)
+          execute_prlctl('set', @uuid,
+                         '--device-set', 'net0',
+                         '--type', 'shared',
+                         '--mac', mac)
         end
 
         def set_name(name)
-          execute('set', @uuid, '--name', name, :retryable => true)
+          execute_prlctl('set', @uuid, '--name', name)
         end
 
         def share_folders(folders)
           folders.each do |folder|
             # Add the shared folder
-            execute('set', @uuid, '--shf-host-add', folder[:name], '--path', folder[:hostpath])
+            execute_prlctl('set', @uuid,
+                           '--shf-host-add', folder[:name],
+                           '--path', folder[:hostpath])
           end
         end
 
@@ -439,25 +451,25 @@ module VagrantPlugins
         end
 
         def start
-          execute('start', @uuid)
+          execute_prlctl('start', @uuid)
         end
 
         def suspend
-          execute('suspend', @uuid)
+          execute_prlctl('suspend', @uuid)
         end
 
         def unregister(uuid)
-          execute("unregister", uuid)
+          execute_prlctl('unregister', uuid)
         end
 
         def unshare_folders(names)
           names.each do |name|
-            execute("set", @uuid, "--shf-host-del", name)
+            execute_prlctl('set', @uuid, '--shf-host-del', name)
           end
         end
 
         def vm_exists?(uuid)
-          raw("list", uuid).exit_code == 0
+          raw('prlctl', 'list', uuid).exit_code == 0
         end
       end
     end

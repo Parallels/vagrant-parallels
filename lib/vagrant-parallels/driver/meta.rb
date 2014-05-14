@@ -84,7 +84,7 @@ module VagrantPlugins
                        :delete_disabled_adapters,
                        :delete_unused_host_only_networks,
                        :enable_adapters,
-                       :execute_command,
+                       :execute_prlctl,
                        :export,
                        :halt,
                        :import,
@@ -132,7 +132,7 @@ module VagrantPlugins
           #
           # But we need exactly the first 3 numbers: "x.x.x"
 
-          if execute('--version', retryable: true) =~ /prlctl version (\d+\.\d+.\d+)/
+          if execute('prlctl', '--version') =~ /prlctl version (\d+\.\d+.\d+)/
             return $1
           else
             return nil

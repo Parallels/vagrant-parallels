@@ -3,7 +3,6 @@ require 'log4r'
 require 'vagrant/util/busy'
 require 'vagrant/util/network_ip'
 require 'vagrant/util/platform'
-require 'vagrant/util/retryable'
 require 'vagrant/util/subprocess'
 
 module VagrantPlugins
@@ -24,17 +23,11 @@ module VagrantPlugins
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
 
-          # Set the list of required CLI utils
-          @cli_paths = {
-            :prlctl        => "prlctl",
-            :prlsrvctl     => "prlsrvctl",
-            :prl_disk_tool => "prl_disk_tool",
-            :ifconfig      => "ifconfig"
-          }
+          @prlctl_path    = "prlctl"
+          @prlsrvctl_path = "prlsrvctl"
 
-          @cli_paths.each do |name, path|
-            @logger.info("CLI utility '#{name}' path: #{path}")
-          end
+          @logger.info("prlctl path: #{@prlctl_path}")
+          @logger.info("prlsrvctl path: #{@prlsrvctl_path}")
         end
 
         # Clears the shared folders that have been set on the virtual machine.
@@ -93,7 +86,7 @@ module VagrantPlugins
         # Raises a prlctl error if it fails.
         #
         # @param [Array] command Command to execute.
-        def execute_command(command)
+        def execute_prlctl(command)
         end
 
         # Exports the virtual machine to the given path.
@@ -250,37 +243,28 @@ module VagrantPlugins
         def vm_exists?(uuid)
         end
 
-        # Execute the given subcommand for PrlCtl and return the output.
+        # Wraps 'execute' and returns the output of given 'prlctl' subcommand.
+        def execute_prlctl(*command, &block)
+          execute(@prlctl_path, *command, &block)
+        end
+
+        #Wraps 'execute' and returns the output of given 'prlsrvctl' subcommand.
+        def execute_prlsrvctl(*command, &block)
+          execute(@prlsrvctl_path, *command, &block)
+        end
+
+        # Execute the given command and return the output.
         def execute(*command, &block)
-          # Get the options hash if it exists
-          opts = {}
-          opts = command.pop if command.last.is_a?(Hash)
+          r = raw(*command, &block)
 
-          tries = opts[:retryable] ? 3 : 0
-
-          # Variable to store our execution result
-          r = nil
-
-          retryable(:on => VagrantPlugins::Parallels::Errors::PrlCtlError, :tries => tries, :sleep => 1) do
-            # If there is an error with PrlCtl, this gets set to true
-            errored = false
-
-            # Execute the command
-            r = raw(*command, &block)
-
-            # If the command was a failure, then raise an exception that is
-            # nicely handled by Vagrant.
-            if r.exit_code != 0
-              if @interrupted
-                @logger.info("Exit code != 0, but interrupted. Ignoring.")
-              else
-                errored = true
-              end
-            end
-
-            # If there was an error running prlctl, show the error and the
-            # output.
-            if errored
+          # If the command was a failure, then raise an exception that is
+          # nicely handled by Vagrant.
+          if r.exit_code != 0
+            if @interrupted
+              @logger.info("Exit code != 0, but interrupted. Ignoring.")
+            else
+              # If there was an error running prlctl, show the error and the
+              # output.
               raise VagrantPlugins::Parallels::Errors::PrlCtlError,
                 :command => command.inspect,
                 :stderr  => r.stderr
@@ -302,13 +286,8 @@ module VagrantPlugins
           # Append in the options for subprocess
           command << { :notify => [:stdout, :stderr] }
 
-          # Get the utility from the first argument:
-          # 'prlctl' by default
-          util = @cli_paths.has_key?(command.first) ? command.delete_at(0) : :prlctl
-          cli = @cli_paths[util]
-
           Vagrant::Util::Busy.busy(int_callback) do
-            Vagrant::Util::Subprocess.execute(cli, *command, &block)
+            Vagrant::Util::Subprocess.execute(*command, &block)
           end
         end
       end
