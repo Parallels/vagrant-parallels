@@ -263,9 +263,9 @@ module VagrantPlugins
             if @interrupted
               @logger.info("Exit code != 0, but interrupted. Ignoring.")
             else
-              # If there was an error running prlctl, show the error and the
+              # If there was an error running command, show the error and the
               # output.
-              raise VagrantPlugins::Parallels::Errors::PrlCtlError,
+              raise VagrantPlugins::Parallels::Errors::ExecutionError,
                 :command => command.inspect,
                 :stderr  => r.stderr
             end

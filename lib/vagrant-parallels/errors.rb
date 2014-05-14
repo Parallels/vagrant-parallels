@@ -15,8 +15,8 @@ module VagrantPlugins
         error_key(:mac_os_x_required)
       end
 
-      class PrlCtlError < VagrantParallelsError
-        error_key(:prlctl_error)
+      class ExecutionError < VagrantParallelsError
+        error_key(:execution_error)
       end
 
       class ParallelsInstallIncomplete < VagrantParallelsError
