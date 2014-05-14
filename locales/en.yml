@@ -18,14 +18,14 @@ en:
         readable for the user that is running Vagrant.
 
         Parallels DHCP leases file: %{leases_file}
-      mac_os_x_required: |-
-        Parallels provider only works on OS X (or Mac OS X).
       execution_error: |-
         There was an error while command execution. The command and stderr is shown below.
 
         Command: %{command}
 
         Stderr: %{stderr}
+      mac_os_x_required: |-
+        Parallels provider works only on OS X (Mac OS X) systems.
       parallels_install_incomplete: |-
         Parallels Desktop is complaining that the installation is incomplete.
         Try to reinstall Parallels Desktop or contact Parallels support.
