@@ -84,14 +84,14 @@ module VagrantPlugins
                        :delete_disabled_adapters,
                        :delete_unused_host_only_networks,
                        :enable_adapters,
-                       :execute_command,
+                       :execute_prlctl,
                        :export,
                        :halt,
                        :import,
                        :read_bridged_interfaces,
-                       :read_guest_tools_version,
+                       :read_guest_tools_state,
+                       :read_guest_tools_iso_path,
                        :read_guest_ip,
-                       :read_guest_property,
                        :read_host_only_interfaces,
                        :read_mac_address,
                        :read_mac_addresses,
@@ -116,7 +116,6 @@ module VagrantPlugins
                        :start,
                        :suspend,
                        :unregister,
-                       :verify!,
                        :vm_exists?
 
         protected
@@ -133,7 +132,7 @@ module VagrantPlugins
           #
           # But we need exactly the first 3 numbers: "x.x.x"
 
-          if execute('--version', retryable: true) =~ /prlctl version (\d+\.\d+.\d+)/
+          if execute('prlctl', '--version') =~ /prlctl version (\d+\.\d+.\d+)/
             return $1
           else
             return nil

@@ -1,8 +1,6 @@
 en:
   vagrant_parallels:
     parallels:
-      checking_guest_tools: |-
-        Checking for Parallels Tools installed on the VM...
       power_consumption:
         set_mode: |-
           Setting power consumption mode: "%{mode}"
@@ -18,15 +16,14 @@ en:
         readable for the user that is running Vagrant.
 
         Parallels DHCP leases file: %{leases_file}
-      mac_os_x_required: |-
-        Parallels provider only works on OS X (or Mac OS X).
-      prlctl_error: |-
-        There was an error while executing `prlctl`, a CLI used by Vagrant
-        for controlling Parallels Desktop. The command and stderr is shown below.
+      execution_error: |-
+        There was an error while command execution. The command and stderr is shown below.
 
         Command: %{command}
 
         Stderr: %{stderr}
+      mac_os_x_required: |-
+        Parallels provider works only on OS X (Mac OS X) systems.
       parallels_install_incomplete: |-
         Parallels Desktop is complaining that the installation is incomplete.
         Try to reinstall Parallels Desktop or contact Parallels support.
@@ -48,11 +45,16 @@ en:
         Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
         this to be available on the PATH. If Parallels Desktop is installed, please find
         the `prlctl` binary and add it to the PATH environmental variable.
-      vm_inaccessible: |-
-        Your VM has become "inaccessible." Unfortunately, this is a critical error
-        with Parallels Desktop that Vagrant can not cleanly recover from.
-        Please open VirtualBox and clear out your inaccessible virtual machines
-        or find a way to fix them.
+      parallels_tools_iso_not_found: |-
+        Parallels Tools ISO file does not exists. The Parallels provider uses it
+        to install or update Parallels Tools in the guest machine. Try to
+        reinstall Parallels Desktop.
+
+        Expected ISO path: "%{iso_path}"
+      vm_import_failure: |-
+        The VM import failed! Please verify that the box you're using is not
+        corrupted and try again.
+
       vm_name_exists: |-
         Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing
@@ -101,23 +103,26 @@ en:
 #-------------------------------------------------------------------------------
     actions:
       vm:
-        check_guest_tools:
+        handle_guest_tools:
+          cant_install: |-
+            Vagrant doesn't support installing Parallels Tools for the guest OS
+            running in the machine. Vagrant attempt to continue, assuming that
+            Parallels Tools will be installed later.
+          checking: |-
+            Checking for Parallels Tools installed on the VM...
+          installing: |-
+            Installing the proper version of Parallels Tools. This may take a few minutes...
           not_detected: |-
-            No Parallels Tools were detected on the base box for this VM! Parallels
-            Tools are required for forwarded ports, shared folders, host only
-            networking, and more. If SSH fails on this machine, please install
-            the Parallels Tools and repackage the box to continue.
-
-            This is not an error message; everything may continue to work properly,
-            in which case you may ignore this message.
-          version_mismatch: |-
-            The Parallels Tools on this VM do not match the installed version of
-            Parallels Desktop! In most cases this is fine, but in rare cases it can
-            cause things such as shared folders to not work properly. If you see
-            shared folder errors, please update the Parallels Tools within the
-            virtual machine and reload your VM.
-
-            Parallels Tools Version: %{tools_version}
-            Parallels Desktop Version: %{parallels_version}
+            Parallels Tools were not detected on this VM! They are required
+            for forwarded ports, shared folders, host only networking and more.
+            If SSH fails or shared folders are not working on this machine,
+            please install Parallels Tools within the virtual machine and
+            reload your VM.
+          outdated: |-
+            Parallels Tools installed on this VM are outdated! In most cases
+            this is fine but in rare cases it can cause things such as shared
+            folders to not work properly. If you see shared folder errors,
+            please update Parallels Tools within the virtual machine and 
+            reload your VM.
         export:
           compacting: Compacting exported HDDs...

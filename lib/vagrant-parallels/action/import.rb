@@ -15,7 +15,7 @@ module VagrantPlugins
           unregister_template
 
           # Flag as erroneous and return if import failed
-          raise Vagrant::Errors::VMImportFailure if !env[:machine].id
+          raise VagrantPlugins::Parallels::Errors::VMImportFailure if !env[:machine].id
 
           # Import completed successfully. Continue the chain
           @app.call(env)

@@ -15,8 +15,8 @@ module VagrantPlugins
         error_key(:mac_os_x_required)
       end
 
-      class PrlCtlError < VagrantParallelsError
-        error_key(:prlctl_error)
+      class ExecutionError < VagrantParallelsError
+        error_key(:execution_error)
       end
 
       class ParallelsInstallIncomplete < VagrantParallelsError
@@ -35,8 +35,12 @@ module VagrantPlugins
         error_key(:parallels_no_room_for_high_level_network)
       end
 
-      class VMInaccessible < VagrantParallelsError
-        error_key(:vm_inaccessible)
+      class ParallelsToolsIsoNotFound < VagrantParallelsError
+        error_key(:parallels_tools_iso_not_found)
+      end
+
+      class VMImportFailure < VagrantParallelsError
+        error_key(:vm_import_failure)
       end
 
       class VMNameExists < VagrantParallelsError

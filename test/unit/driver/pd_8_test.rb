@@ -9,6 +9,7 @@ describe VagrantPlugins::Parallels::Driver::PD_8 do
   let(:tpl_uuid) {'1234-some-template-uuid-5678'}
   let(:tpl_name) {'Some_Template_Name'}
 
+  let(:tools_state) {'installed'}
   let(:tools_version) {'8.0.18615.123456'}
 
   let(:hostonly_iface) {'vnic10'}
@@ -75,6 +76,7 @@ INFO[
     "State": "stopped",
     "Home": "/path/to/#{vm_name}.pvm/",
     "GuestTools": {
+      "state": "#{tools_state}",
       "version": "#{tools_version}"
     },
     "Hardware": {
@@ -135,6 +137,7 @@ INFO[
     "State": "stopped",
     "Home": "/path/to/#{tpl_name}.pvm/",
     "GuestTools": {
+      "state": "#{tools_state}",
       "version": "#{tools_version}"
     },
     "Hardware": {

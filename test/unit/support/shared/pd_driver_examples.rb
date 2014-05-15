@@ -146,18 +146,16 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
-  describe "read_guest_tools_version" do
-    let(:tools_version) {'9.0.23062.123456-something-else'}
+  describe "read_guest_tools_state" do
+    let(:tools_state) {'outdated'}
 
-    it "returns Guest Tools version in semantic format: 'x.y.z'" do
-      subject.read_guest_tools_version.should match(/^\d+.\d+\.\d+$/)
-      subject.read_guest_tools_version.should == "9.0.23062"
+    it "returns Guest Tools state as a symbol" do
+      subject.read_guest_tools_state.should be(:outdated)
     end
 
-    it "returns nil if Guest Tools version is invalid" do
-      settings = {"GuestTools" => {"vesion" => "something_wrong"}}
-      driver.should_receive(:read_settings).and_return(settings)
-      subject.read_guest_tools_version.should be_nil
+    it "returns :not_installed if Guest Tools state can't be reached" do
+      driver.should_receive(:read_settings).and_return(exit_code: 0)
+      subject.read_guest_tools_state.should be(:not_installed)
     end
   end
 
@@ -178,6 +176,32 @@ shared_examples "parallels desktop driver" do |options|
         and_raise(Errno::EACCES)
       expect { subject.read_guest_ip }.
         to raise_error(VagrantPlugins::Parallels::Errors::DhcpLeasesNotAccessible)
+    end
+  end
+
+  describe "read_guest_tools_iso_path" do
+    before do
+      subprocess.stub(:execute).
+        with("mdfind", /^kMDItemCFBundleIdentifier ==/, an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "/Applications/Parallels Desktop.app"))
+    end
+
+    it "returns a valid path to the ISO" do
+      File.stub(:exist?).and_return(true)
+      iso_path = subject.read_guest_tools_iso_path("linux")
+      iso_path.should be_kind_of(String)
+      iso_path.should match(/prl-tools-lin\.iso$/)
+    end
+
+    it "raises an exception if ISO file does not exists" do
+      File.stub(:exist?).and_return(false)
+      expect { subject.read_guest_tools_iso_path("windows") }.
+        to raise_error(VagrantPlugins::Parallels::Errors::ParallelsToolsIsoNotFound)
+    end
+
+    it "returns nil if guest OS is unsupported or invalid" do
+      subject.read_guest_tools_iso_path("").should be_nil
+      subject.read_guest_tools_iso_path("bolgenos").should be_nil
     end
   end
 

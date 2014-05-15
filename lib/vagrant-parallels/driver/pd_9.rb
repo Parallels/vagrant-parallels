@@ -16,12 +16,12 @@ module VagrantPlugins
         end
 
         def read_settings
-          vm = json { execute('list', @uuid, '--info', '--json', retryable: true) }
+          vm = json { execute_prlctl('list', @uuid, '--info', '--json') }
           vm.last
         end
 
         def read_state
-          vm = json { execute('list', @uuid, '--json', retryable: true) }
+          vm = json { execute_prlctl('list', @uuid, '--json') }
           return nil if !vm.last
           vm.last.fetch('status').to_sym
         end
@@ -29,10 +29,10 @@ module VagrantPlugins
         def read_vms
           results = {}
           vms_arr = json([]) do
-            execute('list', '--all', '--json', retryable: true)
+            execute_prlctl('list', '--all', '--json')
           end
           templates_arr = json([]) do
-            execute('list', '--all', '--json', '--template', retryable: true)
+            execute_prlctl('list', '--all', '--json', '--template')
           end
           vms = vms_arr | templates_arr
           vms.each do |item|
@@ -45,17 +45,17 @@ module VagrantPlugins
         # Parse the JSON from *all* VMs and templates. Then return an array of objects (without duplicates)
         def read_vms_info
           vms_arr = json([]) do
-            execute('list', '--all','--info', '--json', retryable: true)
+            execute_prlctl('list', '--all','--info', '--json')
           end
           templates_arr = json([]) do
-            execute('list', '--all','--info', '--json', '--template', retryable: true)
+            execute_prlctl('list', '--all','--info', '--json', '--template')
           end
           vms_arr | templates_arr
         end
 
         def set_power_consumption_mode(optimized)
           state = optimized ? 'on' : 'off'
-          execute('set', @uuid, '--longer-battery-life', state)
+          execute_prlctl('set', @uuid, '--longer-battery-life', state)
         end
       end
     end

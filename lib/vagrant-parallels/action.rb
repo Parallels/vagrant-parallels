@@ -11,28 +11,25 @@ module VagrantPlugins
       # a bootup (i.e. not saved).
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckAccessible
-          b.use SetPowerConsumption
           b.use SetName
-          # b.use ClearForwardedPorts
           b.use Provision
-          b.use EnvSet, :port_collision_repair => true
-          # b.use PrepareForwardedPortCollisionParams
-          # b.use HandleForwardedPortCollisions
           b.use PrepareNFSValidIds
           b.use SyncedFolderCleanup
           b.use SyncedFolders
           b.use PrepareNFSSettings
           b.use Network
           b.use ClearNetworkInterfaces
-          # b.use ForwardPorts
           b.use SetHostname
-          # b.use SaneDefaults
+          b.use Call, IsDriverVersion, '>= 9' do |env1, b1|
+            if env1[:result]
+              b1.use SetPowerConsumption
+            end
+          end
           b.use Customize, "pre-boot"
           b.use Boot
           b.use Customize, "post-boot"
           b.use WaitForCommunicator, [:starting, :running]
-          b.use CheckGuestTools
+          b.use HandleGuestTools
         end
       end
 
@@ -40,26 +37,27 @@ module VagrantPlugins
       # freeing the resources of the underlying virtual machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use Call, Created do |env1, b2|
-            if !env1[:result]
-              b2.use MessageNotCreated
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
               next
             end
 
-            b2.use Call, DestroyConfirm do |env2, b3|
-              if env2[:result]
-                b3.use CheckAccessible
-                b3.use EnvSet, :force_halt => true
-                b3.use action_halt
-                b3.use Destroy
-                b3.use DestroyUnusedNetworkInterfaces
-                b3.use ProvisionerCleanup
-                b3.use PrepareNFSValidIds
-                b3.use SyncedFolderCleanup
-              else
-                b3.use MessageWillNotDestroy
+            b1.use Call, DestroyConfirm do |env2, b2|
+              if !env2[:result]
+                b2.use Message, I18n.t("vagrant.commands.destroy.will_not_destroy",
+                                       :name => env2[:machine].name)
+                next
               end
+
+              b2.use EnvSet, :force_halt => true
+              b2.use action_halt
+              b2.use Destroy
+              b2.use DestroyUnusedNetworkInterfaces
+              b2.use ProvisionerCleanup
+              b2.use PrepareNFSValidIds
+              b2.use SyncedFolderCleanup
             end
           end
         end
@@ -69,23 +67,23 @@ module VagrantPlugins
       # the virtual machine, gracefully or by force.
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use Call, Created do |env, b2|
-            if env[:result]
-              b2.use CheckAccessible
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              next
+            end
 
-              b2.use Call, IsSuspended do |env2, b3|
-                next if !env2[:result]
-                b3.use Resume
+            b1.use Call, IsState, :suspended do |env2, b2|
+              if env2[:result]
+                b2.use Resume
               end
+            end
 
-              b2.use Call, GracefulHalt, :stopped, :running do |env2, b3|
-                if !env2[:result]
-                  b3.use ForcedHalt
-                end
+            b1.use Call, GracefulHalt, :stopped, :running do |env2, b2|
+              if !env2[:result]
+                b2.use ForcedHalt
               end
-            else
-              b2.use MessageNotCreated
             end
           end
         end
@@ -94,22 +92,20 @@ module VagrantPlugins
       # This action packages the virtual machine into a single box file.
       def self.action_package
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use Call, Created do |env1, b2|
-            if !env1[:result]
-              b2.use MessageNotCreated
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
               next
             end
 
-            b2.use SetupPackageFiles
-            b2.use CheckAccessible
-            b2.use action_halt
-            #b2.use ClearForwardedPorts
-            b2.use PrepareNFSValidIds
-            b2.use SyncedFolderCleanup
-            b2.use Package
-            b2.use Export
-            b2.use PackageConfigFiles
+            b1.use SetupPackageFiles
+            b1.use action_halt
+            b1.use PrepareNFSValidIds
+            b1.use SyncedFolderCleanup
+            b1.use Package
+            b1.use Export
+            b1.use PackageConfigFiles
           end
         end
       end
@@ -117,22 +113,20 @@ module VagrantPlugins
       # This action just runs the provisioners on the machine.
       def self.action_provision
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
           b.use ConfigValidate
-          b.use Call, Created do |env1, b2|
-            if !env1[:result]
-              b2.use MessageNotCreated
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
               next
             end
 
-            b2.use Call, IsRunning do |env2, b3|
+            b1.use Call, IsState, :running do |env2, b2|
               if !env2[:result]
-                b3.use MessageNotRunning
+                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
                 next
               end
 
-              b3.use CheckAccessible
-              b3.use Provision
+              b2.use Provision
             end
           end
         end
@@ -143,16 +137,15 @@ module VagrantPlugins
       # machine back up with the new configuration.
       def self.action_reload
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use Call, Created do |env1, b2|
-            if !env1[:result]
-              b2.use MessageNotCreated
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
               next
             end
 
-            b2.use ConfigValidate
-            b2.use action_halt
-            b2.use action_start
+            b1.use action_halt
+            b1.use action_start
           end
         end
       end
@@ -161,16 +154,15 @@ module VagrantPlugins
       # suspended machines.
       def self.action_resume
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use Call, Created do |env, b2|
-            if env[:result]
-              b2.use CheckAccessible
-              b2.use EnvSet, :port_collision_repair => false
-              b2.use Resume
-              b2.use WaitForCommunicator, [:resuming, :running]
-            else
-              b2.use MessageNotCreated
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              next
             end
+
+            b1.use Resume
+            b1.use WaitForCommunicator, [:resuming, :running]
           end
         end
       end
@@ -178,22 +170,44 @@ module VagrantPlugins
       # This is the action that will exec into an SSH shell.
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use CheckCreated
-          b.use CheckAccessible
-          b.use CheckRunning
-          b.use SSHExec
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              next
+            end
+
+            b1.use Call, IsState, :running do |env2, b2|
+              if !env2[:result]
+                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
+                next
+              end
+
+              b2.use SSHExec
+            end
+          end
         end
       end
 
       # This is the action that will run a single SSH command.
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use CheckCreated
-          b.use CheckAccessible
-          b.use CheckRunning
-          b.use SSHRun
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              next
+            end
+
+            b1.use Call, IsState, :running do |env2, b2|
+              if !env2[:result]
+                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
+                next
+              end
+
+              b2.use SSHRun
+            end
+          end
         end
       end
 
@@ -201,26 +215,24 @@ module VagrantPlugins
       # A precondition of this action is that the VM exists.
       def self.action_start
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use ConfigValidate
           b.use BoxCheckOutdated
-          b.use Call, IsRunning do |env, b2|
+          b.use Call, IsState, :running do |env1, b1|
             # If the VM is running, then our work here is done, exit
-            if env[:result]
-              b2.use MessageAlreadyRunning
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant_parallels.commands.common.vm_already_running")
               next
             end
 
-            b2.use Call, IsSuspended do |env2, b3|
+            b1.use Call, IsState, :suspended do |env2, b2|
               if env2[:result]
                 # The VM is suspended, so just resume it
-                b3.use action_resume
+                b2.use action_resume
                 next
               end
 
               # The VM is not saved, so we must have to boot it up
               # like normal. Boot!
-              b3.use action_boot
+              b2.use action_boot
             end
           end
         end
@@ -230,14 +242,14 @@ module VagrantPlugins
       # the virtual machine.
       def self.action_suspend
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-          b.use Call, Created do |env, b2|
-            if env[:result]
-              b2.use CheckAccessible
-              b2.use Suspend
-            else
-              b2.use MessageNotCreated
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              next
             end
+
+            b1.use Suspend
           end
         end
       end
@@ -246,24 +258,21 @@ module VagrantPlugins
       # the box, configuring metadata, and booting.
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
-          b.use CheckParallels
-
           # Handle box_url downloading early so that if the Vagrantfile
           # references any files in the box or something it all just
           # works fine.
-          b.use Call, Created do |env, b2|
-            if !env[:result]
-              b2.use HandleBox
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use HandleBox
             end
           end
 
           b.use ConfigValidate
-          b.use Call, Created do |env, b2|
+          b.use Call, IsState, :not_created do |env1, b1|
             # If the VM is NOT created yet, then do the setup steps
-            if !env[:result]
-              b2.use CheckAccessible
-              b2.use Customize, "pre-import"
-              b2.use Import
+            if env1[:result]
+              b1.use Customize, "pre-import"
+              b1.use Import
             end
           end
           b.use action_start
@@ -271,25 +280,15 @@ module VagrantPlugins
       end
 
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
-      autoload :CheckAccessible, File.expand_path("../action/check_accessible", __FILE__)
-      autoload :CheckCreated, File.expand_path("../action/check_created", __FILE__)
-      autoload :CheckGuestTools, File.expand_path("../action/check_guest_tools", __FILE__)
-      autoload :CheckParallels, File.expand_path("../action/check_parallels", __FILE__)
-      autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
+      autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
-      autoload :Created, File.expand_path("../action/created", __FILE__)
       autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
       autoload :DestroyUnusedNetworkInterfaces, File.expand_path("../action/destroy_unused_network_interfaces", __FILE__)
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
-      autoload :IsSuspended, File.expand_path("../action/is_suspended", __FILE__)
-      autoload :IsRunning, File.expand_path("../action/is_running", __FILE__)
-      autoload :MessageAlreadyRunning, File.expand_path("../action/message_already_running", __FILE__)
-      autoload :MessageNotCreated, File.expand_path("../action/message_not_created", __FILE__)
-      autoload :MessageNotRunning, File.expand_path("../action/message_not_running", __FILE__)
-      autoload :MessageWillNotDestroy, File.expand_path("../action/message_will_not_destroy", __FILE__)
+      autoload :IsDriverVersion, File.expand_path("../action/is_driver_version", __FILE__)
       autoload :Network, File.expand_path("../action/network", __FILE__)
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
