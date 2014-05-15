@@ -39,6 +39,10 @@ module VagrantPlugins
         error_key(:parallels_tools_iso_not_found)
       end
 
+      class VMImportFailure < VagrantParallelsError
+        error_key(:vm_import_failure)
+      end
+
       class VMNameExists < VagrantParallelsError
         error_key(:vm_name_exists)
       end

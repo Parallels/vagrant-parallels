@@ -51,6 +51,10 @@ en:
         reinstall Parallels Desktop.
 
         Expected ISO path: "%{iso_path}"
+      vm_import_failure: |-
+        The VM import failed! Please verify that the box you're using is not
+        corrupted and try again.
+
       vm_name_exists: |-
         Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing
