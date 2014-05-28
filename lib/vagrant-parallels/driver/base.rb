@@ -81,20 +81,6 @@ module VagrantPlugins
         def enable_adapters(adapters)
         end
 
-        # Execute a raw command straight through to 'prlctl' utility
-        #
-        # Accepts a :prlsrvctl as a first element of command if the command
-        # should be executed through to 'prlsrvctl' utility
-        #
-        # Accepts a :retryable => true option if the command should be retried
-        # upon failure.
-        #
-        # Raises a prlctl error if it fails.
-        #
-        # @param [Array] command Command to execute.
-        def execute_prlctl(command)
-        end
-
         # Exports the virtual machine to the given path.
         #
         # @param [String] path Path to the OVF file.
