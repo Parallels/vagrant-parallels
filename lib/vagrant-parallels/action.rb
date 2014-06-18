@@ -20,11 +20,7 @@ module VagrantPlugins
           b.use Network
           b.use ClearNetworkInterfaces
           b.use SetHostname
-          b.use Call, IsDriverVersion, '>= 9' do |env1, b1|
-            if env1[:result]
-              b1.use SetPowerConsumption
-            end
-          end
+          b.use SetPowerConsumption
           b.use Customize, "pre-boot"
           b.use Boot
           b.use Customize, "post-boot"
@@ -288,7 +284,6 @@ module VagrantPlugins
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
-      autoload :IsDriverVersion, File.expand_path("../action/is_driver_version", __FILE__)
       autoload :Network, File.expand_path("../action/network", __FILE__)
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)

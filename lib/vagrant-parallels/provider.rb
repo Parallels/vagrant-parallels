@@ -101,6 +101,15 @@ module VagrantPlugins
         Vagrant::MachineState.new(state_id, short, long)
       end
 
+      # Determines if the installed Parallels Desktop version is
+      # satisfied by the given constraint or group of constraints.
+      #
+      # @return [Boolean]
+      def pd_version_satisfies?(*constraints)
+        pd_version = Gem::Version.new(@driver.version)
+        Gem::Requirement.new(*constraints).satisfied_by?(pd_version)
+      end
+
       # Returns a human-friendly string version of this provider which
       # includes the machine's ID that this provider represents, if it
       # has one.
