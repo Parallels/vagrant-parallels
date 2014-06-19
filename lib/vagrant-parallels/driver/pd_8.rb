@@ -349,13 +349,17 @@ module VagrantPlugins
           vm.last
         end
 
-        def read_shared_interface
+        def read_shared_network_id
           # There should be only one Shared interface
-          shared_net = read_virtual_networks.detect { |net| net['Type'] == 'shared' }
-          return nil if !shared_net
+          shared_net = read_virtual_networks.detect do |net|
+            net['Type'] == 'shared'
+          end
+          shared_net.fetch('Network ID')
+        end
 
+        def read_shared_interface
           net_info = json do
-            execute_prlsrvctl('net', 'info', shared_net['Network ID'], '--json')
+            execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
           end
           info = {
             name:    net_info['Bound To'],
@@ -466,6 +470,10 @@ module VagrantPlugins
                            '--shf-host-add', folder[:name],
                            '--path', folder[:hostpath])
           end
+        end
+
+        def ssh_ip
+          read_guest_ip
         end
 
         def ssh_port(expected_port)

@@ -1,8 +1,9 @@
 shared_context "parallels" do
-  let(:parallels_context) { true                                }
-  let(:uuid)              { "1234-here-is-uuid-5678"            }
-  let(:parallels_version) { "9"                                 }
-  let(:subprocess)        { double("Vagrant::Util::Subprocess") }
+  let(:parallels_context) { true                                     }
+  let(:uuid)              { "1234-here-is-uuid-5678"                 }
+  let(:parallels_version) { "9"                                      }
+  let(:subprocess)        { double("Vagrant::Util::Subprocess")      }
+  let(:driver)            { subject.instance_variable_get("@driver") }
 
   # this is a helper that returns a duck type suitable from a system command
   # execution; allows setting exit_code, stdout, and stderr in stubs.

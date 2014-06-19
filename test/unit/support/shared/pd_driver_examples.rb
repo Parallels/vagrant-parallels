@@ -3,9 +3,6 @@ shared_examples "parallels desktop driver" do |options|
     raise ArgumentError, "Need parallels context to use these shared examples." unless defined? parallels_context
   end
 
-  # Accessor to the delegate object
-  let(:driver) { subject.instance_variable_get("@driver") }
-
   describe "compact" do
     settings = {"Hardware" => {"hdd0" => {"image" => "/path/to/disk0.hdd"},
                                "hdd1" => {"image" => "/path/to/disk1.hdd"}}}
@@ -156,26 +153,6 @@ shared_examples "parallels desktop driver" do |options|
     it "returns :not_installed if Guest Tools state can't be reached" do
       driver.should_receive(:read_settings).and_return(exit_code: 0)
       subject.read_guest_tools_state.should be(:not_installed)
-    end
-  end
-
-  describe "read_guest_ip" do
-    let(:content) {'10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
-
-    it "returns an IP address assigned to the specified MAC" do
-      driver.should_receive(:read_mac_address).and_return("001C420000FF")
-      File.should_receive(:open).with(an_instance_of(String)).
-        and_return(StringIO.new(content))
-
-      subject.read_guest_ip.should == "10.200.0.99"
-    end
-
-    it "rises DhcpLeasesNotAccessible exception when file is not accessible" do
-      File.stub(:open).and_call_original
-      File.should_receive(:open).with(an_instance_of(String)).
-        and_raise(Errno::EACCES)
-      expect { subject.read_guest_ip }.
-        to raise_error(VagrantPlugins::Parallels::Errors::DhcpLeasesNotAccessible)
     end
   end
 
