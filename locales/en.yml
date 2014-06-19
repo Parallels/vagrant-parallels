@@ -126,3 +126,6 @@ en:
             reload your VM.
         export:
           compacting: Compacting exported HDDs...
+        forward_ports:
+          forwarding_entry: |-
+            %{guest_port} => %{host_port}
