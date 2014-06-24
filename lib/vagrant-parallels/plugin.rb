@@ -50,6 +50,11 @@ module VagrantPlugins
         GuestLinuxCap::MountParallelsSharedFolder
       end
 
+      guest_capability(:linux, :prepare_psf_services) do
+        require_relative "guest_cap/linux/mount_parallels_shared_folder"
+        GuestLinuxCap::MountParallelsSharedFolder
+      end
+
       guest_capability(:linux, :install_parallels_tools) do
         require_relative "guest_cap/linux/install_parallels_tools"
         GuestLinuxCap::InstallParallelsTools
