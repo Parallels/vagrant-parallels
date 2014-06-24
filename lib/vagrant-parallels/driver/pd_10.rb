@@ -26,23 +26,6 @@ module VagrantPlugins
           end
         end
 
-        def forward_ports(ports)
-          args = []
-          ports.each do |options|
-            protocol = options[:protocol] || 'tcp'
-            pf_builder = [
-              options[:name],
-              options[:hostport],
-              @uuid,
-              options[:guestport]
-            ]
-
-            args.concat(["--nat-#{protocol}-add", pf_builder.join(',')])
-          end
-
-          execute_prlsrvctl('net', 'set', read_shared_network_id, *args)
-        end
-
         def create_host_only_network(options)
           # Create the interface
           execute_prlsrvctl('net', 'add', options[:network_id], '--type', 'host-only')
@@ -130,39 +113,21 @@ module VagrantPlugins
           end
         end
 
-        def read_shared_interface
-          net_info = json do
-            execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
-          end
-          info = {
-            name:    net_info['Bound To'],
-            ip:      net_info['Parallels adapter']['IP address'],
-            netmask: net_info['Parallels adapter']['Subnet mask'],
-            status:  'Up',
-            nat:     []
-          }
+        def forward_ports(ports)
+          args = []
+          ports.each do |options|
+            protocol = options[:protocol] || 'tcp'
+            pf_builder = [
+              options[:name],
+              options[:hostport],
+              @uuid,
+              options[:guestport]
+            ]
 
-          if net_info.key?('DHCPv4 server')
-            info[:dhcp] = {
-              ip:    net_info['DHCPv4 server']['Server address'],
-              lower: net_info['DHCPv4 server']['IP scope start address'],
-              upper: net_info['DHCPv4 server']['IP scope end address']
-            }
+            args.concat(["--nat-#{protocol}-add", pf_builder.join(',')])
           end
 
-          net_info['NAT server'].each do |group, rules|
-            rules.each do |name, params|
-              info[:nat] << {
-                rule_name: name,
-                protocol:  group == 'TCP rules' ? 'tcp' : 'udp',
-                guest:     params['destination IP/VM id'],
-                hostport:  params['source port'],
-                guestport: params['destination port']
-              }
-            end
-          end
-
-          info
+          execute_prlsrvctl('net', 'set', read_shared_network_id, *args)
         end
 
         def read_forwarded_ports(global=false)
@@ -228,6 +193,41 @@ module VagrantPlugins
             end
           end
           nics
+        end
+
+        def read_shared_interface
+          net_info = json do
+            execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
+          end
+          info = {
+            name:    net_info['Bound To'],
+            ip:      net_info['Parallels adapter']['IP address'],
+            netmask: net_info['Parallels adapter']['Subnet mask'],
+            status:  'Up',
+            nat:     []
+          }
+
+          if net_info.key?('DHCPv4 server')
+            info[:dhcp] = {
+              ip:    net_info['DHCPv4 server']['Server address'],
+              lower: net_info['DHCPv4 server']['IP scope start address'],
+              upper: net_info['DHCPv4 server']['IP scope end address']
+            }
+          end
+
+          net_info['NAT server'].each do |group, rules|
+            rules.each do |name, params|
+              info[:nat] << {
+                rule_name: name,
+                protocol:  group == 'TCP rules' ? 'tcp' : 'udp',
+                guest:     params['destination IP/VM id'],
+                hostport:  params['source port'],
+                guestport: params['destination port']
+              }
+            end
+          end
+
+          info
         end
 
         # Parse the JSON from *all* VMs and templates.
