@@ -43,8 +43,8 @@ We recommend you to start from these pages:
 * [Boxes](http://parallels.github.io/vagrant-parallels/docs/boxes/index.html)
 
 ## Getting Help
-Having problems while using the provider? Ask your question to our mailing list:
-[Google Group](https://groups.google.com/group/vagrant-parallels)
+Having problems while using the provider? Ask your question on the official forum:
+["Parallels Provider for Vagrant" forum branch](http://forum.parallels.com/forumdisplay.php?737-Parallels-Provider-for-Vagrant)
 
 If you get an error while using the Parallels provider or discover a bug,
 please report it on the [IssueTracker](https://github.com/Parallels/vagrant-parallels).
