@@ -3,7 +3,7 @@ module VagrantPlugins
     module Action
       class SetPowerConsumption
         def initialize(app, env)
-          @logger = Log4r::Logger.new("vagrant::plugins::parallels::power_consumption")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::power_consumption')
           @app = app
         end
 

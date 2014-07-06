@@ -18,7 +18,7 @@ module VagrantPlugins
         include Vagrant::Util::NetworkIP
 
         def initialize
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::base")
+          @logger = Log4r::Logger.new('vagrant_parallels::driver::base')
 
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false

@@ -4,7 +4,7 @@ module VagrantPlugins
       class Export
         def initialize(app, env)
           @app = app
-          @logger = Log4r::Logger.new("vagrant::plugins::parallels::export")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::export')
         end
 
         def call(env)

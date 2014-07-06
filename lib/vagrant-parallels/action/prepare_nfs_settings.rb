@@ -4,7 +4,7 @@ module VagrantPlugins
       class PrepareNFSSettings
         def initialize(app, env)
           @app = app
-          @logger = Log4r::Logger.new("vagrant::action::vm::nfs")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::nfs')
         end
 
         def call(env)

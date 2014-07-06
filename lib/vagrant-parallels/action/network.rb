@@ -19,7 +19,7 @@ module VagrantPlugins
 
         def initialize(app, env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant::plugins::parallels::network")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::network')
         end
 
         def call(env)

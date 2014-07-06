@@ -5,7 +5,7 @@ module VagrantPlugins
     module Action
       class SetName
         def initialize(app, env)
-          @logger = Log4r::Logger.new("vagrant::action::vm::setname")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::setname')
           @app = app
         end
 

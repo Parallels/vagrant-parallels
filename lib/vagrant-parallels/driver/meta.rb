@@ -25,7 +25,7 @@ module VagrantPlugins
           # Setup the base
           super()
 
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::meta")
+          @logger = Log4r::Logger.new('vagrant_parallels::driver::meta')
           @uuid = uuid
 
           # Read and assign the version of Parallels Desktop we know which

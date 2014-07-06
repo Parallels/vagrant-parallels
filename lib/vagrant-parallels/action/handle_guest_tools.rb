@@ -4,7 +4,7 @@ module VagrantPlugins
       class HandleGuestTools
         def initialize(app, env)
           @app = app
-          @logger = Log4r::Logger.new("vagrant::plugins::parallels::handle_guest_tools")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::handle_guest_tools')
         end
 
         def call(env)
