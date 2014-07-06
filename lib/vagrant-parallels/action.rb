@@ -25,7 +25,6 @@ module VagrantPlugins
           b.use ClearNetworkInterfaces
           b.use ForwardPorts
           b.use SetHostname
-          b.use SetPowerConsumption
           b.use SaneDefaults
           b.use Customize, "pre-boot"
           b.use Boot
@@ -308,7 +307,6 @@ module VagrantPlugins
       autoload :SaneDefaults, File.expand_path("../action/sane_defaults",__FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :SetName, File.expand_path("../action/set_name", __FILE__)
-      autoload :SetPowerConsumption, File.expand_path("../action/set_power_consumption", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
     end
   end
