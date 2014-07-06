@@ -288,7 +288,7 @@ module VagrantPlugins
           end
 
           # Append in the options for subprocess
-          command << { :notify => [:stdout, :stderr] }
+          command << {notify: [:stdout, :stderr]}
 
           Vagrant::Util::Busy.busy(int_callback) do
             Vagrant::Util::Subprocess.execute(*command, &block)

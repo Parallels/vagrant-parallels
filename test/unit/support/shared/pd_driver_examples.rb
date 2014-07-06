@@ -31,13 +31,13 @@ shared_examples "parallels desktop driver" do |options|
     let(:hostonly_iface) {'vnic12'}
     it "creates host-only NIC with dhcp server configured" do
       vnic_opts = {
-        :network_id => 'vagrant_vnic8',
-        :adapter_ip => '11.11.11.11',
-        :netmask    => '255.255.252.0',
-        :dhcp => {
-          :ip => '11.11.11.11',
-          :lower => '11.11.8.1',
-          :upper => '11.11.11.254'
+        network_id: 'vagrant_vnic8',
+        adapter_ip: '11.11.11.11',
+        netmask:    '255.255.252.0',
+        dhcp:       {
+          ip:    '11.11.11.11',
+          lower: '11.11.8.1',
+          upper: '11.11.11.254'
         }
       }
 
@@ -66,9 +66,9 @@ shared_examples "parallels desktop driver" do |options|
 
     it "creates host-only NIC without dhcp" do
       vnic_options = {
-        :network_id => 'vagrant_vnic3',
-        :adapter_ip => '22.22.22.22',
-        :netmask    => '255.255.254.0',
+        network_id: 'vagrant_vnic3',
+        adapter_ip: '22.22.22.22',
+        netmask:    '255.255.254.0',
       }
 
       subprocess.should_receive(:execute).

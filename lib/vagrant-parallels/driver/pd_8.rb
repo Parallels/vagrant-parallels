@@ -60,10 +60,10 @@ module VagrantPlugins
 
           # Return the details
           return {
-            :name => iface_name,
-            :ip   => options[:adapter_ip],
-            :netmask => options[:netmask],
-            :dhcp => options[:dhcp]
+            name:    iface_name,
+            ip:      options[:adapter_ip],
+            netmask: options[:netmask],
+            dhcp:    options[:dhcp]
           }
         end
 
@@ -240,9 +240,9 @@ module VagrantPlugins
         def read_guest_tools_iso_path(guest_os)
           guest_os = guest_os.to_sym
           iso_name ={
-            :linux   => "prl-tools-lin.iso",
-            :darwin  => "prl-tools-mac.iso",
-            :windows => "prl-tools-win.iso"
+            linux:   "prl-tools-lin.iso",
+            darwin:  "prl-tools-mac.iso",
+            windows: "prl-tools-win.iso"
           }
           return nil if !iso_name[guest_os]
 
@@ -289,9 +289,9 @@ module VagrantPlugins
             if network_address(info[:ip], info[:netmask]) ==
               network_address(dhcp_ip, info[:netmask])
               info[:dhcp] = {
-                :ip      => dhcp_ip,
-                :lower   => net_info['DHCPv4 server']['IP scope start address'],
-                :upper   => net_info['DHCPv4 server']['IP scope end address']
+                ip:    dhcp_ip,
+                lower: net_info['DHCPv4 server']['IP scope start address'],
+                upper: net_info['DHCPv4 server']['IP scope end address']
               }
             end
             hostonly_ifaces << info

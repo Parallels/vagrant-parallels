@@ -29,8 +29,8 @@ module VagrantPlugins
                 env[:machine].provider.driver.execute_prlctl(*processed_command)
               rescue VagrantPlugins::Parallels::Errors::ExecutionError => e
                 raise Vagrant::Errors::VMCustomizationFailed, {
-                  :command => command,
-                  :error   => e.inspect
+                  command: command,
+                  error:   e.inspect
                 }
               end
             end

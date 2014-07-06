@@ -15,13 +15,13 @@ describe VagrantPlugins::Parallels::Driver::PD_9 do
   let(:hostonly_iface) {'vnic10'}
 
   let(:vnic_options) do {
-    :name => 'vagrant_vnic6',
-    :adapter_ip => '11.11.11.11',
-    :netmask    => '255.255.252.0',
-    :dhcp => {
-      :ip => '11.11.11.11',
-      :lower => '11.11.8.1',
-      :upper => '11.11.11.254'
+    name:       'vagrant_vnic6',
+    adapter_ip: '11.11.11.11',
+    netmask:    '255.255.252.0',
+    dhcp:       {
+      ip:    '11.11.11.11',
+      lower: '11.11.8.1',
+      upper: '11.11.11.254'
     }
   } end
 
