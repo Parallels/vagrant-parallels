@@ -80,6 +80,7 @@ module VagrantPlugins
                        :delete,
                        :delete_disabled_adapters,
                        :delete_unused_host_only_networks,
+                       :disable_password_restrictions,
                        :enable_adapters,
                        :execute_prlctl,
                        :export,

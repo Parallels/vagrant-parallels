@@ -71,6 +71,13 @@ module VagrantPlugins
           end
         end
 
+        def disable_password_restrictions
+          server_info = json { execute_prlsrvctl('info', '--json') }
+          server_info.fetch('Require password to',[]).each do |act|
+            execute_prlsrvctl('set', '--require-pwd', "#{act}:off")
+          end
+        end
+
         def enable_adapters(adapters)
           # Get adapters which have already configured for this VM
           # Such adapters will be just overridden

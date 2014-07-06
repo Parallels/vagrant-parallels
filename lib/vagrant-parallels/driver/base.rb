@@ -58,6 +58,12 @@ module VagrantPlugins
         def delete_unused_host_only_networks
         end
 
+        # Disables requiring password on such operations as creating, adding,
+        # removing or cloning the virtual machine.
+        #
+        def disable_password_restrictions
+        end
+
         # Enables network adapters on the VM.
         #
         # The format of each adapter specification should be like so:
