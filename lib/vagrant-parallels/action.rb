@@ -26,6 +26,7 @@ module VagrantPlugins
           b.use ForwardPorts
           b.use SetHostname
           b.use SetPowerConsumption
+          b.use SaneDefaults
           b.use Customize, "pre-boot"
           b.use Boot
           b.use Customize, "post-boot"
@@ -304,6 +305,7 @@ module VagrantPlugins
       autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :PrepareNFSValidIds, File.expand_path("../action/prepare_nfs_valid_ids", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
+      autoload :SaneDefaults, File.expand_path("../action/sane_defaults",__FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :SetName, File.expand_path("../action/set_name", __FILE__)
       autoload :SetPowerConsumption, File.expand_path("../action/set_power_consumption", __FILE__)
