@@ -44,7 +44,7 @@ module VagrantPlugins
           driver_map   = {
             "8" => PD_8,
             "9" => PD_9,
-            "10" => PD_9
+            "10" => PD_10
           }
 
           driver_klass = nil
@@ -57,10 +57,6 @@ module VagrantPlugins
 
           if !driver_klass
             supported_versions = driver_map.keys.sort
-
-            # TODO: Remove this after PD 10 release
-            # Don't show unreleased version in the error message
-            supported_versions.delete("10")
 
             raise VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion,
                   supported_versions: supported_versions.join(", ")
@@ -77,6 +73,7 @@ module VagrantPlugins
         end
 
         def_delegators :@driver,
+                       :clear_forwarded_ports,
                        :clear_shared_folders,
                        :compact,
                        :create_host_only_network,
@@ -86,9 +83,11 @@ module VagrantPlugins
                        :enable_adapters,
                        :execute_prlctl,
                        :export,
+                       :forward_ports,
                        :halt,
                        :import,
                        :read_bridged_interfaces,
+                       :read_forwarded_ports,
                        :read_guest_tools_state,
                        :read_guest_tools_iso_path,
                        :read_host_only_interfaces,
