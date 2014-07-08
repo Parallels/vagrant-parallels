@@ -1,8 +1,8 @@
 require_relative "../base"
 
-describe VagrantPlugins::Parallels::Driver::PD_8 do
+describe VagrantPlugins::Parallels::Driver::PD_10 do
   include_context "parallels"
-  let(:parallels_version) { "8" }
+  let(:parallels_version) { "10" }
 
   let(:vm_name) {'VM_Name'}
 
@@ -10,7 +10,7 @@ describe VagrantPlugins::Parallels::Driver::PD_8 do
   let(:tpl_name) {'Some_Template_Name'}
 
   let(:tools_state) {'installed'}
-  let(:tools_version) {'8.0.18615.123456'}
+  let(:tools_version) {'10.0.23062.123456'}
 
   let(:hostonly_iface) {'vnic10'}
 
@@ -35,7 +35,7 @@ describe VagrantPlugins::Parallels::Driver::PD_8 do
     subprocess.stub(:execute).
       with("prlctl", "list", "--all", "--json", kind_of(Hash)) do
         out = <<-eos
-INFO[
+[
   {
     "uuid": "#{uuid}",
     "status": "stopped",
@@ -51,7 +51,7 @@ INFO[
     subprocess.stub(:execute).
       with("prlctl", "list", "--all", "--json", "--template", kind_of(Hash)) do
         out = <<-eos
-INFO[
+[
   {
     "uuid": "1234-some-template-uuid-5678",
     "name": "Some_Template_Name"
@@ -69,7 +69,7 @@ INFO[
       with("prlctl", "list", kind_of(String), "--info", "--json",
            kind_of(Hash)) do
         out = <<-eos
-INFO[
+[
   {
     "ID": "#{uuid}",
     "Name": "#{vm_name}",
@@ -130,7 +130,7 @@ INFO[
       with("prlctl", "list", kind_of(String), "--info", "--json", "--template",
            kind_of(Hash)) do
       out = <<-eos
-INFO[
+[
   {
     "ID": "#{tpl_uuid}",
     "Name": "#{tpl_name}",
@@ -199,23 +199,30 @@ INFO[
 
   end
 
-  describe "ssh_ip" do
-    let(:content) {'10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
+  describe "set_power_consumption_mode" do
+    it "turns 'longer-battery-life' on" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, "--longer-battery-life", "on",
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
 
-    it "returns an IP address assigned to the specified MAC" do
-      driver.should_receive(:read_mac_address).and_return("001C420000FF")
-      File.should_receive(:open).with(an_instance_of(String)).
-        and_return(StringIO.new(content))
-
-      subject.ssh_ip.should == "10.200.0.99"
+      subject.set_power_consumption_mode(true)
     end
 
-    it "rises DhcpLeasesNotAccessible exception when file is not accessible" do
-      File.stub(:open).and_call_original
-      File.should_receive(:open).with(an_instance_of(String)).
-        and_raise(Errno::EACCES)
-      expect { subject.ssh_ip }.
-        to raise_error(VagrantPlugins::Parallels::Errors::DhcpLeasesNotAccessible)
+    it "turns 'longer-battery-life' off" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "set", uuid, "--longer-battery-life", "off",
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+
+      subject.set_power_consumption_mode(false)
     end
   end
+
+  describe "ssh_ip" do
+    it "returns 127.0.0.1" do
+      subject.ssh_ip.should == "127.0.0.1"
+    end
+  end
+
 end

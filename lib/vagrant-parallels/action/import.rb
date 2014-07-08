@@ -4,7 +4,7 @@ module VagrantPlugins
       class Import
         def initialize(app, env)
           @app = app
-          @logger = Log4r::Logger.new("vagrant::plugins::parallels::import")
+          @logger = Log4r::Logger.new('vagrant_parallels::action::import')
         end
 
         def call(env)

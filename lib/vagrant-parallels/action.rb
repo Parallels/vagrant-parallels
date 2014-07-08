@@ -12,19 +12,20 @@ module VagrantPlugins
       def self.action_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use SetName
+          b.use ClearForwardedPorts
           b.use Provision
+          b.use EnvSet, port_collision_repair: true
+          b.use PrepareForwardedPortCollisionParams
+          b.use HandleForwardedPortCollisions
           b.use PrepareNFSValidIds
           b.use SyncedFolderCleanup
           b.use SyncedFolders
           b.use PrepareNFSSettings
           b.use Network
           b.use ClearNetworkInterfaces
+          b.use ForwardPorts
           b.use SetHostname
-          b.use Call, IsDriverVersion, '>= 9' do |env1, b1|
-            if env1[:result]
-              b1.use SetPowerConsumption
-            end
-          end
+          b.use SaneDefaults
           b.use Customize, "pre-boot"
           b.use Boot
           b.use Customize, "post-boot"
@@ -85,6 +86,8 @@ module VagrantPlugins
                 b2.use ForcedHalt
               end
             end
+
+            b1.use ClearForwardedPorts
           end
         end
       end
@@ -101,6 +104,7 @@ module VagrantPlugins
 
             b1.use SetupPackageFiles
             b1.use action_halt
+            b1.use ClearForwardedPorts
             b1.use PrepareNFSValidIds
             b1.use SyncedFolderCleanup
             b1.use Package
@@ -161,6 +165,9 @@ module VagrantPlugins
               next
             end
 
+            b1.use EnvSet, port_collision_repair: false
+            b1.use PrepareForwardedPortCollisionParams
+            b1.use HandleForwardedPortCollisions
             b1.use Resume
             b1.use WaitForCommunicator, [:resuming, :running]
           end
@@ -282,22 +289,24 @@ module VagrantPlugins
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
+      autoload :ClearForwardedPorts, File.expand_path("../action/clear_forwarded_ports", __FILE__)
       autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
       autoload :DestroyUnusedNetworkInterfaces, File.expand_path("../action/destroy_unused_network_interfaces", __FILE__)
       autoload :Export, File.expand_path("../action/export", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
+      autoload :ForwardPorts, File.expand_path("../action/forward_ports", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
-      autoload :IsDriverVersion, File.expand_path("../action/is_driver_version", __FILE__)
       autoload :Network, File.expand_path("../action/network", __FILE__)
       autoload :Package, File.expand_path("../action/package", __FILE__)
       autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
+      autoload :PrepareForwardedPortCollisionParams, File.expand_path("../action/prepare_forwarded_port_collision_params", __FILE__)
       autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
       autoload :PrepareNFSValidIds, File.expand_path("../action/prepare_nfs_valid_ids", __FILE__)
       autoload :Resume, File.expand_path("../action/resume", __FILE__)
+      autoload :SaneDefaults, File.expand_path("../action/sane_defaults",__FILE__)
       autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
       autoload :SetName, File.expand_path("../action/set_name", __FILE__)
-      autoload :SetPowerConsumption, File.expand_path("../action/set_power_consumption", __FILE__)
       autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
     end
   end

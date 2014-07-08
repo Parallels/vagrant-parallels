@@ -12,7 +12,7 @@ module VagrantPlugins
         def initialize(uuid)
           super()
 
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::pd_8")
+          @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_8')
           @uuid = uuid
         end
 
@@ -60,10 +60,10 @@ module VagrantPlugins
 
           # Return the details
           return {
-            :name => iface_name,
-            :ip   => options[:adapter_ip],
-            :netmask => options[:netmask],
-            :dhcp => options[:dhcp]
+            name:    iface_name,
+            ip:      options[:adapter_ip],
+            netmask: options[:netmask],
+            dhcp:    options[:dhcp]
           }
         end
 
@@ -240,9 +240,9 @@ module VagrantPlugins
         def read_guest_tools_iso_path(guest_os)
           guest_os = guest_os.to_sym
           iso_name ={
-            :linux   => "prl-tools-lin.iso",
-            :darwin  => "prl-tools-mac.iso",
-            :windows => "prl-tools-win.iso"
+            linux:   "prl-tools-lin.iso",
+            darwin:  "prl-tools-mac.iso",
+            windows: "prl-tools-win.iso"
           }
           return nil if !iso_name[guest_os]
 
@@ -289,9 +289,9 @@ module VagrantPlugins
             if network_address(info[:ip], info[:netmask]) ==
               network_address(dhcp_ip, info[:netmask])
               info[:dhcp] = {
-                :ip      => dhcp_ip,
-                :lower   => net_info['DHCPv4 server']['IP scope start address'],
-                :upper   => net_info['DHCPv4 server']['IP scope end address']
+                ip:    dhcp_ip,
+                lower: net_info['DHCPv4 server']['IP scope start address'],
+                upper: net_info['DHCPv4 server']['IP scope end address']
               }
             end
             hostonly_ifaces << info
@@ -349,13 +349,17 @@ module VagrantPlugins
           vm.last
         end
 
-        def read_shared_interface
+        def read_shared_network_id
           # There should be only one Shared interface
-          shared_net = read_virtual_networks.detect { |net| net['Type'] == 'shared' }
-          return nil if !shared_net
+          shared_net = read_virtual_networks.detect do |net|
+            net['Type'] == 'shared'
+          end
+          shared_net.fetch('Network ID')
+        end
 
+        def read_shared_interface
           net_info = json do
-            execute_prlsrvctl('net', 'info', shared_net['Network ID'], '--json')
+            execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
           end
           info = {
             name:    net_info['Bound To'],
@@ -466,6 +470,10 @@ module VagrantPlugins
                            '--shf-host-add', folder[:name],
                            '--path', folder[:hostpath])
           end
+        end
+
+        def ssh_ip
+          read_guest_ip
         end
 
         def ssh_port(expected_port)

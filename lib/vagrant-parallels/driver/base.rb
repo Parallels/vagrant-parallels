@@ -18,7 +18,7 @@ module VagrantPlugins
         include Vagrant::Util::NetworkIP
 
         def initialize
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::base")
+          @logger = Log4r::Logger.new('vagrant_parallels::driver::base')
 
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
@@ -58,6 +58,12 @@ module VagrantPlugins
         def delete_unused_host_only_networks
         end
 
+        # Disables requiring password on such operations as creating, adding,
+        # removing or cloning the virtual machine.
+        #
+        def disable_password_restrictions
+        end
+
         # Enables network adapters on the VM.
         #
         # The format of each adapter specification should be like so:
@@ -73,20 +79,6 @@ module VagrantPlugins
         #
         # @param [Array<Hash>] adapters Array of adapters to enable.
         def enable_adapters(adapters)
-        end
-
-        # Execute a raw command straight through to 'prlctl' utility
-        #
-        # Accepts a :prlsrvctl as a first element of command if the command
-        # should be executed through to 'prlsrvctl' utility
-        #
-        # Accepts a :retryable => true option if the command should be retried
-        # upon failure.
-        #
-        # Raises a prlctl error if it fails.
-        #
-        # @param [Array] command Command to execute.
-        def execute_prlctl(command)
         end
 
         # Exports the virtual machine to the given path.
@@ -296,7 +288,7 @@ module VagrantPlugins
           end
 
           # Append in the options for subprocess
-          command << { :notify => [:stdout, :stderr] }
+          command << {notify: [:stdout, :stderr]}
 
           Vagrant::Util::Busy.busy(int_callback) do
             Vagrant::Util::Subprocess.execute(*command, &block)

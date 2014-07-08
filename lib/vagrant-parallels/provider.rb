@@ -64,7 +64,7 @@ module VagrantPlugins
         # If the VM is not running that we can't possibly SSH into it
         return nil if state.id != :running
 
-        detected_ip = @driver.read_guest_ip
+        detected_ip = @driver.ssh_ip
 
         # If ip couldn't be detected then we cannot possibly SSH into it,
         # and should return nil too.
@@ -72,8 +72,8 @@ module VagrantPlugins
 
         # Return ip from running machine, use ip from config if available
         return {
-          :host => detected_ip,
-          :port => @driver.ssh_port(@machine.config.ssh.guest_port)
+          host: detected_ip,
+          port: @driver.ssh_port(@machine.config.ssh.guest_port)
         }
       end
 
@@ -99,6 +99,15 @@ module VagrantPlugins
 
         # Return the state
         Vagrant::MachineState.new(state_id, short, long)
+      end
+
+      # Determines if the installed Parallels Desktop version is
+      # satisfied by the given constraint or group of constraints.
+      #
+      # @return [Boolean]
+      def pd_version_satisfies?(*constraints)
+        pd_version = Gem::Version.new(@driver.version)
+        Gem::Requirement.new(*constraints).satisfied_by?(pd_version)
       end
 
       # Returns a human-friendly string version of this provider which

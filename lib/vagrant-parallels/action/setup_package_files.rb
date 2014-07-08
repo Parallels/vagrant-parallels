@@ -13,7 +13,6 @@ module VagrantPlugins
           files = {}
           env["package.include"].each do |file|
             source = Pathname.new(file)
-            dest   = nil
 
             # If the source is relative then we add the file as-is to the include
             # directory. Otherwise, we copy only the file into the root of the

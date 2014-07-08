@@ -12,7 +12,7 @@ module VagrantPlugins
         def initialize(uuid)
           super(uuid)
 
-          @logger = Log4r::Logger.new("vagrant::provider::parallels::pd_9")
+          @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_9')
         end
 
         def read_settings

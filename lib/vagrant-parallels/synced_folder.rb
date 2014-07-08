@@ -18,7 +18,6 @@ module VagrantPlugins
             hostpath = Vagrant::Util::Platform.cygwin_windows_path(hostpath)
           end
 
-
           defs << {
               name: os_friendly_id(id),
               hostpath: hostpath.to_s,
@@ -41,6 +40,12 @@ module VagrantPlugins
         end
 
         shf_config = driver(machine).read_shared_folders
+
+        # Parallels Shared Folder services can override Vagrant synced folder
+        # configuration. These services should be pre-configured.
+        if machine.guest.capability?(:prepare_psf_services)
+          machine.guest.capability(:prepare_psf_services)
+        end
 
         # Go through each folder and mount
         machine.ui.output(I18n.t("vagrant.actions.vm.share_folders.mounting"))

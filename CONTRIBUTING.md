@@ -1,0 +1,61 @@
+## How to contribute
+
+We are glad you want to contribute to the `vagrant-parallels` plugin!
+First of all,  clone this repository:
+
+```
+$ git clone https://github.com/Parallels/vagrant-parallels
+$ cd vagrant-parallels
+```
+
+### Dependencies and Unit Tests
+
+To hack on our plugin, you'll need a [Ruby interpreter](https://www.ruby-lang.org/en/downloads/) 
+(>= 2.0) and [Bundler](http://bundler.io/) which can be installed with a simple 
+`gem install bundler`. Afterwards, do the following:
+
+```
+$ bundle install
+$ rake
+```
+
+This will run the unit test suite, which should come back all green! 
+Then you're good to go!
+
+If you want to run Vagrant without having to install the `vagrant-parallels` 
+gem, you may use `bundle exec`, like so:
+
+```
+$ bundle exec vagrant up --provider=parallels
+```
+
+### Building Provider from Source
+To build a `vagrant-parallels` gem just run this command:
+
+```
+$ rake build
+```
+
+The built "gem" package will appear in the `./pkg` folder.
+
+Then, if you want to install plugin from your locally built "gem", use the
+following commands:
+
+```
+$ vagrant plugin uninstall vagrant-parallels
+$ vagrant plugin install pkg/vagrant-parallels-<version>.gem
+```
+
+Now that you have your own plugin installed, check it with the command
+`vagrant plugin list`
+
+### Sending a Pull Request
+If you're ready to send your changes, please follow the next steps:
+
+1. Fork the 'vagrant-parallels' repository and ad it as a new remote (`git add
+remote my-fork <fork_url>`)
+2. Create a branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am "Added a sweet feature"`)
+4. Push the branch to your fork (`git push fork my-new-feature`)
+5. Create a pull request from your `my-new-feature` branch into `master` of
+`vagrant-parallels` repo
