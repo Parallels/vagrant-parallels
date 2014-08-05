@@ -8,8 +8,8 @@ module VagrantPlugins
       attr_accessor :optimize_power_consumption
       attr_accessor :name
       attr_reader   :network_adapters
+      attr_accessor :regen_box_uuid
       attr_accessor :update_guest_tools
-
 
       # Compatibility with virtualbox provider's syntax
       alias :check_guest_additions= :check_guest_tools=
@@ -22,6 +22,7 @@ module VagrantPlugins
         @network_adapters  = {}
         @name              = UNSET_VALUE
         @optimize_power_consumption = UNSET_VALUE
+        @regen_box_uuid    = UNSET_VALUE
         @update_guest_tools = UNSET_VALUE
 
         network_adapter(0, :shared)
@@ -72,6 +73,8 @@ module VagrantPlugins
         end
 
         @name = nil if @name == UNSET_VALUE
+
+        @regen_box_uuid = true if @regen_box_uuid == UNSET_VALUE
 
         if @update_guest_tools == UNSET_VALUE
           @update_guest_tools = false
