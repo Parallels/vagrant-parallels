@@ -17,6 +17,10 @@ module VagrantPlugins
           env[:port_collision_extra_in_use] =
             env[:machine].provider.driver.read_used_ports
 
+          # We can always repair the collision because port forwarding
+          # are configured globally, not per each VM.
+          env[:port_collision_repair] = true
+
           # Build the remap for any existing collision detections
           remap = {}
           env[:port_collision_remap] = remap

@@ -14,7 +14,6 @@ module VagrantPlugins
           b.use SetName
           b.use ClearForwardedPorts
           b.use Provision
-          b.use EnvSet, port_collision_repair: true
           b.use PrepareForwardedPortCollisionParams
           b.use HandleForwardedPortCollisions
           b.use PrepareNFSValidIds
@@ -164,7 +163,6 @@ module VagrantPlugins
               next
             end
 
-            b1.use EnvSet, port_collision_repair: false
             b1.use PrepareForwardedPortCollisionParams
             b1.use HandleForwardedPortCollisions
             b1.use ForwardPorts
