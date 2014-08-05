@@ -14,7 +14,6 @@ module VagrantPlugins
           b.use SetName
           b.use ClearForwardedPorts
           b.use Provision
-          b.use EnvSet, port_collision_repair: true
           b.use PrepareForwardedPortCollisionParams
           b.use HandleForwardedPortCollisions
           b.use PrepareNFSValidIds
@@ -104,7 +103,6 @@ module VagrantPlugins
 
             b1.use SetupPackageFiles
             b1.use action_halt
-            b1.use ClearForwardedPorts
             b1.use PrepareNFSValidIds
             b1.use SyncedFolderCleanup
             b1.use Package
@@ -165,9 +163,9 @@ module VagrantPlugins
               next
             end
 
-            b1.use EnvSet, port_collision_repair: false
             b1.use PrepareForwardedPortCollisionParams
             b1.use HandleForwardedPortCollisions
+            b1.use ForwardPorts
             b1.use Resume
             b1.use WaitForCommunicator, [:resuming, :running]
           end
@@ -256,6 +254,7 @@ module VagrantPlugins
               next
             end
 
+            b1.use ClearForwardedPorts
             b1.use Suspend
           end
         end

@@ -48,9 +48,9 @@ module VagrantPlugins
         def register_template
           if !@env[:machine].provider.driver.read_vms_paths.has_key?(@template_path)
             @logger.info("Register the box template: '#{@template_path}'")
-            # We should also regenerate 'SourceVmUuid' to make sure that
-            # SMBIOS UUID is unique [GH-113]
-            @env[:machine].provider.driver.register(@template_path, regen_src_uuid=true)
+            regen_uuid = @env[:machine].provider_config.regen_box_uuid
+
+            @env[:machine].provider.driver.register(@template_path, regen_uuid)
           end
 
           # Return the uuid of registered template
