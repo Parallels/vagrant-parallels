@@ -22,6 +22,16 @@ en:
         Command: %{command}
 
         Stderr: %{stderr}
+
+      linux_mount_failed: |-
+        Failed to mount folders in Linux guest. This is usually because
+        the "prl_fs" file system is not available. Please verify that
+        Parallels Tools are properly installed in the guest and
+        can work properly. If so, the VM reboot can solve a problem.
+        The command attempted was:
+
+        %{command}
+
       mac_os_x_required: |-
         Parallels provider works only on OS X (Mac OS X) systems.
       parallels_install_incomplete: |-

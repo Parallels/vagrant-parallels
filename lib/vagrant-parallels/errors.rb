@@ -11,6 +11,10 @@ module VagrantPlugins
         error_key(:dhcp_leases_file_not_accessible)
       end
 
+      class LinuxMountFailed < VagrantParallelsError
+        error_key(:linux_mount_failed)
+      end
+
       class MacOSXRequired < VagrantParallelsError
         error_key(:mac_os_x_required)
       end
