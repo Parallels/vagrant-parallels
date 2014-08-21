@@ -306,6 +306,7 @@ module VagrantPlugins
 
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
+      autoload :HandleForwardedPortCollisions, File.expand_path("../action/handle_forwarded_port_collisions.rb", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
       autoload :ClearForwardedPorts, File.expand_path("../action/clear_forwarded_ports", __FILE__)
       autoload :Customize, File.expand_path("../action/customize", __FILE__)
