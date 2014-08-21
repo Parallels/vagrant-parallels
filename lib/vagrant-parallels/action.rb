@@ -29,6 +29,7 @@ module VagrantPlugins
           b.use Boot
           b.use Customize, "post-boot"
           b.use WaitForCommunicator, [:starting, :running]
+          b.use Customize, "post-comm"
           b.use HandleGuestTools
         end
       end
