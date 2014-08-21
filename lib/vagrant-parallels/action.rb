@@ -286,6 +286,24 @@ module VagrantPlugins
         end
       end
 
+      # This action simply reboots the VM. It is executed right after
+      # Parallels Tools installation or upgrade.
+      def self.action_simple_reboot
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, GracefulHalt, :stopped, :running do |env2, b2|
+            if !env2[:result]
+              b2.use ForcedHalt
+            end
+          end
+
+          b.use Customize, "pre-boot"
+          b.use Boot
+          b.use Customize, "post-boot"
+          b.use WaitForCommunicator, [:starting, :running]
+          b.use Customize, "post-comm"
+        end
+      end
+
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
