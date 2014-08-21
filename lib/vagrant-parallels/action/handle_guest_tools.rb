@@ -37,6 +37,11 @@ module VagrantPlugins
           if @machine.guest.capability?(:install_parallels_tools)
             env[:ui].output(I18n.t("vagrant_parallels.actions.vm.handle_guest_tools.installing"))
             @machine.guest.capability(:install_parallels_tools)
+
+            # The VM should be rebooted to enable kernel modules
+            # bundled with Parallels Tools.
+            env[:ui].output(I18n.t("vagrant_parallels.actions.vm.handle_guest_tools.rebooting"))
+            @machine.action(:simple_reboot)
           else
             env[:ui].warn(I18n.t("vagrant_parallels.actions.vm.handle_guest_tools.cant_install"))
           end

@@ -60,7 +60,7 @@ module VagrantPlugins
 
             attempts += 1
             if attempts > 10
-              raise Vagrant::Errors::LinuxMountFailed,
+              raise VagrantPlugins::Parallels::Errors::LinuxMountFailed,
                 command: mount_commands.join("\n")
             end
 
