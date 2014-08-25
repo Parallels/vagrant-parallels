@@ -10,13 +10,19 @@ module VagrantPlugins
         # This middleware just wraps the builtin action and allows to skip it if
         # port forwarding is not supported for current Parallels Desktop version.
         def call(env)
-          # Port Forwarding feature is available only with PD >= 10
-          if !env[:machine].provider.pd_version_satisfies?('>= 10')
-            return @app.call(env)
+          if env[:machine].provider.pd_version_satisfies?('>= 10')
+            super
+          else
+            # Just continue if port forwarding is not supporting
+            @app.call(env)
           end
+        end
 
-          # Call the builtin action
-          super
+        def recover(env)
+          if env[:machine].provider.pd_version_satisfies?('>= 10')
+            super
+          end
+          # Do nothing if port forwarding is not supporting
         end
       end
     end
