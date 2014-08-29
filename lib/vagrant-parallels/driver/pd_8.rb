@@ -277,7 +277,8 @@ module VagrantPlugins
             info = {}
             net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
             # Really we need to work with bounded virtual interface
-            info[:name]     = net_info['Bound To']
+            info[:name]     = net_info['Network ID']
+            info[:bound_to] = net_info['Bound To']
             info[:ip]       = net_info['Parallels adapter']['IP address']
             info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
             # Such interfaces are always in 'Up'
