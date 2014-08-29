@@ -234,6 +234,7 @@ module VagrantPlugins
           options = {
             auto_config: true,
             mac:         nil,
+            name:        nil,
             nic_type:    nil,
             netmask:     "255.255.255.0",
             type:        :static
@@ -293,6 +294,7 @@ module VagrantPlugins
             auto_config: options[:auto_config],
             ip:          options[:ip],
             mac:         options[:mac],
+            name:        options[:name],
             netmask:     options[:netmask],
             nic_type:    options[:nic_type],
             type:        options[:type]
