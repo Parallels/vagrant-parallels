@@ -290,6 +290,7 @@ module VagrantPlugins
           end
 
           return {
+            name:        options[:name],
             adapter_ip:  options[:adapter_ip],
             auto_config: options[:auto_config],
             ip:          options[:ip],
