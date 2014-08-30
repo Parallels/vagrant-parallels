@@ -500,7 +500,23 @@ module VagrantPlugins
         end
 
         def vm_exists?(uuid)
-          raw('prlctl', 'list', uuid).exit_code == 0
+          5.times do |i|
+            result = raw('prlctl', 'list', uuid)
+            return true if result.exit_code == 0
+
+            # Sometimes this happens. In this case, retry. If
+            # we don't see this text, the VM really probably doesn't exist.
+            return false if !result.stderr.include?('Login failed:')
+
+            # Sleep a bit though to give Parallels Desktop time to fix itself
+            sleep 2
+          end
+
+          # If we reach this point, it means that we consistently got the
+          # failure, do a standard prlctl now. This will raise an
+          # exception if it fails again.
+          execute_prlctl("showvminfo", uuid)
+          true
         end
       end
     end
