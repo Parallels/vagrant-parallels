@@ -30,9 +30,8 @@ module VagrantPlugins
         #
         # The ! indicates that this method modifies its argument.
         def add_ips_to_env!(env)
-          adapter, host_ip = find_host_only_adapter
-          machine_ip       = nil
-          machine_ip       = read_machine_ip if adapter
+          host_ip    = find_host_only_adapter
+          machine_ip = read_machine_ip
 
           raise Vagrant::Errors::NFSNoHostonlyNetwork if !host_ip || !machine_ip
 
@@ -40,18 +39,23 @@ module VagrantPlugins
           env[:nfs_machine_ip] = machine_ip
         end
 
-        # Finds first host only network adapter and returns its adapter number
-        # and IP address
+        # Finds first host only network adapter and returns its IP address
         #
-        # @return [Integer, String] adapter number, ip address of found host-only adapter
+        # @return [String] ip address of found host-only adapter
         def find_host_only_adapter
-          @machine.provider.driver.read_network_interfaces.each do |adapter, opts|
-            if opts[:type] == :hostonly
-              @machine.provider.driver.read_host_only_interfaces.each do |interface|
-                if interface[:name] == opts[:hostonly]
-                  return adapter, interface[:ip]
-                end
+          host_only_all = @machine.provider.driver.read_host_only_interfaces
+          host_only_used = @machine.provider.driver.read_network_interfaces.
+            select { |_, opts| opts[:type] == :hostonly }
+
+          host_only_used.each do |_, opts|
+            host_only_all.each do |interface|
+              if @machine.provider.pd_version_satisfies?('>= 10')
+                name_matched = interface[:name] == opts[:hostonly]
+              else
+                name_matched = interface[:bound_to] == opts[:hostonly]
               end
+
+              return interface[:ip] if name_matched
             end
           end
 
