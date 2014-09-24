@@ -304,6 +304,30 @@ module VagrantPlugins
         end
       end
 
+      # This action sync folders 
+      def self.action_sync_folders
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              next
+            end
+
+            b1.use Call, IsState, :running do |env2, b2|
+              if !env2[:result]
+                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
+                next
+              end
+
+              b2.use SyncedFolders
+              b2.use PrepareNFSSettings
+            end
+          end
+        end
+      end
+
+
       autoload :Boot, File.expand_path("../action/boot", __FILE__)
       autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
       autoload :HandleForwardedPortCollisions, File.expand_path("../action/handle_forwarded_port_collisions.rb", __FILE__)
