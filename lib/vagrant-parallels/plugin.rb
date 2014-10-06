@@ -20,7 +20,7 @@ module VagrantPlugins
       Parallels-based virtual machines.
       EOF
 
-      provider(:parallels) do
+      provider(:parallels, parallel: true) do
         require File.expand_path("../provider", __FILE__)
         Provider
       end
