@@ -429,6 +429,23 @@ module VagrantPlugins
         def register(pvm_file, regen_src_uuid=false)
           args = ['prlctl', 'register', pvm_file]
           args << '--regenerate-src-uuid' if regen_src_uuid
+
+          3.times do
+            result = raw(*args)
+            # Exit if everything is OK
+            return if result.exit_code == 0
+
+            # It may occur in the race condition with other Vagrant processes.
+            # It is OK, just exit.
+            return if result.stderr.include?('is already registered.')
+
+            # Sleep a bit though to give Parallels Desktop time to fix itself
+            sleep 2
+          end
+
+          # If we reach this point, it means that we consistently got the
+          # failure, do a standard execute now. This will raise an
+          # exception if it fails again.
           execute(*args)
         end
 
@@ -480,7 +497,25 @@ module VagrantPlugins
         end
 
         def unregister(uuid)
-          execute_prlctl('unregister', uuid)
+          args = ['prlctl', 'unregister', uuid]
+          3.times do
+            result = raw(*args)
+            # Exit if everything is OK
+            return if result.exit_code == 0
+
+            # It may occur in the race condition with other Vagrant processes.
+            # Both are OK, just exit.
+            return if result.stderr.include?('is not registered')
+            return if result.stderr.include?('is being cloned')
+
+            # Sleep a bit though to give Parallels Desktop time to fix itself
+            sleep 2
+          end
+
+          # If we reach this point, it means that we consistently got the
+          # failure, do a standard execute now. This will raise an
+          # exception if it fails again.
+          execute(*args)
         end
 
         def unshare_folders(names)
