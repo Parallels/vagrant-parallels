@@ -59,7 +59,7 @@ module VagrantPlugins
           iface_name = net_info['Bound To']
 
           # Return the details
-          return {
+          {
             name:    iface_name,
             ip:      options[:adapter_ip],
             netmask: options[:netmask],
@@ -301,19 +301,13 @@ module VagrantPlugins
         end
 
         def read_mac_address
-          read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
+          # Get MAC of Shared network interface (net0)
+          read_vm_option('mac').strip.split(' ').first.gsub(':', '')
         end
 
         def read_mac_addresses
-          macs = {}
-          read_settings.fetch('Hardware', {}).each do |device, params|
-            if device =~ /^net(\d+)$/
-              adapter = $1
-              mac = params.fetch('mac')
-              macs[adapter] = mac
-            end
-          end
-          macs
+          macs = read_vm_option('mac').strip.split(' ')
+          Hash[macs.map.with_index{ |mac, ind| [ind.to_s, mac.gsub(':', '')]  }]
         end
 
         def read_network_interfaces
@@ -391,9 +385,7 @@ module VagrantPlugins
         end
 
         def read_state
-          vm = json { execute_prlctl('list', @uuid, '--no-header', '--json') }
-          return nil if !vm.last
-          vm.last.fetch('status').to_sym
+          read_vm_option('status').strip.to_sym
         end
 
         def read_virtual_networks
@@ -405,30 +397,21 @@ module VagrantPlugins
         end
 
         def read_vms
-          results = {}
-          vms_arr = json([]) do
-            execute_prlctl('list', '--all', '--no-header', '--json')
-          end
-          templates_arr = json([]) do
-            execute_prlctl('list', '--all', '--no-header', '--json', '--template')
-          end
-          vms = vms_arr | templates_arr
-          vms.each do |item|
-            results[item.fetch('name')] = item.fetch('uuid')
-          end
+          args = %w(list --all --no-header --json -o name,uuid)
+          vms_arr = json([]) { execute_prlctl(*args) }
+          templates_arr = json([]) { execute_prlctl(*args, '--template') }
 
-          results
+          vms = vms_arr | templates_arr
+          Hash[vms.map { |i| [i.fetch('name'), i.fetch('uuid')] }]
         end
 
         # Parse the JSON from *all* VMs and templates.
         # Then return an array of objects (without duplicates)
         def read_vms_info
-          vms_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--no-header', '--json')
-          end
-          templates_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--no-header', '--json', '--template')
-          end
+          args = %w(list --all --info --no-header --json)
+          vms_arr = json([]) { execute_prlctl(*args) }
+          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+
           vms_arr | templates_arr
         end
 
@@ -450,7 +433,10 @@ module VagrantPlugins
         end
 
         def registered?(uuid)
-          read_vms.has_value?(uuid)
+          args = %w(list --all --info --no-header -o uuid)
+
+          execute_prlctl(*args).include?(uuid) ||
+            execute_prlctl(*args, '--template').include?(uuid)
         end
 
         def resume
@@ -519,7 +505,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard prlctl now. This will raise an
           # exception if it fails again.
-          execute_prlctl("showvminfo", uuid)
+          execute_prlctl('list', uuid)
           true
         end
       end

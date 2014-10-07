@@ -85,7 +85,7 @@ module VagrantPlugins
         end
 
         def unregister_template
-          if @env[:machine].provider.driver.registered?(@template_uuid)
+          if @env[:machine].provider.driver.vm_exists?(@template_uuid)
             @logger.info("Unregister the box template: '#{@template_uuid}'")
             @env[:machine].provider.driver.unregister(@template_uuid)
           end

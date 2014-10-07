@@ -105,7 +105,6 @@ module VagrantPlugins
                        :read_vms_info,
                        :read_vms_paths,
                        :register,
-                       :registered?,
                        :resume,
                        :set_power_consumption_mode,
                        :set_mac_address,
