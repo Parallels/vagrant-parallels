@@ -237,18 +237,6 @@ module VagrantPlugins
           info
         end
 
-        # Parse the JSON from *all* VMs and templates.
-        # Then return an array of objects (without duplicates)
-        def read_vms_info
-          vms_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--json')
-          end
-          templates_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--json', '--template')
-          end
-          vms_arr | templates_arr
-        end
-
         def read_used_ports
           # Ignore our own used ports
           read_forwarded_ports(true).reject { |r| r[:guest].include?(@uuid) }

@@ -346,7 +346,7 @@ module VagrantPlugins
         end
 
         def read_settings
-          vm = json { execute_prlctl('list', @uuid, '--info', '--json').gsub(/^INFO/, '') }
+          vm = json { execute_prlctl('list', @uuid, '--info', '--no-header', '--json')  }
           vm.last
         end
 
@@ -391,7 +391,7 @@ module VagrantPlugins
         end
 
         def read_state
-          vm = json { execute_prlctl('list', @uuid, '--json').gsub(/^INFO/, '') }
+          vm = json { execute_prlctl('list', @uuid, '--no-header', '--json') }
           return nil if !vm.last
           vm.last.fetch('status').to_sym
         end
@@ -403,10 +403,10 @@ module VagrantPlugins
         def read_vms
           results = {}
           vms_arr = json([]) do
-            execute_prlctl('list', '--all', '--json').gsub(/^INFO/, '')
+            execute_prlctl('list', '--all', '--no-header', '--json')
           end
           templates_arr = json([]) do
-            execute_prlctl('list', '--all', '--json', '--template').gsub(/^INFO/, '')
+            execute_prlctl('list', '--all', '--no-header', '--json', '--template')
           end
           vms = vms_arr | templates_arr
           vms.each do |item|
@@ -420,10 +420,10 @@ module VagrantPlugins
         # Then return an array of objects (without duplicates)
         def read_vms_info
           vms_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--json').gsub(/^INFO/, '')
+            execute_prlctl('list', '--all','--info', '--no-header', '--json')
           end
           templates_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--json', '--template').gsub(/^INFO/, '')
+            execute_prlctl('list', '--all','--info', '--no-header', '--json', '--template')
           end
           vms_arr | templates_arr
         end
