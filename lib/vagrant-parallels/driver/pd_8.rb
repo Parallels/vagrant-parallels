@@ -400,6 +400,10 @@ module VagrantPlugins
           json { execute_prlsrvctl('net', 'list', '--json') }
         end
 
+        def read_vm_option(option, uuid=@uuid)
+          execute_prlctl('list', uuid,'--no-header', '-o', option)
+        end
+
         def read_vms
           results = {}
           vms_arr = json([]) do
