@@ -61,6 +61,11 @@ en:
         reinstall Parallels Desktop.
 
         Expected ISO path: "%{iso_path}"
+      parallels_tpl_name_not_found: |-
+        The VM import failed! Template name not found. Please verify that
+        the box you're using is not corrupted and try again.
+
+        Template config path: "%{config_path}"
       vm_import_failure: |-
         The VM import failed! Please verify that the box you're using is not
         corrupted and try again.

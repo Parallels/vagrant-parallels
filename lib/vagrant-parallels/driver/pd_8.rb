@@ -170,11 +170,10 @@ module VagrantPlugins
           execute(*args)
         end
 
-        def import(template_uuid)
-          template_name = read_vms.key(template_uuid)
-          vm_name = "#{template_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+        def import(tpl_name)
+          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
 
-          execute_prlctl('clone', template_uuid, '--name', vm_name) do |type, data|
+          execute_prlctl('clone', tpl_name, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
