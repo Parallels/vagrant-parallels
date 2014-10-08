@@ -31,7 +31,11 @@ en:
         The command attempted was:
 
         %{command}
+      linux_prl_fs_invalid_options: |-
+        Failed to mount folders in Linux guest. You've specified mount options
+        which are not supported by "prl_fs" file system.
 
+        Invalid mount options: %{options}
       mac_os_x_required: |-
         Parallels provider works only on OS X (Mac OS X) systems.
       parallels_install_incomplete: |-

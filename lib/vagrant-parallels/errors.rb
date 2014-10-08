@@ -15,6 +15,10 @@ module VagrantPlugins
         error_key(:linux_mount_failed)
       end
 
+      class LinuxPrlFsInvalidOptions < VagrantParallelsError
+        error_key(:linux_prl_fs_invalid_options)
+      end
+
       class MacOSXRequired < VagrantParallelsError
         error_key(:mac_os_x_required)
       end
