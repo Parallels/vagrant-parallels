@@ -1,4 +1,5 @@
 Copyright (c) 2013 Youssef Shahin
+Copyright (c) 2013-2014 Parallels IP Holdings GmbH.
 
 MIT License
 

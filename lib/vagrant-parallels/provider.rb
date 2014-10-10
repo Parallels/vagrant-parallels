@@ -7,6 +7,10 @@ module VagrantPlugins
       attr_reader :driver
 
       def self.usable?(raise_error=false)
+        if !Vagrant::Util::Platform.darwin?
+          raise Errors::MacOSXRequired
+        end
+
         # Instantiate the driver, which will determine the Parallels Desktop
         # version and all that, which checks for Parallels Desktop being present
         Driver::Meta.new
@@ -22,10 +26,6 @@ module VagrantPlugins
       def initialize(machine)
         @logger = Log4r::Logger.new("vagrant::provider::parallels")
         @machine = machine
-
-        if !Vagrant::Util::Platform.darwin?
-          raise Errors::MacOSXRequired
-        end
 
         # This method will load in our driver, so we call it now to
         # initialize it.

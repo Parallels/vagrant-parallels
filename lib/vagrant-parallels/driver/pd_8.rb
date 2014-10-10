@@ -59,7 +59,7 @@ module VagrantPlugins
           iface_name = net_info['Bound To']
 
           # Return the details
-          return {
+          {
             name:    iface_name,
             ip:      options[:adapter_ip],
             netmask: options[:netmask],
@@ -170,11 +170,10 @@ module VagrantPlugins
           execute(*args)
         end
 
-        def import(template_uuid)
-          template_name = read_vms.key(template_uuid)
-          vm_name = "#{template_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+        def import(tpl_name)
+          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
 
-          execute_prlctl('clone', template_uuid, '--name', vm_name) do |type, data|
+          execute_prlctl('clone', tpl_name, '--name', vm_name) do |type, data|
             lines = data.split("\r")
             # The progress of the import will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
@@ -277,7 +276,8 @@ module VagrantPlugins
             info = {}
             net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
             # Really we need to work with bounded virtual interface
-            info[:name]     = net_info['Bound To']
+            info[:name]     = net_info['Network ID']
+            info[:bound_to] = net_info['Bound To']
             info[:ip]       = net_info['Parallels adapter']['IP address']
             info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
             # Such interfaces are always in 'Up'
@@ -300,19 +300,13 @@ module VagrantPlugins
         end
 
         def read_mac_address
-          read_settings.fetch('Hardware', {}).fetch('net0', {}).fetch('mac', nil)
+          # Get MAC of Shared network interface (net0)
+          read_vm_option('mac').strip.split(' ').first.gsub(':', '')
         end
 
         def read_mac_addresses
-          macs = {}
-          read_settings.fetch('Hardware', {}).each do |device, params|
-            if device =~ /^net(\d+)$/
-              adapter = $1
-              mac = params.fetch('mac')
-              macs[adapter] = mac
-            end
-          end
-          macs
+          macs = read_vm_option('mac').strip.split(' ')
+          Hash[macs.map.with_index{ |mac, ind| [ind.to_s, mac.gsub(':', '')]  }]
         end
 
         def read_network_interfaces
@@ -345,7 +339,7 @@ module VagrantPlugins
         end
 
         def read_settings
-          vm = json { execute_prlctl('list', @uuid, '--info', '--json').gsub(/^INFO/, '') }
+          vm = json { execute_prlctl('list', @uuid, '--info', '--no-header', '--json')  }
           vm.last
         end
 
@@ -390,40 +384,33 @@ module VagrantPlugins
         end
 
         def read_state
-          vm = json { execute_prlctl('list', @uuid, '--json').gsub(/^INFO/, '') }
-          return nil if !vm.last
-          vm.last.fetch('status').to_sym
+          read_vm_option('status').strip.to_sym
         end
 
         def read_virtual_networks
           json { execute_prlsrvctl('net', 'list', '--json') }
         end
 
-        def read_vms
-          results = {}
-          vms_arr = json([]) do
-            execute_prlctl('list', '--all', '--json').gsub(/^INFO/, '')
-          end
-          templates_arr = json([]) do
-            execute_prlctl('list', '--all', '--json', '--template').gsub(/^INFO/, '')
-          end
-          vms = vms_arr | templates_arr
-          vms.each do |item|
-            results[item.fetch('name')] = item.fetch('uuid')
-          end
+        def read_vm_option(option, uuid=@uuid)
+          execute_prlctl('list', uuid,'--no-header', '-o', option)
+        end
 
-          results
+        def read_vms
+          args = %w(list --all --no-header --json -o name,uuid)
+          vms_arr = json([]) { execute_prlctl(*args) }
+          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+
+          vms = vms_arr | templates_arr
+          Hash[vms.map { |i| [i.fetch('name'), i.fetch('uuid')] }]
         end
 
         # Parse the JSON from *all* VMs and templates.
         # Then return an array of objects (without duplicates)
         def read_vms_info
-          vms_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--json').gsub(/^INFO/, '')
-          end
-          templates_arr = json([]) do
-            execute_prlctl('list', '--all','--info', '--json', '--template').gsub(/^INFO/, '')
-          end
+          args = %w(list --all --info --no-header --json)
+          vms_arr = json([]) { execute_prlctl(*args) }
+          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+
           vms_arr | templates_arr
         end
 
@@ -441,11 +428,31 @@ module VagrantPlugins
         def register(pvm_file, regen_src_uuid=false)
           args = ['prlctl', 'register', pvm_file]
           args << '--regenerate-src-uuid' if regen_src_uuid
+
+          3.times do
+            result = raw(*args)
+            # Exit if everything is OK
+            return if result.exit_code == 0
+
+            # It may occur in the race condition with other Vagrant processes.
+            # It is OK, just exit.
+            return if result.stderr.include?('is already registered.')
+
+            # Sleep a bit though to give Parallels Desktop time to fix itself
+            sleep 2
+          end
+
+          # If we reach this point, it means that we consistently got the
+          # failure, do a standard execute now. This will raise an
+          # exception if it fails again.
           execute(*args)
         end
 
         def registered?(uuid)
-          read_vms.has_value?(uuid)
+          args = %w(list --all --info --no-header -o uuid)
+
+          execute_prlctl(*args).include?(uuid) ||
+            execute_prlctl(*args, '--template').include?(uuid)
         end
 
         def resume
@@ -489,7 +496,25 @@ module VagrantPlugins
         end
 
         def unregister(uuid)
-          execute_prlctl('unregister', uuid)
+          args = ['prlctl', 'unregister', uuid]
+          3.times do
+            result = raw(*args)
+            # Exit if everything is OK
+            return if result.exit_code == 0
+
+            # It may occur in the race condition with other Vagrant processes.
+            # Both are OK, just exit.
+            return if result.stderr.include?('is not registered')
+            return if result.stderr.include?('is being cloned')
+
+            # Sleep a bit though to give Parallels Desktop time to fix itself
+            sleep 2
+          end
+
+          # If we reach this point, it means that we consistently got the
+          # failure, do a standard execute now. This will raise an
+          # exception if it fails again.
+          execute(*args)
         end
 
         def unshare_folders(names)
@@ -499,7 +524,23 @@ module VagrantPlugins
         end
 
         def vm_exists?(uuid)
-          raw('prlctl', 'list', uuid).exit_code == 0
+          5.times do |i|
+            result = raw('prlctl', 'list', uuid)
+            return true if result.exit_code == 0
+
+            # Sometimes this happens. In this case, retry. If
+            # we don't see this text, the VM really probably doesn't exist.
+            return false if !result.stderr.include?('Login failed:')
+
+            # Sleep a bit though to give Parallels Desktop time to fix itself
+            sleep 2
+          end
+
+          # If we reach this point, it means that we consistently got the
+          # failure, do a standard prlctl now. This will raise an
+          # exception if it fails again.
+          execute_prlctl('list', uuid)
+          true
         end
       end
     end

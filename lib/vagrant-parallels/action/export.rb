@@ -13,17 +13,9 @@ module VagrantPlugins
             raise Vagrant::Errors::VMPowerOffToPackage
           end
 
-          name = "#{env[:root_path].basename.to_s}_#{env[:machine].name}"
-          name.gsub!(/[^-a-z0-9_]/i, "")
+          @tpl_name = gen_template_name
 
-          # Check the name is not in use
-          if @env[:machine].provider.driver.read_vms.has_key?(@template_name)
-            @template_name << rand(100000).to_s
-          end
-
-
-          @template_name = gen_template_name
-          @template_uuid = export
+          export
           compact_template
           unregister_template
 
@@ -42,21 +34,24 @@ module VagrantPlugins
           name = @env[:machine].provider_config.name
           if !name
             name = "#{@env[:root_path].basename.to_s}_#{@env[:machine].name}"
-            name.gsub!(/[^-a-z0-9_]/i, "")
+            name.gsub!(/[^-a-z0-9_]/i, '')
           end
+
           tpl_name = "#{name}_box"
 
           # Ensure that the name is not in use
-          if @env[:machine].provider.driver.read_vms.has_key?(tpl_name)
-            tpl_name << "_#{rand(1000)}"
+          ind = 0
+          while @env[:machine].provider.driver.read_vms.has_key?(tpl_name)
+            ind += 1
+            tpl_name = "#{name}_box_#{ind}"
           end
 
           tpl_name
         end
 
         def export
-          @env[:ui].info I18n.t("vagrant.actions.vm.export.exporting")
-          tpl_uuid = @env[:machine].provider.driver.export(@env["export.temp_dir"], @template_name) do |progress|
+          @env[:ui].info I18n.t('vagrant.actions.vm.export.exporting')
+          @env[:machine].provider.driver.export(@env['export.temp_dir'], @tpl_name) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
 
@@ -68,13 +63,11 @@ module VagrantPlugins
           # Clear the line a final time so the next data can appear
           # alone on the line.
           @env[:ui].clear_line
-
-          tpl_uuid
         end
 
         def compact_template
-          @env[:ui].info I18n.t("vagrant_parallels.actions.vm.export.compacting")
-          @env[:machine].provider.driver.compact(@template_uuid) do |progress|
+          @env[:ui].info I18n.t('vagrant_parallels.actions.vm.export.compacting')
+          @env[:machine].provider.driver.compact(@tpl_name) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
           end
@@ -85,10 +78,8 @@ module VagrantPlugins
         end
 
         def unregister_template
-          if @env[:machine].provider.driver.registered?(@template_uuid)
-            @logger.info("Unregister the box template: '#{@template_uuid}'")
-            @env[:machine].provider.driver.unregister(@template_uuid)
-          end
+          @logger.info("Unregister the box template: '#{@tpl_name}'")
+          @env[:machine].provider.driver.unregister(@tpl_name)
         end
       end
     end

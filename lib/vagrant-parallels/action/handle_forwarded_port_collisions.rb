@@ -13,7 +13,7 @@ module VagrantPlugins
           if env[:machine].provider.pd_version_satisfies?('>= 10')
             super
           else
-            # Just continue if port forwarding is not supporting
+            # Just continue if port forwarding is not supported
             @app.call(env)
           end
         end
@@ -22,7 +22,7 @@ module VagrantPlugins
           if env[:machine].provider.pd_version_satisfies?('>= 10')
             super
           end
-          # Do nothing if port forwarding is not supporting
+          # Do nothing if port forwarding is not supported
         end
       end
     end

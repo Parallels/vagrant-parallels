@@ -177,6 +177,14 @@ module VagrantPlugins
         def read_state
         end
 
+        # Returns a value of specified VM option
+        #
+        # @param [String] option Name of option (See all: `prlctl list -L`)
+        # @param [String] uuid Virtual machine UUID
+        # @return [String]
+        def read_vm_option(option, uuid=@uuid)
+        end
+
         # Returns a list of all registered
         # virtual machines and templates.
         #

@@ -31,7 +31,11 @@ en:
         The command attempted was:
 
         %{command}
+      linux_prl_fs_invalid_options: |-
+        Failed to mount folders in Linux guest. You've specified mount options
+        which are not supported by "prl_fs" file system.
 
+        Invalid mount options: %{options}
       mac_os_x_required: |-
         Parallels provider works only on OS X (Mac OS X) systems.
       parallels_install_incomplete: |-
@@ -61,6 +65,11 @@ en:
         reinstall Parallels Desktop.
 
         Expected ISO path: "%{iso_path}"
+      parallels_tpl_name_not_found: |-
+        The VM import failed! Template name not found. Please verify that
+        the box you're using is not corrupted and try again.
+
+        Template config path: "%{config_path}"
       vm_import_failure: |-
         The VM import failed! Please verify that the box you're using is not
         corrupted and try again.

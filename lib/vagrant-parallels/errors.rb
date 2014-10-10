@@ -15,6 +15,10 @@ module VagrantPlugins
         error_key(:linux_mount_failed)
       end
 
+      class LinuxPrlFsInvalidOptions < VagrantParallelsError
+        error_key(:linux_prl_fs_invalid_options)
+      end
+
       class MacOSXRequired < VagrantParallelsError
         error_key(:mac_os_x_required)
       end
@@ -41,6 +45,10 @@ module VagrantPlugins
 
       class ParallelsToolsIsoNotFound < VagrantParallelsError
         error_key(:parallels_tools_iso_not_found)
+      end
+
+      class ParallelsTplNameNotFound < VagrantParallelsError
+        error_key(:parallels_tpl_name_not_found)
       end
 
       class VMImportFailure < VagrantParallelsError

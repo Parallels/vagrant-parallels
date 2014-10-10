@@ -234,6 +234,7 @@ module VagrantPlugins
           options = {
             auto_config: true,
             mac:         nil,
+            name:        nil,
             nic_type:    nil,
             netmask:     "255.255.255.0",
             type:        :static
@@ -293,6 +294,7 @@ module VagrantPlugins
             auto_config: options[:auto_config],
             ip:          options[:ip],
             mac:         options[:mac],
+            name:        options[:name],
             netmask:     options[:netmask],
             nic_type:    options[:nic_type],
             type:        options[:type]
@@ -305,12 +307,6 @@ module VagrantPlugins
 
           if !interface
             @logger.info("Network not found. Creating if we can.")
-
-            # It is an error if a specific host only network name was specified
-            # but the network wasn't found.
-            if config[:name]
-              raise Vagrant::Errors::NetworkNotFound, :name => config[:name]
-            end
 
             # Create a new network
             interface = hostonly_create_network(config)
@@ -414,7 +410,7 @@ module VagrantPlugins
         # This creates a host only network for the given configuration.
         def hostonly_create_network(config)
           options = {
-            network_id: next_network_id,
+            network_id: config[:name] || next_network_id,
             adapter_ip: config[:adapter_ip],
             netmask:    config[:netmask],
           }
@@ -432,15 +428,20 @@ module VagrantPlugins
 
         # This finds a matching host only network for the given configuration.
         def hostonly_find_matching_network(config)
-          this_netaddr = network_address(config[:ip], config[:netmask])
+          existing = @env[:machine].provider.driver.read_host_only_interfaces
 
-          @env[:machine].provider.driver.read_host_only_interfaces.each do |interface|
-            return interface if config[:name] && config[:name] == interface[:name]
-            return interface if this_netaddr == \
-              network_address(interface[:ip], interface[:netmask])
+          if config[:name]
+            # Search networks strongly by specified name
+            matched_iface = existing.detect { |i| config[:name] == i[:name] }
+          else
+            # Name is not specified - search by network address
+            this_netaddr = network_address(config[:ip], config[:netmask])
+            matched_iface = existing.detect do |i|
+              this_netaddr == network_address(i[:ip], i[:netmask])
+            end
           end
 
-          nil
+          matched_iface || nil
         end
       end
     end

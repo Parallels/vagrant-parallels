@@ -3,6 +3,18 @@ module VagrantPlugins
     module GuestLinuxCap
       class MountParallelsSharedFolder
         def self.mount_parallels_shared_folder(machine, name, guestpath, options)
+          # Sanity check for mount options: we are not supporting
+          # VirtualBox-specific 'fmode' and 'dmode' options
+          if options[:mount_options]
+            invalid_opts = options[:mount_options].select do |opt|
+              opt =~ /^(d|f)mode/
+            end
+
+            if !invalid_opts.empty?
+              raise Errors::LinuxPrlFsInvalidOptions, options: invalid_opts
+            end
+          end
+
           expanded_guest_path = machine.guest.capability(
             :shell_expand_guest_path, guestpath)
 
