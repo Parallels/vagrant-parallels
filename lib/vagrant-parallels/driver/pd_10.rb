@@ -194,20 +194,6 @@ module VagrantPlugins
           execute_prlctl('set', @uuid, '--longer-battery-life', state)
         end
 
-        def ssh_ip
-          '127.0.0.1'
-        end
-
-        def ssh_port(expected_port)
-          @logger.debug("Searching for SSH port: #{expected_port.inspect}")
-
-          # Look for the forwarded port only by comparing the guest port
-          read_forwarded_ports.each do |r|
-            return r[:hostport] if r[:guestport] == expected_port
-          end
-
-          nil
-        end
       end
     end
   end

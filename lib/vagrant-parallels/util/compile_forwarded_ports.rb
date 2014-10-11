@@ -22,6 +22,12 @@ module VagrantPlugins
               # If the forwarded port was marked as disabled, ignore.
               next if options[:disabled]
 
+              # Temporary disable automatically pre-configured forwarded ports
+              # for SSH, since it is working not so well [GH-146]
+              # TODO: Roll it back when forwarded ports will be completely
+              # fixed in Parallels Desktop 10
+              next if id == 'ssh'
+
               mappings[host_port.to_s + protocol.to_s] =
                 Model::ForwardedPort.new(id, host_port, guest_port, options)
             end
