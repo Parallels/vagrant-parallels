@@ -147,37 +147,6 @@ module VagrantPlugins
           end
         end
 
-        def read_host_only_interfaces
-          net_list = read_virtual_networks
-          net_list.keep_if { |net| net['Type'] == "host-only" }
-
-          hostonly_ifaces = []
-          net_list.each do |iface|
-            info = {}
-            net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
-            info[:name]     = net_info['Network ID']
-            info[:bound_to] = net_info['Bound To']
-            info[:ip]       = net_info['Parallels adapter']['IP address']
-            info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
-            # Such interfaces are always in 'Up'
-            info[:status]   = "Up"
-
-            # There may be a fake DHCPv4 parameters
-            # We can trust them only if adapter IP and DHCP IP are in the same subnet
-            dhcp_ip = net_info['DHCPv4 server']['Server address']
-            if network_address(info[:ip], info[:netmask]) ==
-              network_address(dhcp_ip, info[:netmask])
-              info[:dhcp] = {
-                ip: dhcp_ip,
-                lower: net_info['DHCPv4 server']['IP scope start address'],
-                upper: net_info['DHCPv4 server']['IP scope end address']
-              }
-            end
-            hostonly_ifaces << info
-          end
-          hostonly_ifaces
-        end
-
         def read_network_interfaces
           nics = {}
 
