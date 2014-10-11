@@ -26,28 +26,6 @@ module VagrantPlugins
           end
         end
 
-        def create_host_only_network(options)
-          # Create the interface
-          execute_prlsrvctl('net', 'add', options[:network_id], '--type', 'host-only')
-
-          # Configure it
-          args = ["--ip", "#{options[:adapter_ip]}/#{options[:netmask]}"]
-          if options[:dhcp]
-            args.concat(["--dhcp-ip", options[:dhcp][:ip],
-                         "--ip-scope-start", options[:dhcp][:lower],
-                         "--ip-scope-end", options[:dhcp][:upper]])
-          end
-
-          execute_prlsrvctl('net', 'set', options[:network_id], *args)
-
-          # Return the details
-          {
-            name:    options[:network_id],
-            ip:      options[:adapter_ip],
-            netmask: options[:netmask],
-            dhcp:    options[:dhcp]
-          }
-        end
 
         def delete_unused_host_only_networks
           networks = read_virtual_networks
