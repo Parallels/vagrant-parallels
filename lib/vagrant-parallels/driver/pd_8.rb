@@ -54,13 +54,9 @@ module VagrantPlugins
 
           execute_prlsrvctl('net', 'set', options[:network_id], *args)
 
-          # Determine interface to which it has been bound
-          net_info = json { execute_prlsrvctl('net', 'info', options[:network_id], '--json') }
-          iface_name = net_info['Bound To']
-
           # Return the details
           {
-            name:    iface_name,
+            name:    options[:network_id],
             ip:      options[:adapter_ip],
             netmask: options[:netmask],
             dhcp:    options[:dhcp]
@@ -126,11 +122,16 @@ module VagrantPlugins
             end
 
             if adapter[:type] == :hostonly
-              # Oddly enough, but there is a 'bridge' anyway.
+              # Determine interface to which it has been bound
+              net_info = json do
+                execute_prlsrvctl('net', 'info', adapter[:hostonly], '--json')
+              end
+
+              # Oddly enough, but there is a 'bridge' type anyway.
               # The only difference is the destination interface:
               # - in host-only (private) network it will be bridged to the 'vnicX' device
               # - in real bridge (public) network it will be bridged to the assigned device
-              args.concat(["--type", "bridged", "--iface", adapter[:hostonly]])
+              args.concat(["--type", "bridged", "--iface", net_info['Bound To']])
             elsif adapter[:type] == :bridged
               args.concat(["--type", "bridged", "--iface", adapter[:bridge]])
             elsif adapter[:type] == :shared
@@ -275,7 +276,6 @@ module VagrantPlugins
           net_list.each do |iface|
             info = {}
             net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
-            # Really we need to work with bounded virtual interface
             info[:name]     = net_info['Network ID']
             info[:bound_to] = net_info['Bound To']
             info[:ip]       = net_info['Parallels adapter']['IP address']
