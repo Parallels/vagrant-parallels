@@ -24,6 +24,7 @@ module VagrantPlugins
 
         def call(env)
           @env = env
+          @lock = Mutex.new
 
           # Get the list of network adapters from the configuration
           network_adapters_config = env[:machine].provider_config.network_adapters.dup
@@ -86,9 +87,20 @@ module VagrantPlugins
             @logger.debug("Normalized configuration: #{config.inspect}")
 
             # Get the virtual network adapter configuration
-            adapter = send("#{type}_adapter", config)
-            adapters << adapter
-            @logger.debug("Adapter configuration: #{adapter.inspect}")
+            # We wrap this in locks to avoid race conditions between multiple
+            # Vagrant threads and/or processes.
+            @lock.synchronize do
+              begin
+                env[:machine].env.lock('parallels-network-adapters') do
+                  adapter = send("#{type}_adapter", config)
+                  adapters << adapter
+                  @logger.debug("Adapter configuration: #{adapter.inspect}")
+                end
+              rescue Vagrant::Errors::EnvironmentLockedError
+                sleep 1
+                retry
+              end
+            end
 
             # Get the network configuration
             network = send("#{type}_network_config", config)
