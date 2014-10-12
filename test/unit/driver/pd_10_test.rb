@@ -28,10 +28,4 @@ describe VagrantPlugins::Parallels::Driver::PD_10 do
     end
   end
 
-  describe "ssh_ip" do
-    it "returns 127.0.0.1" do
-      subject.ssh_ip.should == "127.0.0.1"
-    end
-  end
-
 end
