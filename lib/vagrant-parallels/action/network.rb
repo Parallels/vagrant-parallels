@@ -16,6 +16,7 @@ module VagrantPlugins
       class Network
         include Vagrant::Util::NetworkIP
         include Vagrant::Util::ScopedHashOverride
+        @@lock = Mutex.new
 
         def initialize(app, env)
           @app    = app
@@ -24,7 +25,6 @@ module VagrantPlugins
 
         def call(env)
           @env = env
-          @lock = Mutex.new
 
           # Get the list of network adapters from the configuration
           network_adapters_config = env[:machine].provider_config.network_adapters.dup
@@ -89,7 +89,7 @@ module VagrantPlugins
             # Get the virtual network adapter configuration
             # We wrap this in locks to avoid race conditions between multiple
             # Vagrant threads and/or processes.
-            @lock.synchronize do
+            @@lock.synchronize do
               begin
                 env[:machine].env.lock('parallels-network-adapters') do
                   adapter = send("#{type}_adapter", config)
