@@ -51,6 +51,10 @@ module VagrantPlugins
         error_key(:parallels_tpl_name_not_found)
       end
 
+      class ParallelsVMOptionNotFound < VagrantParallelsError
+        error_key(:parallels_vm_option_not_found)
+      end
+
       class VMImportFailure < VagrantParallelsError
         error_key(:vm_import_failure)
       end

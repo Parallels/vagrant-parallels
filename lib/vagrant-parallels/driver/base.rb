@@ -177,7 +177,8 @@ module VagrantPlugins
         def read_state
         end
 
-        # Returns a value of specified VM option
+        # Returns a value of specified VM option. Raises an exception if value
+        # is not available
         #
         # @param [String] option Name of option (See all: `prlctl list -L`)
         # @param [String] uuid Virtual machine UUID

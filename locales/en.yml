@@ -70,6 +70,11 @@ en:
         the box you're using is not corrupted and try again.
 
         Template config path: "%{config_path}"
+
+      parallels_vm_option_not_found: |-
+        Could not find a required option of Parallels Desktop virtual machine:
+          %{vm_option}
+        This is an internal error that should be reported as a bug.
       vm_import_failure: |-
         The VM import failed! Please verify that the box you're using is not
         corrupted and try again.

@@ -392,7 +392,12 @@ module VagrantPlugins
         end
 
         def read_vm_option(option, uuid=@uuid)
-          execute_prlctl('list', uuid,'--no-header', '-o', option)
+          out = execute_prlctl('list', uuid,'--no-header', '-o', option).strip
+          if out.empty?
+            raise Errors::ParallelsVMOptionNotFound, vm_option: option
+          end
+
+          out
         end
 
         def read_vms
