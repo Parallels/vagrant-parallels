@@ -1,9 +1,11 @@
 require 'ipaddr'
+require "vagrant/action/builtin/mixin_synced_folders"
 
 module VagrantPlugins
   module Parallels
     module Action
       class PrepareNFSSettings
+        include Vagrant::Action::Builtin::MixinSyncedFolders
         include Vagrant::Util::Retryable
 
         def initialize(app, env)
@@ -15,17 +17,17 @@ module VagrantPlugins
           @machine = env[:machine]
           @app.call(env)
 
-          if using_nfs?(@machine.config.vm) || using_nfs?(env[:synced_folders_config])
+          opts = {
+            cached: !!env[:synced_folders_cached],
+            config: env[:synced_folders_config],
+            disable_usable_check: !!env[:test],
+          }
+          folders = synced_folders(env[:machine], **opts)
+
+          if folders.has_key?(:nfs)
             @logger.info("Using NFS, preparing NFS settings by reading host IP and machine IP")
             add_ips_to_env!(env)
           end
-        end
-
-        # We're using NFS if we have any synced folder with NFS configured. If
-        # we are not using NFS we don't need to do the extra work to
-        # populate these fields in the environment.
-        def using_nfs?(env)
-          env && env.synced_folders.any? { |_, opts| opts[:type] == :nfs }
         end
 
         # Extracts the proper host and guest IPs for NFS mounts and stores them
