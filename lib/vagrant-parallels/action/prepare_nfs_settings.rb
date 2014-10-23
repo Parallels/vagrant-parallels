@@ -1,7 +1,11 @@
+require 'ipaddr'
+
 module VagrantPlugins
   module Parallels
     module Action
       class PrepareNFSSettings
+        include Vagrant::Util::Retryable
+
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_parallels::action::nfs')
@@ -30,55 +34,40 @@ module VagrantPlugins
         #
         # The ! indicates that this method modifies its argument.
         def add_ips_to_env!(env)
-          host_ip    = find_host_only_adapter
-          machine_ip = read_machine_ip
+          host_ip = @machine.provider.driver.read_shared_interface[:ip]
 
-          raise Vagrant::Errors::NFSNoHostonlyNetwork if !host_ip || !machine_ip
+          if !host_ip
+            # If we couldn't determine host's IP, then it is probably a bug.
+            # Display an appropriate error message.
+            raise Vagrant::Errors::NFSNoHostIP
+          end
 
           env[:nfs_host_ip]    = host_ip
-          env[:nfs_machine_ip] = machine_ip
+          env[:nfs_machine_ip] = read_machine_ip
         end
 
-        # Finds first host only network adapter and returns its IP address
+        # Returns the IPv4 addresses of the guest by looking at VM options.
         #
-        # @return [String] ip address of found host-only adapter
-        def find_host_only_adapter
-          host_only_all = @machine.provider.driver.read_host_only_interfaces
-          host_only_used = @machine.provider.driver.read_network_interfaces.
-            select { |_, opts| opts[:type] == :hostonly }
-
-          host_only_used.each do |_, opts|
-            host_only_all.each do |interface|
-              if @machine.provider.pd_version_satisfies?('>= 10')
-                name_matched = interface[:name] == opts[:hostonly]
-              else
-                name_matched = interface[:bound_to] == opts[:hostonly]
-              end
-
-              return interface[:ip] if name_matched
-            end
-          end
-
-          nil
-        end
-
-        # Returns the IP address of the guest by looking at the first
-        # enabled host only network.
+        # For DHCP interfaces, the ip address will be present at the option
+        # value only after VM boot
         #
-        # @return [String] ip address of adapter in guest
+        # @return [String] ip addresses
         def read_machine_ip
-          ips = []
-          @machine.config.vm.networks.each do |type, options|
-            if type == :private_network && options[:ip].is_a?(String)
-              ips << options[:ip]
-            end
+          # We need to wait for the guest's IP to show up as a VM option.
+          # Retry thresholds are relatively high since we might need to wait
+          # for DHCP, but even static IPs can take a second or two to appear.
+          retryable(retry_options.merge(on: Errors::ParallelsVMOptionNotFound)) do
+            ips = @machine.provider.driver.read_vm_option('ip').split(' ')
+            ips.select! { |ip| IPAddr.new(ip).ipv4? }.sort
           end
+        rescue Errors::ParallelsVMOptionNotFound
+          # Display an appropriate error message.
+          raise Vagrant::Errors::NFSNoGuestIP
+        end
 
-          if ips.empty?
-            raise Vagrant::Errors::NFSNoGuestIP
-          end
-
-          ips
+        # Separating these out so we can stub out the sleep in tests
+        def retry_options
+          {tries: 7, sleep: 2}
         end
       end
     end
