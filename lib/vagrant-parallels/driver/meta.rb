@@ -32,8 +32,7 @@ module VagrantPlugins
           # specific driver to instantiate.
           begin
             @version = read_version || ""
-          rescue Vagrant::Errors::CommandUnavailable,
-            Vagrant::Errors::CommandUnavailableWindows
+          rescue Vagrant::Errors::CommandUnavailable
             # This means that Parallels Desktop was not found, so we raise this
             # error here.
             raise VagrantPlugins::Parallels::Errors::ParallelsNotDetected

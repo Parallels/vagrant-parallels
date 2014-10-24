@@ -15,10 +15,7 @@ module VagrantPlugins
         # version and all that, which checks for Parallels Desktop being present
         Driver::Meta.new
         true
-      rescue VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion
-        raise if raise_error
-        return false
-      rescue VagrantPlugins::Parallels::Errors::ParallelsNotDetected
+      rescue Errors::VagrantParallelsError
         raise if raise_error
         return false
       end
