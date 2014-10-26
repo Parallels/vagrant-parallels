@@ -36,40 +36,16 @@ module VagrantPlugins
         #
         # The ! indicates that this method modifies its argument.
         def add_ips_to_env!(env)
-          host_ip = @machine.provider.driver.read_shared_interface[:ip]
+          host_ip  = @machine.provider.driver.read_shared_interface[:ip]
+          guest_ip = @machine.provider.driver.read_guest_ip
 
-          if !host_ip
-            # If we couldn't determine host's IP, then it is probably a bug.
-            # Display an appropriate error message.
-            raise Vagrant::Errors::NFSNoHostIP
-          end
+          # If we couldn't determine either guest's or host's IP, then
+          # it is probably a bug. Display an appropriate error message.
+          raise Vagrant::Errors::NFSNoHostIP  if !host_ip
+          raise Vagrant::Errors::NFSNoGuestIP if !guest_ip
 
           env[:nfs_host_ip]    = host_ip
-          env[:nfs_machine_ip] = read_machine_ip
-        end
-
-        # Returns the IPv4 addresses of the guest by looking at VM options.
-        #
-        # For DHCP interfaces, the ip address will be present at the option
-        # value only after VM boot
-        #
-        # @return [String] ip addresses
-        def read_machine_ip
-          # We need to wait for the guest's IP to show up as a VM option.
-          # Retry thresholds are relatively high since we might need to wait
-          # for DHCP, but even static IPs can take a second or two to appear.
-          retryable(retry_options.merge(on: Errors::ParallelsVMOptionNotFound)) do
-            ips = @machine.provider.driver.read_vm_option('ip').split(' ')
-            ips.select! { |ip| IPAddr.new(ip).ipv4? }.sort
-          end
-        rescue Errors::ParallelsVMOptionNotFound
-          # Display an appropriate error message.
-          raise Vagrant::Errors::NFSNoGuestIP
-        end
-
-        # Separating these out so we can stub out the sleep in tests
-        def retry_options
-          {tries: 7, sleep: 2}
+          env[:nfs_machine_ip] = guest_ip
         end
       end
     end
