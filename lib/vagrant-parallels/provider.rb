@@ -68,7 +68,7 @@ module VagrantPlugins
         return nil if !detected_ip
 
         # Return ip from running machine, use ip from config if available
-        return {
+        {
           host: detected_ip,
           port: @driver.ssh_port(@machine.config.ssh.guest_port)
         }

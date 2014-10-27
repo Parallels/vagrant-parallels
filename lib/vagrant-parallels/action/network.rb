@@ -139,7 +139,7 @@ module VagrantPlugins
         end
 
         def bridged_config(options)
-          return {
+          {
             auto_config:                     true,
             bridge:                          nil,
             mac:                             nil,
@@ -215,7 +215,7 @@ module VagrantPlugins
           @logger.info("Bridging adapter #{config[:adapter]} to #{chosen_bridge}")
 
           # Given the choice we can now define the adapter we're using
-          return {
+          {
             adapter:     config[:adapter],
             type:        :bridged,
             bridge:      chosen_bridge,
@@ -236,7 +236,7 @@ module VagrantPlugins
             return options
           end
 
-          return {
+          {
             type:                            :dhcp,
             use_dhcp_assigned_default_route: config[:use_dhcp_assigned_default_route]
           }
@@ -301,7 +301,7 @@ module VagrantPlugins
             dhcp_options[:dhcp_upper] = options[:dhcp_upper] || dhcp_upper.join(".")
           end
 
-          return {
+          {
             adapter_ip:  options[:adapter_ip],
             auto_config: options[:auto_config],
             ip:          options[:ip],
@@ -325,7 +325,7 @@ module VagrantPlugins
             @logger.info("Created network: #{interface[:name]}")
           end
 
-          return {
+          {
             adapter:     config[:adapter],
             hostonly:    interface[:name],
             mac_address: config[:mac],
@@ -335,7 +335,7 @@ module VagrantPlugins
         end
 
         def hostonly_network_config(config)
-          return {
+          {
             type:       config[:type],
             adapter_ip: config[:adapter_ip],
             ip:         config[:ip],
@@ -345,20 +345,20 @@ module VagrantPlugins
 
 
         def shared_config(options)
-          return {
+          {
             auto_config: false
           }
         end
 
         def shared_adapter(config)
-          return {
+          {
             adapter: config[:adapter],
             type:    :shared
           }
         end
 
         def shared_network_config(config)
-          return {}
+          {}
         end
 
         #-----------------------------------------------------------------
