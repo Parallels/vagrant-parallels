@@ -101,6 +101,7 @@ module VagrantPlugins
                        :read_state,
                        :read_used_ports,
                        :read_virtual_networks,
+                       :read_vm_option,
                        :read_vms,
                        :read_vms_info,
                        :read_vms_paths,
