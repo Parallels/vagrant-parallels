@@ -40,7 +40,7 @@ module VagrantPlugins
             # because the VM is using Shared networking. Host-only and
             # bridged networking don't require port-forwarding and establishing
             # forwarded ports on these attachment types has uncertain behaviour.
-            @env[:ui].detail(I18n.t("vagrant_parallels.actions.vm.forward_ports.forwarding_entry",
+            @env[:ui].detail(I18n.t('vagrant_parallels.actions.vm.forward_ports.forwarding_entry',
                                     message_attributes))
 
             # Add the options to the ports array to send to the driver later

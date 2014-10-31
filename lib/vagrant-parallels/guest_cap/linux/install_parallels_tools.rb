@@ -7,14 +7,14 @@ module VagrantPlugins
           if ptiagent_usable?(machine)
             # Argument '--info' means that Parallels Tools version will be
             # checked before the installing.
-            machine.communicate.sudo("ptiagent-cmd --info")
+            machine.communicate.sudo('ptiagent-cmd --info')
           else
             machine.communicate.tap do |comm|
               tools_iso_path = File.expand_path(
-                machine.provider.driver.read_guest_tools_iso_path("linux"),
+                machine.provider.driver.read_guest_tools_iso_path('linux'),
                 machine.env.root_path
               )
-              remote_file = "/tmp/prl-tools-lin.iso"
+              remote_file = '/tmp/prl-tools-lin.iso'
               mount_point = "/media/prl-tools-lin_#{rand(100000)}/"
 
               comm.upload(tools_iso_path, remote_file)
@@ -44,8 +44,8 @@ module VagrantPlugins
           # 'ptiagent-cmd' binary should be available on the guest
 
           machine.provider_name == :parallels &&
-          Gem::Version.new(machine.provider.driver.version) >= Gem::Version.new("9") &&
-          machine.communicate.test("which ptiagent-cmd", :sudo => true)
+          Gem::Version.new(machine.provider.driver.version) >= Gem::Version.new('9') &&
+          machine.communicate.test('which ptiagent-cmd', :sudo => true)
         end
       end
     end

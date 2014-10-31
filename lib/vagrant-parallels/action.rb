@@ -1,4 +1,4 @@
-require "vagrant/action/builder"
+require 'vagrant/action/builder'
 
 module VagrantPlugins
   module Parallels
@@ -25,11 +25,11 @@ module VagrantPlugins
           b.use ForwardPorts
           b.use SetHostname
           b.use SaneDefaults
-          b.use Customize, "pre-boot"
+          b.use Customize, 'pre-boot'
           b.use Boot
-          b.use Customize, "post-boot"
+          b.use Customize, 'post-boot'
           b.use WaitForCommunicator, [:starting, :running]
-          b.use Customize, "post-comm"
+          b.use Customize, 'post-comm'
           b.use HandleGuestTools
         end
       end
@@ -41,13 +41,13 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
             b1.use Call, DestroyConfirm do |env2, b2|
               if !env2[:result]
-                b2.use Message, I18n.t("vagrant.commands.destroy.will_not_destroy",
+                b2.use Message, I18n.t('vagrant.commands.destroy.will_not_destroy',
                                        :name => env2[:machine].name)
                 next
               end
@@ -71,7 +71,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -98,7 +98,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -119,13 +119,13 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
             b1.use Call, IsState, :running do |env2, b2|
               if !env2[:result]
-                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
+                b2.use Message, I18n.t('vagrant.commands.common.vm_not_running')
                 next
               end
 
@@ -143,7 +143,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -160,7 +160,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -179,7 +179,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -200,7 +200,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -223,7 +223,7 @@ module VagrantPlugins
           b.use Call, IsState, :running do |env1, b1|
             # If the VM is running, then our work here is done, exit
             if env1[:result]
-              b1.use Message, I18n.t("vagrant_parallels.commands.common.vm_already_running")
+              b1.use Message, I18n.t('vagrant_parallels.commands.common.vm_already_running')
               next
             end
 
@@ -249,7 +249,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
@@ -276,7 +276,7 @@ module VagrantPlugins
           b.use Call, IsState, :not_created do |env1, b1|
             # If the VM is NOT created yet, then do the setup steps
             if env1[:result]
-              b1.use Customize, "pre-import"
+              b1.use Customize, 'pre-import'
               b1.use Import
               b1.use Customize, 'post-import'
             end
@@ -295,11 +295,11 @@ module VagrantPlugins
             end
           end
 
-          b.use Customize, "pre-boot"
+          b.use Customize, 'pre-boot'
           b.use Boot
-          b.use Customize, "post-boot"
+          b.use Customize, 'post-boot'
           b.use WaitForCommunicator, [:starting, :running]
-          b.use Customize, "post-comm"
+          b.use Customize, 'post-comm'
         end
       end
 
@@ -311,13 +311,13 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use Call, IsState, :not_created do |env1, b1|
             if env1[:result]
-              b1.use Message, I18n.t("vagrant.commands.common.vm_not_created")
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
               next
             end
 
             b1.use Call, IsState, :running do |env2, b2|
               if !env2[:result]
-                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
+                b2.use Message, I18n.t('vagrant.commands.common.vm_not_running')
                 next
               end
               b2.use PrepareNFSValidIds
@@ -329,29 +329,29 @@ module VagrantPlugins
       end
 
 
-      autoload :Boot, File.expand_path("../action/boot", __FILE__)
-      autoload :HandleGuestTools, File.expand_path("../action/handle_guest_tools", __FILE__)
-      autoload :HandleForwardedPortCollisions, File.expand_path("../action/handle_forwarded_port_collisions.rb", __FILE__)
-      autoload :ClearNetworkInterfaces, File.expand_path("../action/clear_network_interfaces", __FILE__)
-      autoload :ClearForwardedPorts, File.expand_path("../action/clear_forwarded_ports", __FILE__)
-      autoload :Customize, File.expand_path("../action/customize", __FILE__)
-      autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
-      autoload :DestroyUnusedNetworkInterfaces, File.expand_path("../action/destroy_unused_network_interfaces", __FILE__)
-      autoload :Export, File.expand_path("../action/export", __FILE__)
-      autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
-      autoload :ForwardPorts, File.expand_path("../action/forward_ports", __FILE__)
-      autoload :Import, File.expand_path("../action/import", __FILE__)
-      autoload :Network, File.expand_path("../action/network", __FILE__)
-      autoload :Package, File.expand_path("../action/package", __FILE__)
-      autoload :PackageConfigFiles, File.expand_path("../action/package_config_files", __FILE__)
-      autoload :PrepareForwardedPortCollisionParams, File.expand_path("../action/prepare_forwarded_port_collision_params", __FILE__)
-      autoload :PrepareNFSSettings, File.expand_path("../action/prepare_nfs_settings", __FILE__)
-      autoload :PrepareNFSValidIds, File.expand_path("../action/prepare_nfs_valid_ids", __FILE__)
-      autoload :Resume, File.expand_path("../action/resume", __FILE__)
-      autoload :SaneDefaults, File.expand_path("../action/sane_defaults",__FILE__)
-      autoload :SetupPackageFiles, File.expand_path("../action/setup_package_files", __FILE__)
-      autoload :SetName, File.expand_path("../action/set_name", __FILE__)
-      autoload :Suspend, File.expand_path("../action/suspend", __FILE__)
+      autoload :Boot, File.expand_path('../action/boot', __FILE__)
+      autoload :HandleGuestTools, File.expand_path('../action/handle_guest_tools', __FILE__)
+      autoload :HandleForwardedPortCollisions, File.expand_path('../action/handle_forwarded_port_collisions.rb', __FILE__)
+      autoload :ClearNetworkInterfaces, File.expand_path('../action/clear_network_interfaces', __FILE__)
+      autoload :ClearForwardedPorts, File.expand_path('../action/clear_forwarded_ports', __FILE__)
+      autoload :Customize, File.expand_path('../action/customize', __FILE__)
+      autoload :Destroy, File.expand_path('../action/destroy', __FILE__)
+      autoload :DestroyUnusedNetworkInterfaces, File.expand_path('../action/destroy_unused_network_interfaces', __FILE__)
+      autoload :Export, File.expand_path('../action/export', __FILE__)
+      autoload :ForcedHalt, File.expand_path('../action/forced_halt', __FILE__)
+      autoload :ForwardPorts, File.expand_path('../action/forward_ports', __FILE__)
+      autoload :Import, File.expand_path('../action/import', __FILE__)
+      autoload :Network, File.expand_path('../action/network', __FILE__)
+      autoload :Package, File.expand_path('../action/package', __FILE__)
+      autoload :PackageConfigFiles, File.expand_path('../action/package_config_files', __FILE__)
+      autoload :PrepareForwardedPortCollisionParams, File.expand_path('../action/prepare_forwarded_port_collision_params', __FILE__)
+      autoload :PrepareNFSSettings, File.expand_path('../action/prepare_nfs_settings', __FILE__)
+      autoload :PrepareNFSValidIds, File.expand_path('../action/prepare_nfs_valid_ids', __FILE__)
+      autoload :Resume, File.expand_path('../action/resume', __FILE__)
+      autoload :SaneDefaults, File.expand_path('../action/sane_defaults',__FILE__)
+      autoload :SetupPackageFiles, File.expand_path('../action/setup_package_files', __FILE__)
+      autoload :SetName, File.expand_path('../action/set_name', __FILE__)
+      autoload :Suspend, File.expand_path('../action/suspend', __FILE__)
     end
   end
 end

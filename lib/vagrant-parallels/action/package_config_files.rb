@@ -18,7 +18,7 @@ module VagrantPlugins
         end
 
         def create_metadata
-          File.open(File.join(@env["export.temp_dir"], "metadata.json"), "w") do |f|
+          File.open(File.join(@env['export.temp_dir'], 'metadata.json'), 'w') do |f|
             f.write(template_metadatafile)
           end
         end

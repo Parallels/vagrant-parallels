@@ -15,7 +15,7 @@ module VagrantPlugins
             if type == :forwarded_port
               guest_port = options[:guest]
               host_port  = options[:host]
-              protocol   = options[:protocol] || "tcp"
+              protocol   = options[:protocol] || 'tcp'
               options    = scoped_hash_override(options, :parallels)
               id         = options[:id]
 

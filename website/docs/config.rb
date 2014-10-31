@@ -19,7 +19,7 @@ configure :build do
 end
 
 activate :deploy do |deploy|
-  deploy.remote = "origin"
+  deploy.remote = 'origin'
   deploy.method = :git
-  deploy.branch = "gh-pages"
+  deploy.branch = 'gh-pages'
 end

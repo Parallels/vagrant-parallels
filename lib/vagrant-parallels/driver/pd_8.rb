@@ -23,7 +23,7 @@ module VagrantPlugins
           # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
           # They should not be deleted anyway.
           networks.keep_if do |net|
-            net['Type'] == "host-only" &&
+            net['Type'] == 'host-only' &&
               net['Bound To'].match(/^(?>vnic|Parallels Host-Only #)(\d+)$/)[1].to_i >= 2
           end
 
@@ -58,9 +58,9 @@ module VagrantPlugins
           adapters.each do |adapter|
             args = []
             if existing_adapters.include? "net#{adapter[:adapter]}"
-              args.concat(["--device-set","net#{adapter[:adapter]}", "--enable"])
+              args.concat(['--device-set',"net#{adapter[:adapter]}", '--enable'])
             else
-              args.concat(["--device-add", "net"])
+              args.concat(['--device-add', 'net'])
             end
 
             if adapter[:type] == :hostonly
@@ -73,28 +73,28 @@ module VagrantPlugins
               # The only difference is the destination interface:
               # - in host-only (private) network it will be bridged to the 'vnicX' device
               # - in real bridge (public) network it will be bridged to the assigned device
-              args.concat(["--type", "bridged", "--iface", net_info['Bound To']])
+              args.concat(['--type', 'bridged', '--iface', net_info['Bound To']])
             elsif adapter[:type] == :bridged
-              args.concat(["--type", "bridged", "--iface", adapter[:bridge]])
+              args.concat(['--type', 'bridged', '--iface', adapter[:bridge]])
             elsif adapter[:type] == :shared
-              args.concat(["--type", "shared"])
+              args.concat(['--type', 'shared'])
             end
 
             if adapter[:mac_address]
-              args.concat(["--mac", adapter[:mac_address]])
+              args.concat(['--mac', adapter[:mac_address]])
             end
 
             if adapter[:nic_type]
-              args.concat(["--adapter-type", adapter[:nic_type].to_s])
+              args.concat(['--adapter-type', adapter[:nic_type].to_s])
             end
 
-            execute_prlctl("set", @uuid, *args)
+            execute_prlctl('set', @uuid, *args)
           end
         end
 
         def read_host_only_interfaces
           net_list = read_virtual_networks
-          net_list.keep_if { |net| net['Type'] == "host-only" }
+          net_list.keep_if { |net| net['Type'] == 'host-only' }
 
           hostonly_ifaces = []
           net_list.each do |iface|
@@ -105,7 +105,7 @@ module VagrantPlugins
             info[:ip]       = net_info['Parallels adapter']['IP address']
             info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
             # Such interfaces are always in 'Up'
-            info[:status]   = "Up"
+            info[:status]   = 'Up'
 
             # There may be a fake DHCPv4 parameters
             # We can trust them only if adapter IP and DHCP IP are in the same subnet
@@ -128,23 +128,23 @@ module VagrantPlugins
 
           # Get enabled VM's network interfaces
           ifaces = read_settings.fetch('Hardware', {}).keep_if do |dev, params|
-            dev.start_with?('net') and params.fetch("enabled", true)
+            dev.start_with?('net') and params.fetch('enabled', true)
           end
           ifaces.each do |name, params|
             adapter = name.match(/^net(\d+)$/)[1].to_i
             nics[adapter] ||= {}
 
-            if params['type'] == "shared"
+            if params['type'] == 'shared'
               nics[adapter][:type] = :shared
-            elsif params['type'] == "host"
+            elsif params['type'] == 'host'
               # It is PD internal host-only network and it is bounded to 'vnic1'
               nics[adapter][:type] = :hostonly
-              nics[adapter][:hostonly] = "vnic1"
-            elsif params['type'] == "bridged" and params.fetch('iface','').start_with?('vnic')
+              nics[adapter][:hostonly] = 'vnic1'
+            elsif params['type'] == 'bridged' and params.fetch('iface','').start_with?('vnic')
               # Bridged to the 'vnicXX'? Then it is a host-only, actually.
               nics[adapter][:type] = :hostonly
               nics[adapter][:hostonly] = params.fetch('iface','')
-            elsif params['type'] == "bridged"
+            elsif params['type'] == 'bridged'
               nics[adapter][:type] = :bridged
               nics[adapter][:bridge] = params.fetch('iface','')
             end
@@ -160,7 +160,7 @@ module VagrantPlugins
             name:    net_info['Bound To'],
             ip:      net_info['Parallels adapter']['IP address'],
             netmask: net_info['Parallels adapter']['Subnet mask'],
-            status:  "Up"
+            status: 'Up'
           }
 
           if net_info.key?('DHCPv4 server')

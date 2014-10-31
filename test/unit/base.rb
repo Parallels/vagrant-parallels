@@ -1,17 +1,17 @@
-require "rubygems"
-require "rspec/autorun"
+require 'rubygems'
+require 'rspec/autorun'
 
 # Require Vagrant itself so we can reference the proper
 # classes to test.
-require "vagrant"
+require 'vagrant'
 require 'vagrant-parallels'
 
 # Add the test directory to the load path
-$:.unshift File.expand_path("../../", __FILE__)
+$:.unshift File.expand_path('../../', __FILE__)
 
 # Load in helpers
-require "unit/support/shared/parallels_context"
-require "unit/support/shared/pd_driver_examples"
+require 'unit/support/shared/parallels_context'
+require 'unit/support/shared/pd_driver_examples'
 
 # Do not buffer output
 $stdout.sync = true

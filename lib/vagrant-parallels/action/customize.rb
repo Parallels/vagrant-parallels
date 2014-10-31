@@ -16,7 +16,7 @@ module VagrantPlugins
           end
 
           if !customizations.empty?
-            env[:ui].info I18n.t("vagrant.actions.vm.customize.running", event: @event)
+            env[:ui].info I18n.t('vagrant.actions.vm.customize.running', event: @event)
 
             # Execute each customization command.
             customizations.each do |command|

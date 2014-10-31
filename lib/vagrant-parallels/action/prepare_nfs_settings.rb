@@ -1,5 +1,5 @@
 require 'ipaddr'
-require "vagrant/action/builtin/mixin_synced_folders"
+require 'vagrant/action/builtin/mixin_synced_folders'
 
 module VagrantPlugins
   module Parallels
@@ -25,7 +25,7 @@ module VagrantPlugins
           folders = synced_folders(env[:machine], **opts)
 
           if folders.has_key?(:nfs)
-            @logger.info("Using NFS, preparing NFS settings by reading host IP and machine IP")
+            @logger.info('Using NFS, preparing NFS settings by reading host IP and machine IP')
             add_ips_to_env!(env)
           end
         end

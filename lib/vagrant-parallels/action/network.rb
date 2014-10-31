@@ -1,9 +1,9 @@
-require "set"
+require 'set'
 
-require "log4r"
+require 'log4r'
 
-require "vagrant/util/network_ip"
-require "vagrant/util/scoped_hash_override"
+require 'vagrant/util/network_ip'
+require 'vagrant/util/scoped_hash_override'
 
 module VagrantPlugins
   module Parallels
@@ -36,7 +36,7 @@ module VagrantPlugins
           end
 
           @logger.debug("Available slots for high-level adapters: #{available_slots.inspect}")
-          @logger.info("Determining network adapters required for high-level configuration...")
+          @logger.info('Determining network adapters required for high-level configuration...')
           available_slots = available_slots.to_a.sort
           env[:machine].config.vm.networks.each do |type, options|
             # We only handle private and public networks
@@ -69,7 +69,7 @@ module VagrantPlugins
             network_adapters_config[slot] = data
           end
 
-          @logger.info("Determining adapters and compiling network configuration...")
+          @logger.info('Determining adapters and compiling network configuration...')
           adapters = []
           networks = []
           network_adapters_config.each do |slot, data|
@@ -107,14 +107,14 @@ module VagrantPlugins
 
           if !adapters.empty?
             # Enable the adapters
-            @logger.info("Enabling adapters...")
-            env[:ui].output(I18n.t("vagrant.actions.vm.network.preparing"))
+            @logger.info('Enabling adapters...')
+            env[:ui].output(I18n.t('vagrant.actions.vm.network.preparing'))
             adapters.each do |adapter|
               env[:ui].detail(I18n.t(
-                "vagrant_parallels.parallels.network_adapter",
+                'vagrant_parallels.parallels.network_adapter',
                 adapter: adapter[:adapter].to_s,
                 type: adapter[:type].to_s,
-                extra: "",
+                extra: '',
               ))
             end
 
@@ -132,7 +132,7 @@ module VagrantPlugins
             # Only configure the networks the user requested us to configure
             networks_to_configure = networks.select { |n| n[:auto_config] }
             if !networks_to_configure.empty?
-              env[:ui].info I18n.t("vagrant.actions.vm.network.configuring")
+              env[:ui].info I18n.t('vagrant.actions.vm.network.configuring')
               env[:machine].guest.capability(:configure_networks, networks_to_configure)
             end
           end
@@ -151,7 +151,7 @@ module VagrantPlugins
         def bridged_adapter(config)
           # Find the bridged interfaces that are available
           bridgedifs = @env[:machine].provider.driver.read_bridged_interfaces
-          bridgedifs.delete_if { |interface| interface[:status] == "Down" }
+          bridgedifs.delete_if { |interface| interface[:status] == 'Down' }
 
           # The name of the chosen bridge interface will be assigned to this
           # variable.
@@ -163,7 +163,7 @@ module VagrantPlugins
             # Search for a matching bridged interface
             bridgedifs.each do |interface|
               if interface[:name].downcase == config[:bridge].downcase
-                @logger.debug("Specific bridge found as configured in the Vagrantfile. Using it.")
+                @logger.debug('Specific bridge found as configured in the Vagrantfile. Using it.')
                 chosen_bridge = interface[:name]
                 break
               end
@@ -171,7 +171,7 @@ module VagrantPlugins
 
             # If one wasn't found, then we notify the user here.
             if !chosen_bridge
-              @env[:ui].info I18n.t("vagrant.actions.vm.bridged_networking.specific_not_found",
+              @env[:ui].info I18n.t('vagrant.actions.vm.bridged_networking.specific_not_found',
                                     :bridge => config[:bridge])
             end
           end
@@ -184,18 +184,18 @@ module VagrantPlugins
             if bridgedifs.length == 1
               # One bridgable interface? Just use it.
               chosen_bridge = bridgedifs[0][:name]
-              @logger.debug("Only one bridged interface available. Using it by default.")
+              @logger.debug('Only one bridged interface available. Using it by default.')
             else
               # More than one bridgable interface requires a user decision, so
               # show options to choose from.
-              @env[:ui].info I18n.t("vagrant.actions.vm.bridged_networking.available",
+              @env[:ui].info I18n.t('vagrant.actions.vm.bridged_networking.available',
                                     :prefix => false)
               bridgedifs.each_index do |index|
                 interface = bridgedifs[index]
                 @env[:ui].info("#{index + 1}) #{interface[:name]}", :prefix => false)
               end
               @env[:ui].info(I18n.t(
-                "vagrant.actions.vm.bridged_networking.choice_help")+"\n")
+                               'vagrant.actions.vm.bridged_networking.choice_help')+"\n")
 
               # The range of valid choices
               valid = Range.new(1, bridgedifs.length)
@@ -229,7 +229,7 @@ module VagrantPlugins
             options = {
               auto_config: true,
               mac:         nil,
-              netmask:     "255.255.255.0",
+              netmask:     '255.255.255.0',
               type:        :static
             }.merge(config)
             options[:type] = options[:type].to_sym
@@ -248,7 +248,7 @@ module VagrantPlugins
             mac:         nil,
             name:        nil,
             nic_type:    nil,
-            netmask:     "255.255.255.0",
+            netmask:     '255.255.255.0',
             type:        :static
           }.merge(options)
 
@@ -256,7 +256,7 @@ module VagrantPlugins
           options[:type] = options[:type].to_sym
 
           # Default IP is in the 20-bit private network block for DHCP based networks
-          options[:ip] = "10.37.129.1" if options[:type] == :dhcp && !options[:ip]
+          options[:ip] = '10.37.129.1' if options[:type] == :dhcp && !options[:ip]
 
           # Calculate our network address for the given IP/netmask
           netaddr  = network_address(options[:ip], options[:netmask])
@@ -271,17 +271,17 @@ module VagrantPlugins
           @env[:machine].provider.driver.read_bridged_interfaces.each do |interface|
             that_netaddr = network_address(interface[:ip], interface[:netmask])
             raise Vagrant::Errors::NetworkCollision if \
-              netaddr == that_netaddr && interface[:status] != "Down"
+              netaddr == that_netaddr && interface[:status] != 'Down'
           end
 
           # Split the IP address into its components
-          ip_parts = netaddr.split(".").map { |i| i.to_i }
+          ip_parts = netaddr.split('.').map { |i| i.to_i }
 
           # Calculate the adapter IP, which we assume is the IP ".1" at
           # the end usually.
           adapter_ip    = ip_parts.dup
           adapter_ip[3] += 1
-          options[:adapter_ip] ||= adapter_ip.join(".")
+          options[:adapter_ip] ||= adapter_ip.join('.')
 
           dhcp_options = {}
           if options[:type] == :dhcp
@@ -289,16 +289,16 @@ module VagrantPlugins
             # with the final octet + 1. So "172.28.0.0" turns into "172.28.0.1"
             dhcp_ip    = ip_parts.dup
             dhcp_ip[3] += 1
-            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || dhcp_ip.join(".")
+            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || dhcp_ip.join('.')
 
             # Calculate the lower and upper bound for the DHCP server
             dhcp_lower    = ip_parts.dup
             dhcp_lower[3] += 2
-            dhcp_options[:dhcp_lower] = options[:dhcp_lower] || dhcp_lower.join(".")
+            dhcp_options[:dhcp_lower] = options[:dhcp_lower] || dhcp_lower.join('.')
 
             dhcp_upper    = ip_parts.dup
             dhcp_upper[3] = 254
-            dhcp_options[:dhcp_upper] = options[:dhcp_upper] || dhcp_upper.join(".")
+            dhcp_options[:dhcp_upper] = options[:dhcp_upper] || dhcp_upper.join('.')
           end
 
           {
@@ -318,7 +318,7 @@ module VagrantPlugins
           interface = hostonly_find_matching_network(config)
 
           if !interface
-            @logger.info("Network not found. Creating if we can.")
+            @logger.info('Network not found. Creating if we can.')
 
             # Create a new network
             interface = hostonly_create_network(config)
@@ -408,7 +408,7 @@ module VagrantPlugins
           end
 
           if net_nums.empty?
-            "vagrant-vnet0"
+            'vagrant-vnet0'
           else
             net_nums.sort! if net_nums
             free_names = Array(0..net_nums.last.next) - net_nums

@@ -38,8 +38,8 @@ module VagrantPlugins
           unregister_template(tpl_name)
 
           if @machine.state.id != :not_created
-            return if env["vagrant.error"].is_a?(Vagrant::Errors::VagrantError)
-            return if env["vagrant_parallels.error"].is_a?(Errors::VagrantParallelsError)
+            return if env['vagrant.error'].is_a?(Vagrant::Errors::VagrantError)
+            return if env['vagrant_parallels.error'].is_a?(Errors::VagrantParallelsError)
 
             # If we're not supposed to destroy on error then just return
             return if !env[:destroy_on_error]
@@ -92,7 +92,7 @@ module VagrantPlugins
             opts[:snapshot_id] = snapshot_id(tpl_name)
             opts[:linked] = true
           else
-            env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
+            env[:ui].info I18n.t('vagrant.actions.vm.import.importing',
                                  :name => @machine.box.name)
           end
 
@@ -111,7 +111,7 @@ module VagrantPlugins
           env[:ui].clear_line
 
           if @machine.provider_config.regen_src_uuid
-            @logger.info("Regenerate SourceVmUuid")
+            @logger.info('Regenerate SourceVmUuid')
             @machine.provider.driver.regenerate_src_uuid
           end
 

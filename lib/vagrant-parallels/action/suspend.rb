@@ -8,7 +8,7 @@ module VagrantPlugins
 
         def call(env)
           if env[:machine].state.id == :running
-            env[:ui].info I18n.t("vagrant.actions.vm.suspend.suspending")
+            env[:ui].info I18n.t('vagrant.actions.vm.suspend.suspending')
             env[:machine].provider.driver.suspend
           end
 

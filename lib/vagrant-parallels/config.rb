@@ -1,6 +1,6 @@
 module VagrantPlugins
   module Parallels
-    class Config < Vagrant.plugin("2", :config)
+    class Config < Vagrant.plugin('2', :config)
       attr_accessor :check_guest_tools
       attr_reader   :customizations
       attr_accessor :destroy_unused_network_interfaces
@@ -34,7 +34,7 @@ module VagrantPlugins
       end
 
       def customize(*command)
-        event   = command.first.is_a?(String) ? command.shift : "pre-boot"
+        event   = command.first.is_a?(String) ? command.shift : 'pre-boot'
         command = command[0]
         @customizations << [event, command]
       end
@@ -45,11 +45,11 @@ module VagrantPlugins
 
       # @param size [Integer, String] the memory size in MB
       def memory=(size)
-        customize("pre-boot", ["set", :id, "--memsize", size.to_s])
+        customize('pre-boot', ['set', :id, '--memsize', size.to_s])
       end
 
       def cpus=(count)
-        customize("pre-boot", ["set", :id, "--cpus", count.to_i])
+        customize('pre-boot', ['set', :id, '--cpus', count.to_i])
       end
 
       def regen_box_uuid=(value)
@@ -97,18 +97,18 @@ module VagrantPlugins
         valid_events = ['pre-import', 'post-import', 'pre-boot', 'post-boot', 'post-comm']
         @customizations.each do |event, _|
           if !valid_events.include?(event)
-            errors << I18n.t("vagrant_parallels.config.invalid_event",
+            errors << I18n.t('vagrant_parallels.config.invalid_event',
                              event: event.to_s,
-                             valid_events: valid_events.join(", "))
+                             valid_events: valid_events.join(', '))
           end
         end
         @customizations.each do |event, command|
-          if event == "pre-import" && command.index(:id)
-            errors << I18n.t("vagrant_parallels.config.id_in_pre_import")
+          if event == 'pre-import' && command.index(:id)
+            errors << I18n.t('vagrant_parallels.config.id_in_pre_import')
           end
         end
 
-        { "Parallels Provider" => errors }
+        { 'Parallels Provider' => errors }
 
       end
 
