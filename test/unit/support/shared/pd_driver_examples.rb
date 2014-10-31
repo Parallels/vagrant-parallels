@@ -201,6 +201,27 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
+  describe 'read_vm_option' do
+    it 'returns stripped value' do
+      subprocess.stub(:execute).
+        with('prlctl', 'list', uuid, '--no-header', '-o', an_instance_of(String),
+             an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "opt_val \n"))
+
+      subject.read_vm_option('supported_option').should == 'opt_val'
+    end
+
+    it 'raises an exception in option is not available' do
+      subprocess.stub(:execute).
+        with('prlctl', 'list', uuid, '--no-header', '-o', an_instance_of(String),
+             an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: " \n"))
+
+      expect { subject.read_vm_option('invalid_option') }.
+        to raise_error(VagrantPlugins::Parallels::Errors::ParallelsVMOptionNotFound)
+    end
+  end
+
   describe "read_vms" do
     it "returns the list of all registered VMs and templates" do
       subject.read_vms.should be_kind_of(Hash)
@@ -295,7 +316,7 @@ shared_examples "parallels desktop driver" do |options|
       subject.version.should match(/^#{parallels_version}.\d+\.\d+$/)
     end
 
-    it "rises ParallelsInvalidVersion exception for unsupported version" do
+    it "raises ParallelsInvalidVersion exception for unsupported version" do
       subprocess.should_receive(:execute).
         with("prlctl", "--version", an_instance_of(Hash)).
         and_return(subprocess_result(stdout: "prlctl version 7.0.12345"))

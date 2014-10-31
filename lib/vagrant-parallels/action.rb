@@ -304,8 +304,9 @@ module VagrantPlugins
         end
       end
 
-      # This action sync folders on a running provider. It is used by the docker provider
-      # to link synced folders on the host machine as volumes into the docker containers
+      # This is the action that is called to sync folders to a running machine
+      # without a reboot. It is used by the docker provider to link synced
+      # folders on the host machine as volumes into the docker containers.
       def self.action_sync_folders
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
@@ -320,7 +321,7 @@ module VagrantPlugins
                 b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
                 next
               end
-
+              b2.use PrepareNFSValidIds
               b2.use SyncedFolders
               b2.use PrepareNFSSettings
             end
