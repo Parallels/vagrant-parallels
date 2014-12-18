@@ -17,7 +17,7 @@ module VagrantPlugins
 
           env[:ui].output(I18n.t("vagrant_parallels.actions.vm.handle_guest_tools.checking"))
 
-          tools_state = @machine.provider.driver.read_guest_tools_state
+          tools_state = parallels_tools_state
 
           if tools_state == :installed
             @logger.info("The proper version of Parallels Tools is already installed")
@@ -48,6 +48,24 @@ module VagrantPlugins
 
           # Continue
           @app.call(env)
+        end
+
+        private
+
+        # Determines the state of Parallels Tools
+        #
+        # @return [Symbol] Parallels Tools state (ex. :installed, :outdated,
+        # :not_installed, :possibly_installed)
+        def parallels_tools_state
+          # Sometimes tools can define their state with a little delay.
+          # If it is 'possibly_installed', then just wait a bit and try again.
+          3.times do
+            state = @machine.provider.driver.read_guest_tools_state
+            return state if state != :possibly_installed
+            sleep 2
+          end
+
+          state
         end
 
       end
