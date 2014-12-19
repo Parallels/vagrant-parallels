@@ -58,9 +58,7 @@ module VagrantPlugins
 
         def register_template(tpl_path_s)
           @logger.info("Register the box template: '#{tpl_path_s}'")
-          regen_uuid = @machine.provider_config.regen_box_uuid
-
-          @machine.provider.driver.register(tpl_path_s, regen_uuid)
+          @machine.provider.driver.register(tpl_path_s)
         end
 
         def template_path
@@ -96,6 +94,11 @@ module VagrantPlugins
           # Clear the line one last time since the progress meter doesn't disappear
           # immediately.
           env[:ui].clear_line
+
+          if @machine.provider_config.regen_box_uuid
+            @logger.info("Regenerate SourceVmUuid")
+            @machine.provider.driver.regenerate_src_uuid
+          end
         end
 
         def unregister_template(tpl_name)
