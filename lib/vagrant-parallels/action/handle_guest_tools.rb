@@ -65,7 +65,7 @@ module VagrantPlugins
             sleep 2
           end
 
-          state
+          @machine.provider.driver.read_guest_tools_state
         end
 
       end
