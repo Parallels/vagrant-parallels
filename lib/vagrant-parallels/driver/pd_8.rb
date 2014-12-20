@@ -1,4 +1,6 @@
 require 'log4r'
+require 'nokogiri'
+require 'securerandom'
 
 require 'vagrant/util/platform'
 
@@ -430,9 +432,22 @@ module VagrantPlugins
           list
         end
 
-        def register(pvm_file, regen_src_uuid=false)
+        def regenerate_src_uuid
+          settings = read_settings
+          vm_config = File.join(settings.fetch('Home'), 'config.pvs')
+
+          # Generate and put new SourceVmUuid
+          xml = Nokogiri::XML(File.open(vm_config))
+          p = '//ParallelsVirtualMachine/Identification/SourceVmUuid'
+          xml.xpath(p).first.content = "{#{SecureRandom.uuid}}"
+
+          File.open(vm_config, 'w') do |f|
+            f.write xml.to_xml
+          end
+        end
+
+        def register(pvm_file)
           args = ['prlctl', 'register', pvm_file]
-          args << '--regenerate-src-uuid' if regen_src_uuid
 
           3.times do
             result = raw(*args)

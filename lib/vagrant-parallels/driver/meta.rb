@@ -105,6 +105,7 @@ module VagrantPlugins
                        :read_vms,
                        :read_vms_info,
                        :read_vms_paths,
+                       :regenerate_src_uuid,
                        :register,
                        :resume,
                        :set_power_consumption_mode,
