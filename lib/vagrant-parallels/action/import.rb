@@ -95,7 +95,7 @@ module VagrantPlugins
           # immediately.
           env[:ui].clear_line
 
-          if @machine.provider_config.regen_box_uuid
+          if @machine.provider_config.regen_src_uuid
             @logger.info("Regenerate SourceVmUuid")
             @machine.provider.driver.regenerate_src_uuid
           end
