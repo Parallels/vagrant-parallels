@@ -193,13 +193,15 @@ module VagrantPlugins
         def read_vms
         end
 
+        # Regenerates 'SourceVmUuid' to avoid SMBIOS UUID collision [GH-113]
+        #
+        def regenerate_src_uuid
+        end
+
         # Registers the virtual machine
         #
         # @param [String] pvm_file Path to the machine image (*.pvm)
-        # @param [Boolean] regen_src_uuid Regenerate 'SourceVmUuid' to avoid
-        # SMBIOS UUID collision, or let it unchanged to keep activation status
-        # for Windows-based guests [GH-113]
-        def register(pvm_file, regen_src_uuid)
+        def register(pvm_file)
         end
 
         # Resumes the virtual machine.

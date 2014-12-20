@@ -8,11 +8,14 @@ module VagrantPlugins
       attr_accessor :optimize_power_consumption
       attr_accessor :name
       attr_reader   :network_adapters
-      attr_accessor :regen_box_uuid
+      attr_accessor :regen_src_uuid
       attr_accessor :update_guest_tools
 
       # Compatibility with virtualbox provider's syntax
       alias :check_guest_additions= :check_guest_tools=
+
+      # Compatibility with old names
+      alias :regen_box_uuid= :regen_src_uuid=
 
       def initialize
         @check_guest_tools = UNSET_VALUE
@@ -22,7 +25,7 @@ module VagrantPlugins
         @network_adapters  = {}
         @name              = UNSET_VALUE
         @optimize_power_consumption = UNSET_VALUE
-        @regen_box_uuid    = UNSET_VALUE
+        @regen_src_uuid     = UNSET_VALUE
         @update_guest_tools = UNSET_VALUE
 
         network_adapter(0, :shared)
@@ -45,6 +48,10 @@ module VagrantPlugins
 
       def cpus=(count)
         customize("pre-boot", ["set", :id, "--cpus", count.to_i])
+      end
+
+      def regen_box_uuid=(value)
+        @regen_src_uuid = value
       end
 
       def merge(other)
@@ -74,7 +81,7 @@ module VagrantPlugins
 
         @name = nil if @name == UNSET_VALUE
 
-        @regen_box_uuid = true if @regen_box_uuid == UNSET_VALUE
+        @regen_src_uuid = true if @regen_src_uuid == UNSET_VALUE
 
         if @update_guest_tools == UNSET_VALUE
           @update_guest_tools = false
