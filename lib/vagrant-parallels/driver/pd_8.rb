@@ -282,6 +282,13 @@ module VagrantPlugins
             info[:bound_to] = net_info['Bound To']
             info[:ip]       = net_info['Parallels adapter']['IP address']
             info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
+
+            # Try IPv4/v6 address style
+            if info[:ip].nil?
+              info[:ip]       = net_info['Parallels adapter']['IPv4 address']
+              info[:netmask]  = net_info['Parallels adapter']['IPv4 subnet mask']
+            end
+
             # Such interfaces are always in 'Up'
             info[:status]   = "Up"
 
@@ -363,6 +370,12 @@ module VagrantPlugins
             netmask: net_info['Parallels adapter']['Subnet mask'],
             status:  "Up"
           }
+
+          # Try IPv4/v6 address style
+          if info[:ip].nil?
+            info[:ip]       = net_info['Parallels adapter']['IPv4 address']
+            info[:netmask]  = net_info['Parallels adapter']['IPv4 subnet mask']
+          end
 
           if net_info.key?('DHCPv4 server')
             info[:dhcp] = {
