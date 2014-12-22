@@ -125,6 +125,41 @@ module VagrantPlugins
           end
         end
 
+        def read_host_only_interfaces
+          net_list = read_virtual_networks
+          net_list.keep_if { |net| net['Type'] == "host-only" }
+
+          hostonly_ifaces = []
+          net_list.each do |iface|
+            info = {}
+            net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
+            adapter = net_info['Parallels adapter']
+
+            info[:name]     = net_info['Network ID']
+            info[:bound_to] = net_info['Bound To']
+            # In PD >= 10.1.2 there are new field names for an IP/Subnet
+            info[:ip]       = adapter['IP address'] || adapter['IPv4 address']
+            info[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
+
+            # Such interfaces are always in 'Up'
+            info[:status]   = "Up"
+
+            # There may be a fake DHCPv4 parameters
+            # We can trust them only if adapter IP and DHCP IP are in the same subnet
+            dhcp_ip = net_info['DHCPv4 server']['Server address']
+            if network_address(info[:ip], info[:netmask]) ==
+              network_address(dhcp_ip, info[:netmask])
+              info[:dhcp] = {
+                ip:    dhcp_ip,
+                lower: net_info['DHCPv4 server']['IP scope start address'],
+                upper: net_info['DHCPv4 server']['IP scope end address']
+              }
+            end
+            hostonly_ifaces << info
+          end
+          hostonly_ifaces
+        end
+
         def read_network_interfaces
           nics = {}
 
@@ -153,10 +188,14 @@ module VagrantPlugins
           net_info = json do
             execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
           end
+
+          adapter = net_info['Parallels adapter']
+
+          # In PD >= 10.1.2 there are new field names for an IP/Subnet
           info = {
             name:    net_info['Bound To'],
-            ip:      net_info['Parallels adapter']['IP address'],
-            netmask: net_info['Parallels adapter']['Subnet mask'],
+            ip:      adapter['IP address'] || adapter['IPv4 address'],
+            netmask: adapter['Subnet mask'] || adapter['IPv4 subnet mask'],
             status:  'Up',
             nat:     []
           }
