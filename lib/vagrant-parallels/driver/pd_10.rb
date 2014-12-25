@@ -146,13 +146,13 @@ module VagrantPlugins
 
             # There may be a fake DHCPv4 parameters
             # We can trust them only if adapter IP and DHCP IP are in the same subnet
-            dhcp_ip = net_info['DHCPv4 server']['Server address']
-            if network_address(info[:ip], info[:netmask]) ==
-              network_address(dhcp_ip, info[:netmask])
+            dhcp_info = net_info['DHCPv4 server']
+            if dhcp_info && (network_address(info[:ip], info[:netmask]) ==
+              network_address(dhcp_info['Server address'], info[:netmask]))
               info[:dhcp] = {
-                ip:    dhcp_ip,
-                lower: net_info['DHCPv4 server']['IP scope start address'],
-                upper: net_info['DHCPv4 server']['IP scope end address']
+                ip:    dhcp_info['Server address'],
+                lower: dhcp_info['IP scope start address'],
+                upper: dhcp_info['IP scope end address']
               }
             end
             hostonly_ifaces << info

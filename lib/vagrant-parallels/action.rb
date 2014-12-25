@@ -280,6 +280,7 @@ module VagrantPlugins
             if env1[:result]
               b1.use Customize, "pre-import"
               b1.use Import
+              b1.use Customize, 'post-import'
             end
           end
           b.use action_start
