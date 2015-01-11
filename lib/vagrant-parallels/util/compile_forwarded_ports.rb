@@ -8,7 +8,7 @@ module VagrantPlugins
 
         # This method compiles the forwarded ports into {ForwardedPort}
         # models.
-        def compile_forwarded_ports(config)
+        def compile_forwarded_ports(config, machine)
           mappings = {}
 
           config.vm.networks.each do |type, options|
@@ -22,11 +22,8 @@ module VagrantPlugins
               # If the forwarded port was marked as disabled, ignore.
               next if options[:disabled]
 
-              # Temporary disable automatically pre-configured forwarded ports
-              # for SSH, since it is working not so well [GH-146]
-              # TODO: Roll it back when forwarded ports will be completely
-              # fixed in Parallels Desktop 10
-              next if id == 'ssh'
+              # Only port forward SSH for Parallels Desktop 10 (see [GH-146])
+              next if id == 'ssh' && !machine.provider.pd_version_satisfies?('>= 10')
 
               mappings[host_port.to_s + protocol.to_s] =
                 Model::ForwardedPort.new(id, host_port, guest_port, options)
