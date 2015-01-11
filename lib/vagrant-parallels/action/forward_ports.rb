@@ -20,7 +20,7 @@ module VagrantPlugins
           @env = env
 
           # Get the ports we're forwarding
-          env[:forwarded_ports] ||= compile_forwarded_ports(env[:machine].config)
+          env[:forwarded_ports] ||= compile_forwarded_ports(env[:machine].config, env[:machine])
           env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
           forward_ports
 
