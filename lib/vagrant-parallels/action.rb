@@ -185,8 +185,7 @@ module VagrantPlugins
 
             b1.use Call, IsState, :running do |env2, b2|
               if !env2[:result]
-                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
-                next
+                raise Vagrant::Errors::VMNotRunningError
               end
 
               b2.use SSHExec
@@ -207,8 +206,7 @@ module VagrantPlugins
 
             b1.use Call, IsState, :running do |env2, b2|
               if !env2[:result]
-                b2.use Message, I18n.t("vagrant.commands.common.vm_not_running")
-                next
+                raise Vagrant::Errors::VMNotRunningError
               end
 
               b2.use SSHRun
