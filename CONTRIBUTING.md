@@ -59,3 +59,22 @@ remote my-fork <fork_url>`)
 4. Push the branch to your fork (`git push fork my-new-feature`)
 5. Create a pull request from your `my-new-feature` branch into `master` of
 `vagrant-parallels` repo
+
+### Acceptance Tests
+
+Vagrant also comes with an acceptance test suite that does black-box
+tests of various Vagrant components. Note that these tests are **extremely
+slow** because actual VMs are spun up and down. The full test suite can
+take hours.
+
+To run the acceptance test suite, first copy `vagrant-spec.config.example.rb`
+to `vagrant-spec.config.rb` and modify it to valid values. The places you
+should fill in are clearly marked. Highly recommend to download a box and
+specify a local path to it.
+
+Run acceptance tests:
+
+```
+$ rake acceptance:run
+...
+```
