@@ -6,7 +6,10 @@ module VagrantPlugins
         #
         # @return [Hash<Integer, String>] Adapter => MAC address
         def self.nic_mac_addresses(machine)
-          machine.provider.driver.read_mac_addresses
+          nic_macs = machine.provider.driver.read_mac_addresses
+
+          # Make numeration starting from 1, as it is expected in Vagrant.
+          Hash[nic_macs.map{ |index, mac| [index+1, mac] }]
         end
       end
     end
