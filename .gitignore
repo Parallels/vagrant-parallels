@@ -4,7 +4,7 @@
 # Vagrant stuff
 acceptance_config.yml
 boxes/*
-Vagrantfile
+/Vagrantfile
 .vagrant
 vagrant-spec.config.rb
 
@@ -15,6 +15,7 @@ pkg/*
 tags
 Gemfile.lock
 test/tmp/
+/vendor
 
 # Python
 *.pyc
