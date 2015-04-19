@@ -38,7 +38,7 @@ module VagrantPlugins
             '8' => PD_8,
             '9' => PD_9,
             '10' => PD_10,
-            '11' => PD_10
+            '11' => PD_11
           }
 
           driver_klass = nil
