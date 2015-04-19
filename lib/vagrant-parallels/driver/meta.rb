@@ -38,12 +38,13 @@ module VagrantPlugins
             raise VagrantPlugins::Parallels::Errors::ParallelsNotDetected
           end
 
-          # Instantiate the proper version driver for VirtualBox
+          # Instantiate the proper version driver for Parallels Desktop
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
           driver_map   = {
-            "8" => PD_8,
-            "9" => PD_9,
-            "10" => PD_10
+            '8' => PD_8,
+            '9' => PD_9,
+            '10' => PD_10,
+            '11' => PD_10
           }
 
           driver_klass = nil
