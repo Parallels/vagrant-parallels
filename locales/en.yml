@@ -111,6 +111,11 @@ en:
           create the environment. If a machine is not created, only the
           default provider will be shown. So if a provider is not listed,
           then the machine is not created for that environment.
+        paused: |-
+          The VM is paused. This VM may have been paused via Parallels Desktop
+          GUI or the `prlctl` command line interface. To unpause, please
+          use the Parallels Desktop GUI and/or `prlctl` command line interface
+          so that vagrant would be able to control the VM again.
         suspended: |-
           The VM is suspended. To resume this VM you can run `vagrant resume`
           or `vagrant up` to restart it again, so that vagrant would be able
