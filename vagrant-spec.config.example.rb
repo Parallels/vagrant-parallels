@@ -6,6 +6,5 @@ Vagrant::Spec::Acceptance.configure do |c|
 
   c.provider 'parallels',
              box:      'ENTER BOX URL',
-             contexts: ['provider-context/parallels'],
-             features: ['!network/forwarded_port', '!cli/plugin']
+             contexts: ['provider-context/parallels']
 end
