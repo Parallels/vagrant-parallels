@@ -26,6 +26,7 @@ module VagrantPlugins
 
           @prlctl_path    = util_path('prlctl')
           @prlsrvctl_path = util_path('prlsrvctl')
+          @prldisktool_path = util_path('prl_disk_tool')
 
           if !@prlctl_path
             # This means that Parallels Desktop was not found, so we raise this
