@@ -31,6 +31,10 @@ shared_context 'parallels' do
   end
 
   before do
+    # Consider that 'prlctl' and 'prlsrvctl' binaries are available
+    allow(Vagrant::Util::Which).to receive(:which).with('prlctl').and_return('prlctl')
+    allow(Vagrant::Util::Which).to receive(:which).with('prlsrvctl').and_return('prlsrvctl')
+
     # we don't want unit tests to ever run commands on the system; so we wire
     # in a double to ensure any unexpected messages raise exceptions
     stub_const('Vagrant::Util::Subprocess', subprocess)
