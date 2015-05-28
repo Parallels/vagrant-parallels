@@ -30,13 +30,7 @@ module VagrantPlugins
 
           # Read and assign the version of Parallels Desktop we know which
           # specific driver to instantiate.
-          begin
-            @version = read_version || ""
-          rescue Vagrant::Errors::CommandUnavailable
-            # This means that Parallels Desktop was not found, so we raise this
-            # error here.
-            raise VagrantPlugins::Parallels::Errors::ParallelsNotDetected
-          end
+          @version = read_version || ''
 
           # Instantiate the proper version driver for Parallels Desktop
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
@@ -82,7 +76,6 @@ module VagrantPlugins
                        :delete_unused_host_only_networks,
                        :disable_password_restrictions,
                        :enable_adapters,
-                       :execute_prlctl,
                        :export,
                        :forward_ports,
                        :halt,
@@ -134,11 +127,11 @@ module VagrantPlugins
           #
           # But we need exactly the first 3 numbers: "x.x.x"
 
-          if execute('prlctl', '--version') =~ /prlctl version (\d+\.\d+.\d+)/
+          if execute_prlctl('--version') =~ /prlctl version (\d+\.\d+.\d+)/
             return $1
-          else
-            return nil
           end
+
+          nil
         end
       end
     end

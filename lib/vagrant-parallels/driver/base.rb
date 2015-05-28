@@ -4,6 +4,7 @@ require 'vagrant/util/busy'
 require 'vagrant/util/network_ip'
 require 'vagrant/util/platform'
 require 'vagrant/util/subprocess'
+require 'vagrant/util/which'
 
 module VagrantPlugins
   module Parallels
@@ -23,8 +24,14 @@ module VagrantPlugins
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
 
-          @prlctl_path    = "prlctl"
-          @prlsrvctl_path = "prlsrvctl"
+          @prlctl_path    = util_path('prlctl')
+          @prlsrvctl_path = util_path('prlsrvctl')
+
+          if !@prlctl_path
+            # This means that Parallels Desktop was not found, so we raise this
+            # error here.
+            raise VagrantPlugins::Parallels::Errors::ParallelsNotDetected
+          end
 
           @logger.info("prlctl path: #{@prlctl_path}")
           @logger.info("prlsrvctl path: #{@prlsrvctl_path}")
@@ -306,6 +313,19 @@ module VagrantPlugins
             Vagrant::Util::Subprocess.execute(*command, &block)
           end
         end
+
+        private
+
+        def util_path(bin)
+          path = Vagrant::Util::Which.which(bin)
+          return path if path
+
+          ['/usr/local/bin', '/usr/bin'].each do |folder|
+            path = File.join(folder, bin)
+            return path if File.file?(path)
+          end
+        end
+
       end
     end
   end
