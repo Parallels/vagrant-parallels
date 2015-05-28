@@ -24,7 +24,7 @@ module VagrantPlugins
             name.start_with? 'hdd'
           end
           used_drives.each_value do |drive_params|
-            execute('prl_disk_tool', 'compact', '--hdd', drive_params['image']) do |type, data|
+            execute(@prldisktool_path, 'compact', '--hdd', drive_params['image']) do |type, data|
               lines = data.split("\r")
               # The progress of the compact will be in the last line. Do a greedy
               # regular expression to find what we're looking for.
@@ -168,9 +168,9 @@ module VagrantPlugins
         end
 
         def halt(force=false)
-          args = ['prlctl', 'stop', @uuid]
+          args = ['stop', @uuid]
           args << '--kill' if force
-          execute(*args)
+          execute_prlctl(*args)
         end
 
         def import(tpl_name)
@@ -447,7 +447,7 @@ module VagrantPlugins
         end
 
         def register(pvm_file)
-          args = ['prlctl', 'register', pvm_file]
+          args = [@prlctl_path, 'register', pvm_file]
 
           3.times do
             result = raw(*args)
@@ -465,7 +465,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
-          execute(*args)
+          execute_prlctl(*args)
         end
 
         def registered?(uuid)
@@ -516,7 +516,7 @@ module VagrantPlugins
         end
 
         def unregister(uuid)
-          args = ['prlctl', 'unregister', uuid]
+          args = [@prlctl_path, 'unregister', uuid]
           3.times do
             result = raw(*args)
             # Exit if everything is OK
@@ -534,7 +534,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
-          execute(*args)
+          execute_prlctl(*args)
         end
 
         def unshare_folders(names)
@@ -545,7 +545,7 @@ module VagrantPlugins
 
         def vm_exists?(uuid)
           5.times do |i|
-            result = raw('prlctl', 'list', uuid)
+            result = raw(@prlctl_path, 'list', uuid)
             return true if result.exit_code == 0
 
             # Sometimes this happens. In this case, retry. If

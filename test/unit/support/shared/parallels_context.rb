@@ -34,6 +34,7 @@ shared_context 'parallels' do
     # Consider that 'prlctl' and 'prlsrvctl' binaries are available
     allow(Vagrant::Util::Which).to receive(:which).with('prlctl').and_return('prlctl')
     allow(Vagrant::Util::Which).to receive(:which).with('prlsrvctl').and_return('prlsrvctl')
+    allow(Vagrant::Util::Which).to receive(:which).with('prl_disk_tool').and_return('prl_disk_tool')
 
     # we don't want unit tests to ever run commands on the system; so we wire
     # in a double to ensure any unexpected messages raise exceptions
