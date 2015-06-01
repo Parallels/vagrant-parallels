@@ -307,8 +307,7 @@ module VagrantPlugins
         end
 
         def read_mac_addresses
-          macs = read_vm_option('mac').strip.split(' ')
-          Hash[macs.map.with_index{ |mac, ind| [ind, mac.gsub(':', '')] }]
+          read_vm_option('mac').strip.gsub(':', '').split(' ')
         end
 
         def read_network_interfaces

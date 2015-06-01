@@ -154,9 +154,9 @@ module VagrantPlugins
         def read_mac_address
         end
 
-        # Returns the network interface card MAC addresses
+        # Returns the array of network interface card MAC addresses
         #
-        # @return [Hash<Integer, String>] Adapter => MAC address
+        # @return [Array<String>]
         def read_mac_addresses
         end
 
