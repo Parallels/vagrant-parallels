@@ -9,7 +9,8 @@ describe VagrantPlugins::Parallels::Driver::PD_8 do
   it_behaves_like "parallels desktop driver"
 
   describe "ssh_ip" do
-    let(:content) {'10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
+    let(:content) {'10.200.0.100="1394546410,1800,001c420000ff,01001c420000ff
+                    10.200.0.99="1394547632,1800,001c420000ff,01001c420000ff"'}
 
     it "returns an IP address assigned to the specified MAC" do
       driver.should_receive(:read_mac_address).and_return("001C420000FF")
