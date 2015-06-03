@@ -465,7 +465,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
-          execute_prlctl(*args)
+          execute(*args)
         end
 
         def registered?(uuid)
@@ -534,7 +534,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
-          execute_prlctl(*args)
+          execute(*args)
         end
 
         def unshare_folders(names)
