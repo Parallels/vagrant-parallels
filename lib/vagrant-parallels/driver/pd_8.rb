@@ -302,13 +302,20 @@ module VagrantPlugins
         end
 
         def read_mac_address
-          # Get MAC of Shared network interface (net0)
-          read_vm_option('mac').strip.split(' ').first.gsub(':', '')
+          hw_info = read_settings.fetch('Hardware', {})
+          shared_ifaces = hw_info.select do |name, params|
+            name.start_with?('net') && params['type'] == 'shared'
+          end
+
+          if shared_ifaces.empty?
+            raise Errors::SharedAdapterNotFound
+          end
+
+          shared_ifaces.values.first.fetch('mac', nil)
         end
 
         def read_mac_addresses
-          macs = read_vm_option('mac').strip.split(' ')
-          Hash[macs.map.with_index{ |mac, ind| [ind, mac.gsub(':', '')] }]
+          read_vm_option('mac').strip.gsub(':', '').split(' ')
         end
 
         def read_network_interfaces
@@ -465,7 +472,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
-          execute_prlctl(*args)
+          execute(*args)
         end
 
         def registered?(uuid)
@@ -534,7 +541,7 @@ module VagrantPlugins
           # If we reach this point, it means that we consistently got the
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
-          execute_prlctl(*args)
+          execute(*args)
         end
 
         def unshare_folders(names)
