@@ -302,8 +302,12 @@ module VagrantPlugins
         end
 
         def read_mac_address
-          # Get MAC of Shared network interface (net0)
-          read_vm_option('mac').strip.split(' ').first.gsub(':', '')
+          hw_info = read_settings.fetch('Hardware', {})
+          shared_ifaces = hw_info.select do |name, params|
+            name.start_with?('net') && params['type'] == 'shared'
+          end
+          
+          shared_ifaces.values.first.fetch('mac', nil)
         end
 
         def read_mac_addresses

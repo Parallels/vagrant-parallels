@@ -148,7 +148,7 @@ module VagrantPlugins
         def read_host_only_interfaces
         end
 
-        # Returns the MAC address of the first network interface.
+        # Returns the MAC address of the first Shared network interface.
         #
         # @return [String]
         def read_mac_address
