@@ -186,9 +186,9 @@ shared_examples "parallels desktop driver" do |options|
 
   describe "read_mac_addresses" do
     it "returns MAC addresses of all network interface cards" do
-      subject.read_mac_addresses.should be_kind_of(Hash)
-      subject.read_mac_addresses.should include(0)
-      subject.read_mac_addresses[0].should be_kind_of(String)
+      subject.read_mac_addresses.should be_kind_of(Array)
+      subject.read_mac_addresses.should include('001C42B4B074')
+      subject.read_mac_addresses.should include('001C42B4B090')
     end
   end
 

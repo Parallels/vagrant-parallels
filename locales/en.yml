@@ -75,6 +75,10 @@ en:
         Could not find a required option of Parallels Desktop virtual machine:
           %{vm_option}
         This is an internal error that should be reported as a bug.
+      shared_adapter_not_found: |-
+        Shared network adapter was not found in your virtual machine configuration.
+        It is required to communicate with VM and forward ports. Please check
+        network configuration in your Vagrantfile.
       vm_import_failure: |-
         The VM import failed! Please verify that the box you're using is not
         corrupted and try again.

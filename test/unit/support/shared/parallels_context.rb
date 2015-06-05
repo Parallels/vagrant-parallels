@@ -223,7 +223,7 @@ shared_context 'parallels' do
     subprocess.stub(:execute).
       with('prlctl', 'list', kind_of(String), '--no-header', '-o', 'mac',
            kind_of(Hash)) do
-      subprocess_result(stdout: "001C42B4B074\n")
+      subprocess_result(stdout: "00:1C:42:B4:B0:74 00:1C:42:B4:B0:90\n")
     end
 
   end

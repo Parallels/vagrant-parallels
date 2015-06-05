@@ -9,7 +9,7 @@ module VagrantPlugins
           nic_macs = machine.provider.driver.read_mac_addresses
 
           # Make numeration starting from 1, as it is expected in Vagrant.
-          Hash[nic_macs.map{ |index, mac| [index+1, mac] }]
+          Hash[nic_macs.map.with_index{ |mac, index| [index+1, mac] }]
         end
       end
     end
