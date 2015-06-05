@@ -55,6 +55,10 @@ module VagrantPlugins
         error_key(:parallels_vm_option_not_found)
       end
 
+      class SharedAdapterNotFound < VagrantParallelsError
+        error_key(:shared_adapter_not_found)
+      end
+
       class VMImportFailure < VagrantParallelsError
         error_key(:vm_import_failure)
       end

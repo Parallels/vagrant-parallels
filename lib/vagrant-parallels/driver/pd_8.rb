@@ -306,7 +306,11 @@ module VagrantPlugins
           shared_ifaces = hw_info.select do |name, params|
             name.start_with?('net') && params['type'] == 'shared'
           end
-          
+
+          if shared_ifaces.empty?
+            raise Errors::SharedAdapterNotFound
+          end
+
           shared_ifaces.values.first.fetch('mac', nil)
         end
 
