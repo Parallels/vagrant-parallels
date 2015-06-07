@@ -292,16 +292,16 @@ module VagrantPlugins
             # with the final octet + 1. So "172.28.0.0" turns into "172.28.0.1"
             dhcp_ip    = ip_parts.dup
             dhcp_ip[3] += 1
-            dhcp_options[:dhcp_ip] ||= dhcp_ip.join(".")
+            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || dhcp_ip.join(".")
 
             # Calculate the lower and upper bound for the DHCP server
             dhcp_lower    = ip_parts.dup
             dhcp_lower[3] += 2
-            dhcp_options[:dhcp_lower] ||= dhcp_lower.join(".")
+            dhcp_options[:dhcp_lower] = options[:dhcp_lower] || dhcp_lower.join(".")
 
             dhcp_upper    = ip_parts.dup
             dhcp_upper[3] = 254
-            dhcp_options[:dhcp_upper] ||= dhcp_upper.join(".")
+            dhcp_options[:dhcp_upper] = options[:dhcp_upper] || dhcp_upper.join(".")
           end
 
           return {
