@@ -89,22 +89,17 @@ module VagrantPlugins
         def enable_adapters(adapters)
         end
 
-        # Exports the virtual machine to the given path.
-        #
-        # @param [String] path Path to the OVF file.
-        # @yield [progress] Yields the block with the progress of the export.
-        def export(path)
-        end
-
         # Halts the virtual machine (pulls the plug).
         def halt(force)
         end
 
-        # Imports the VM by cloning from registered template.
+        # Makes a clone of the virtual machine.
         #
-        # @param [String] template_uuid Registered template UUID.
-        # @return [String] UUID of the imported VM.
-        def import(template_uuid)
+        # @param [String] src_name Name or UUID of the source VM or template.
+        # @param [String] dst_name Name of the destination VM.
+        # @param [Hash] options Options to clone virtual machine.
+        # @return [String] UUID of the new VM.
+        def clone_vm(src_name, dst_name, options={})
         end
 
         # Parses given block (JSON string) to object
