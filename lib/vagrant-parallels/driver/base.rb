@@ -321,7 +321,7 @@ module VagrantPlugins
           path = Vagrant::Util::Which.which(bin)
           return path if path
 
-          ['/usr/local/bin', '/usr/bin'].each do |folder|
+          ['/usr/local/bin', '/usr/bin', '/Applications/Parallels Desktop.app/Contents/MacOS'].each do |folder|
             path = File.join(folder, bin)
             return path if File.file?(path)
           end
