@@ -325,6 +325,7 @@ module VagrantPlugins
             path = File.join(folder, bin)
             return path if File.file?(path)
           end
+          nil
         end
 
       end
