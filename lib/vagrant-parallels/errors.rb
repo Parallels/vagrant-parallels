@@ -59,6 +59,10 @@ module VagrantPlugins
         error_key(:shared_adapter_not_found)
       end
 
+      class SnapshotIdNotDetected < VagrantParallelsError
+        error_key(:snapshot_id_not_detected)
+      end
+
       class VMImportFailure < VagrantParallelsError
         error_key(:vm_import_failure)
       end

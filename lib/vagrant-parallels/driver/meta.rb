@@ -71,6 +71,7 @@ module VagrantPlugins
                        :clear_shared_folders,
                        :compact,
                        :create_host_only_network,
+                       :create_snapshot,
                        :delete,
                        :delete_disabled_adapters,
                        :delete_unused_host_only_networks,
