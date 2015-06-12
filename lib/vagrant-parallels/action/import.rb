@@ -89,6 +89,7 @@ module VagrantPlugins
 
             env[:ui].info I18n.t('vagrant_parallels.actions.vm.import.importing_linked',
                                  :name => @machine.box.name)
+            opts[:snapshot_id] = snapshot_id(tpl_name)
             opts[:linked] = true
           else
             env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
@@ -113,6 +114,23 @@ module VagrantPlugins
             @logger.info("Regenerate SourceVmUuid")
             @machine.provider.driver.regenerate_src_uuid
           end
+        end
+
+        def snapshot_id(tpl_name)
+          snap_id = @machine.provider.driver.read_current_snapshot(tpl_name)
+
+          # If there is no current snapshot, just create the new one.
+          if !snap_id
+            @logger.info('Create a new snapshot')
+            opts = {
+              name: 'vagrant_linked_clone',
+              desc: 'Snapshot to create linked clones for Vagrant'
+            }
+            snap_id = @machine.provider.driver.create_snapshot(tpl_name, opts)
+          end
+
+          @logger.info("User this snapshot ID to create a linked clone: #{snap_id}")
+          snap_id
         end
 
         def unregister_template(tpl_name)
