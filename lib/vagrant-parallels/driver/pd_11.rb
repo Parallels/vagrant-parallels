@@ -34,6 +34,14 @@ module VagrantPlugins
           end
           read_vms[dst_name]
         end
+
+        def read_current_snapshot(uuid)
+          if execute_prlctl('snapshot-list', uuid) =~ /\*\{([\w-]+)\}/
+            return $1
+          end
+
+          nil
+        end
       end
     end
   end

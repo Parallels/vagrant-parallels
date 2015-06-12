@@ -80,6 +80,7 @@ module VagrantPlugins
                        :halt,
                        :clone_vm,
                        :read_bridged_interfaces,
+                       :read_current_snapshot,
                        :read_forwarded_ports,
                        :read_guest_ip,
                        :read_guest_tools_state,
