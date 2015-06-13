@@ -51,7 +51,13 @@ module VagrantPlugins
 
         def export
           @env[:ui].info I18n.t('vagrant.actions.vm.export.exporting')
-          @env[:machine].provider.driver.export(@env['export.temp_dir'], @tpl_name) do |progress|
+
+          options = {
+            template: true,
+            dst: @env['export.temp_dir'].to_s
+          }
+
+          @env[:machine].provider.driver.clone_vm(@env[:machine].id, @tpl_name, options) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
 

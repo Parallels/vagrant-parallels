@@ -81,8 +81,12 @@ module VagrantPlugins
         def import(env, tpl_name)
           env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
                                :name => @machine.box.name)
+
+          # Generate virtual machine name
+          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+
           # Import the virtual machine
-          @machine.id = @machine.provider.driver.import(tpl_name) do |progress|
+          @machine.id = @machine.provider.driver.clone_vm(tpl_name, vm_name) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
 

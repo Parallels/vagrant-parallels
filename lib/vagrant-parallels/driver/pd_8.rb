@@ -152,39 +152,26 @@ module VagrantPlugins
           end
         end
 
-        def export(path, tpl_name)
-          execute_prlctl('clone', @uuid,
-                         '--name', tpl_name,
-                         '--template',
-                         '--dst', path.to_s) do |type, data|
-            lines = data.split("\r")
-            # The progress of the export will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
-            end
-          end
-          read_vms[tpl_name]
-        end
-
         def halt(force=false)
           args = ['stop', @uuid]
           args << '--kill' if force
           execute_prlctl(*args)
         end
 
-        def import(tpl_name)
-          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+        def clone_vm(src_name, dst_name, options={})
+          args = ['clone', src_name, '--name', dst_name]
+          args << '--template' if options[:template]
+          args.concat(['--dst', options[:dst]]) if options[:dst]
 
-          execute_prlctl('clone', tpl_name, '--name', vm_name) do |type, data|
+          execute_prlctl(*args) do |_, data|
             lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
+            # The progress of the clone will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
+            if lines.last =~ /Copying hard disk.+?(\d{,3}) ?%/
               yield $1.to_i if block_given?
             end
           end
-          read_vms[vm_name]
+          read_vms[dst_name]
         end
 
         def read_bridged_interfaces
