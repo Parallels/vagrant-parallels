@@ -24,11 +24,11 @@ module VagrantPlugins
           args << '--linked' if options[:linked]
           args.concat(['--id', options[:snapshot_id]]) if options[:snapshot_id]
 
-          execute_prlctl(*args) do |type, data|
-            lines = data.split("\r")
-            # The progress of the import will be in the last line. Do a greedy
+          execute_prlctl(*args) do |_, data|
+            lines = data.split('\r')
+            # The progress of the clone will be in the last line. Do a greedy
             # regular expression to find what we're looking for.
-            if lines.last =~ /.+?(\d{,3}) ?%/
+            if lines.last =~ /Copying hard disk.+?(\d{,3}) ?%/
               yield $1.to_i if block_given?
             end
           end
