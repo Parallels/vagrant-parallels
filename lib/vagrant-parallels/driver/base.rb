@@ -208,11 +208,6 @@ module VagrantPlugins
           execute_prlctl(*args)
         end
 
-        # Returns the maximum number of network adapters.
-        def max_network_adapters
-          16
-        end
-
         # Returns a list of bridged interfaces.
         #
         # @return [Array<Symbol => String>]
