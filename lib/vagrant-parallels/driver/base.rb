@@ -528,16 +528,6 @@ module VagrantPlugins
           execute_prlctl('resume', @uuid)
         end
 
-        # Sets the MAC address of the first network adapter.
-        #
-        # @param [String] mac MAC address without any spaces/hyphens.
-        def set_mac_address(mac)
-          execute_prlctl('set', @uuid,
-                         '--device-set', 'net0',
-                         '--type', 'shared',
-                         '--mac', mac)
-        end
-
         # Sets the name of the virtual machine.
         #
         # @param [String] name New VM name.
