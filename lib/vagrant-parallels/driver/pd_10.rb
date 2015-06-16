@@ -227,12 +227,6 @@ module VagrantPlugins
           # Ignore our own used ports
           read_forwarded_ports(true).reject { |r| r[:guest].include?(@uuid) }
         end
-
-        def set_power_consumption_mode(optimized)
-          state = optimized ? 'on' : 'off'
-          execute_prlctl('set', @uuid, '--longer-battery-life', state)
-        end
-
       end
     end
   end

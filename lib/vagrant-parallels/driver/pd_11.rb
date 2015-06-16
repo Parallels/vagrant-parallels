@@ -15,26 +15,6 @@ module VagrantPlugins
           @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_11')
         end
 
-        def clone_vm(src_name, dst_name, options={})
-          args = ['clone', src_name, '--name', dst_name]
-          args << '--template' if options[:template]
-          args.concat(['--dst', options[:dst]]) if options[:dst]
-
-          # Linked clone options
-          args << '--linked' if options[:linked]
-          args.concat(['--id', options[:snapshot_id]]) if options[:snapshot_id]
-
-          execute_prlctl(*args) do |_, data|
-            lines = data.split('\r')
-            # The progress of the clone will be in the last line. Do a greedy
-            # regular expression to find what we're looking for.
-            if lines.last =~ /Copying hard disk.+?(\d{,3}) ?%/
-              yield $1.to_i if block_given?
-            end
-          end
-          read_vms[dst_name]
-        end
-
         def create_snapshot(uuid, options)
           args = ['snapshot', uuid]
           args.concat(['--name', options[:name]]) if options[:name]
