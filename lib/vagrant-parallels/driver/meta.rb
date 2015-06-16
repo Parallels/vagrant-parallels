@@ -1,8 +1,7 @@
-require "forwardable"
+require 'forwardable'
+require 'log4r'
 
-require "log4r"
-
-require File.expand_path("../base", __FILE__)
+require File.expand_path('../base', __FILE__)
 
 module VagrantPlugins
   module Parallels

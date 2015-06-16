@@ -85,8 +85,8 @@ module VagrantPlugins
             name.start_with? 'hdd'
           end
           used_drives.each_value do |drive_params|
-            execute(@prldisktool_path, 'compact', '--hdd', drive_params['image']) do |type, data|
-              lines = data.split("\r")
+            execute(@prldisktool_path, 'compact', '--hdd', drive_params['image']) do |_, data|
+              lines = data.split('\r')
               # The progress of the compact will be in the last line. Do a greedy
               # regular expression to find what we're looking for.
               if lines.last =~ /.+?(\d{,3}) ?%/
@@ -627,7 +627,7 @@ module VagrantPlugins
         #
         # @return [Boolean]
         def vm_exists?(uuid)
-          5.times do |i|
+          5.times do
             result = raw(@prlctl_path, 'list', uuid)
             return true if result.exit_code == 0
 
