@@ -38,7 +38,7 @@ module VagrantPlugins
             '8' => PD_8,
             '9' => PD_9,
             '10' => PD_10,
-            '11' => PD_10
+            '11' => PD_11
           }
 
           driver_klass = nil
@@ -71,6 +71,7 @@ module VagrantPlugins
                        :clear_shared_folders,
                        :compact,
                        :create_host_only_network,
+                       :create_snapshot,
                        :delete,
                        :delete_disabled_adapters,
                        :delete_unused_host_only_networks,
@@ -80,6 +81,7 @@ module VagrantPlugins
                        :halt,
                        :clone_vm,
                        :read_bridged_interfaces,
+                       :read_current_snapshot,
                        :read_forwarded_ports,
                        :read_guest_ip,
                        :read_guest_tools_state,

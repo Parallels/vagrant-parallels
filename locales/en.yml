@@ -75,6 +75,11 @@ en:
         Could not find a required option of Parallels Desktop virtual machine:
           %{vm_option}
         This is an internal error that should be reported as a bug.
+      snapshot_id_not_detected: |-
+        ID of the newly created shapshod could not be detected. This is an
+        internal error that users should never see. Please report a bug.
+
+        stdout: %{stdout}
       shared_adapter_not_found: |-
         Shared network adapter was not found in your virtual machine configuration.
         It is required to communicate with VM and forward ports. Please check
@@ -164,3 +169,5 @@ en:
         forward_ports:
           forwarding_entry: |-
             %{guest_port} => %{host_port}
+        import:
+          importing_linked: Importing base box '%{name}' as a linked clone...

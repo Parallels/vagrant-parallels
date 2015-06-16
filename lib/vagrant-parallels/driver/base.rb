@@ -54,6 +54,14 @@ module VagrantPlugins
         def create_host_only_network(options)
         end
 
+        # Creates a snapshot for the specified virtual machine.
+        #
+        # @param [String] uuid Name or UUID of the target VM.
+        # @param [Hash] options Snapshot options.
+        # @return [String] ID of the created snapshot.
+        def create_snapshot(uuid, options)
+        end
+
         # Deletes the virtual machine references by this driver.
         def delete
         end
@@ -117,6 +125,14 @@ module VagrantPlugins
         #
         # @return [Hash]
         def read_bridged_interfaces
+        end
+
+        # Returns current snapshot ID for the specified VM. Returns nil if
+        # the VM doesn't have any snapshot.
+        #
+        # @param [String] uuid Name or UUID of the target VM.
+        # @return [String]
+        def read_current_snapshot(uuid)
         end
 
         # Returns the state of guest tools that is installed on this VM.
