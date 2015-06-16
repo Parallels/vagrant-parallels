@@ -80,7 +80,8 @@ module VagrantPlugins
 
         # Compacts all disk drives of virtual machine
         def compact(uuid)
-          used_drives = read_settings.fetch('Hardware', {}).select do |name, _|
+          hw_info = read_settings(uuid).fetch('Hardware', {})
+          used_drives = hw_info.select do |name, _|
             name.start_with? 'hdd'
           end
           used_drives.each_value do |drive_params|
@@ -372,8 +373,8 @@ module VagrantPlugins
         # Returns virtual machine settings
         #
         # @return [<String => String, Hash>]
-        def read_settings
-          vm = json { execute_prlctl('list', @uuid, '--info', '--no-header', '--json')  }
+        def read_settings(uuid=@uuid)
+          vm = json { execute_prlctl('list', uuid, '--info', '--no-header', '--json')  }
           vm.last
         end
 
