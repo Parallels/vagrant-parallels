@@ -470,18 +470,6 @@ module VagrantPlugins
           vms_arr | templates_arr
         end
 
-        def read_vms_paths
-          paths = {}
-          read_vms_info.each do |item|
-            if Dir.exists? item.fetch('Home')
-              paths[File.realpath item.fetch('Home')] = item.fetch('ID')
-            end
-          end
-
-          paths
-        end
-
-
         # Regenerates 'SourceVmUuid' to avoid SMBIOS UUID collision [GH-113]
         #
         def regenerate_src_uuid

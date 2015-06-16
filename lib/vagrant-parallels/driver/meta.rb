@@ -99,7 +99,6 @@ module VagrantPlugins
                        :read_vm_option,
                        :read_vms,
                        :read_vms_info,
-                       :read_vms_paths,
                        :regenerate_src_uuid,
                        :register,
                        :resume,
