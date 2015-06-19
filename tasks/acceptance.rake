@@ -1,7 +1,7 @@
 namespace :acceptance do
   desc "shows components that can be tested separately"
   task :components do
-    exec("bundle exec vagrant-spec components")
+    exec("vagrant-spec components")
   end
 
   desc "runs acceptance tests using vagrant-spec"
@@ -18,7 +18,7 @@ namespace :acceptance do
       package
     ).map{ |s| "provider/parallels/#{s}" }
 
-    command = "bundle exec vagrant-spec test --components=#{components.join(" ")}"
+    command = "vagrant-spec test --components=#{components.join(" ")}"
     puts command
     puts
     exec(command)

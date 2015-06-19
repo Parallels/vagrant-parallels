@@ -29,11 +29,8 @@ module VagrantPlugins
           # Get the list of network adapters from the configuration
           network_adapters_config = env[:machine].provider_config.network_adapters.dup
 
-          # Get maximum number of network adapters
-          max_adapters = env[:machine].provider.driver.max_network_adapters
-
           # Assign the adapter slot for each high-level network
-          available_slots = Set.new(0...max_adapters)
+          available_slots = Set.new(0...16)
           network_adapters_config.each do |slot, _data|
             available_slots.delete(slot)
           end
@@ -197,6 +194,8 @@ module VagrantPlugins
                 interface = bridgedifs[index]
                 @env[:ui].info("#{index + 1}) #{interface[:name]}", :prefix => false)
               end
+              @env[:ui].info(I18n.t(
+                "vagrant.actions.vm.bridged_networking.choice_help")+"\n")
 
               # The range of valid choices
               valid = Range.new(1, bridgedifs.length)
@@ -204,7 +203,8 @@ module VagrantPlugins
               # The choice that the user has chosen as the bridging interface
               choice = nil
               while !valid.include?(choice)
-                choice = @env[:ui].ask("What interface should the network bridge to? Enter a number: ")
+                choice = @env[:ui].ask(
+                  'Which interface should the network bridge to? Enter a number: ')
                 choice = choice.to_i
               end
 
@@ -289,16 +289,16 @@ module VagrantPlugins
             # with the final octet + 1. So "172.28.0.0" turns into "172.28.0.1"
             dhcp_ip    = ip_parts.dup
             dhcp_ip[3] += 1
-            dhcp_options[:dhcp_ip] ||= dhcp_ip.join(".")
+            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || dhcp_ip.join(".")
 
             # Calculate the lower and upper bound for the DHCP server
             dhcp_lower    = ip_parts.dup
             dhcp_lower[3] += 2
-            dhcp_options[:dhcp_lower] ||= dhcp_lower.join(".")
+            dhcp_options[:dhcp_lower] = options[:dhcp_lower] || dhcp_lower.join(".")
 
             dhcp_upper    = ip_parts.dup
             dhcp_upper[3] = 254
-            dhcp_options[:dhcp_upper] ||= dhcp_upper.join(".")
+            dhcp_options[:dhcp_upper] = options[:dhcp_upper] || dhcp_upper.join(".")
           end
 
           return {

@@ -115,17 +115,24 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
-  describe "export" do
-    tpl_name = "Some_Template_Name"
-    tpl_uuid = "1234-some-template-uuid-5678"
-
-    it "exports VM to template" do
+  describe "clone_vm" do
+    it "clones VM to the new one" do
       subprocess.should_receive(:execute).
-        with("prlctl", "clone", uuid, "--name", an_instance_of(String),
+        with("prlctl", "clone", tpl_uuid, "--name", vm_name,
+             an_instance_of(Hash)).
+        and_return(subprocess_result(exit_code: 0))
+      subject.clone_vm(tpl_uuid, vm_name).should == uuid
+    end
+
+    it "clones VM to template" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "clone", uuid, "--name", tpl_name,
              "--template", "--dst", an_instance_of(String),
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
-      subject.export("/path/to/template", tpl_name).should == tpl_uuid
+      subject.clone_vm(uuid, tpl_name,
+                       {dst: "/path/to/template", template: true}).
+        should == tpl_uuid
     end
   end
 
@@ -248,18 +255,6 @@ shared_examples "parallels desktop driver" do |options|
         and_return(subprocess_result(exit_code: 0))
 
       subject.register("/path/to/vm_image.pvm")
-    end
-  end
-
-  describe "set_mac_address" do
-    it "sets base MAC address to the Shared network adapter" do
-      subprocess.should_receive(:execute).exactly(2).times.
-        with("prlctl", "set", uuid, '--device-set', 'net0', '--type', 'shared',
-             '--mac', an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
-
-      subject.set_mac_address('001C42DD5902')
-      subject.set_mac_address('auto')
     end
   end
 

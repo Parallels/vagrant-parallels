@@ -79,10 +79,25 @@ module VagrantPlugins
         end
 
         def import(env, tpl_name)
-          env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
-                               :name => @machine.box.name)
+          # Generate virtual machine name
+          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+          opts = {}
+
+          # Linked clones are supported only for PD 11 and higher
+          if @machine.provider_config.use_linked_clone &&
+            @machine.provider.pd_version_satisfies?('>= 11')
+
+            env[:ui].info I18n.t('vagrant_parallels.actions.vm.import.importing_linked',
+                                 :name => @machine.box.name)
+            opts[:snapshot_id] = snapshot_id(tpl_name)
+            opts[:linked] = true
+          else
+            env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
+                                 :name => @machine.box.name)
+          end
+
           # Import the virtual machine
-          @machine.id = @machine.provider.driver.import(tpl_name) do |progress|
+          @machine.id = @machine.provider.driver.clone_vm(tpl_name, vm_name, opts) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
 
@@ -99,6 +114,23 @@ module VagrantPlugins
             @logger.info("Regenerate SourceVmUuid")
             @machine.provider.driver.regenerate_src_uuid
           end
+        end
+
+        def snapshot_id(tpl_name)
+          snap_id = @machine.provider.driver.read_current_snapshot(tpl_name)
+
+          # If there is no current snapshot, just create the new one.
+          if !snap_id
+            @logger.info('Create a new snapshot')
+            opts = {
+              name: 'vagrant_linked_clone',
+              desc: 'Snapshot to create linked clones for Vagrant'
+            }
+            snap_id = @machine.provider.driver.create_snapshot(tpl_name, opts)
+          end
+
+          @logger.info("User this snapshot ID to create a linked clone: #{snap_id}")
+          snap_id
         end
 
         def unregister_template(tpl_name)

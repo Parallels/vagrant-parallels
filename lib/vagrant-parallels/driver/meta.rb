@@ -1,8 +1,7 @@
-require "forwardable"
+require 'forwardable'
+require 'log4r'
 
-require "log4r"
-
-require File.expand_path("../base", __FILE__)
+require File.expand_path('../base', __FILE__)
 
 module VagrantPlugins
   module Parallels
@@ -23,7 +22,7 @@ module VagrantPlugins
 
         def initialize(uuid=nil)
           # Setup the base
-          super()
+          super(uuid)
 
           @logger = Log4r::Logger.new('vagrant_parallels::driver::meta')
           @uuid = uuid
@@ -38,7 +37,7 @@ module VagrantPlugins
             '8' => PD_8,
             '9' => PD_9,
             '10' => PD_10,
-            '11' => PD_10
+            '11' => PD_11
           }
 
           driver_klass = nil
@@ -71,16 +70,17 @@ module VagrantPlugins
                        :clear_shared_folders,
                        :compact,
                        :create_host_only_network,
+                       :create_snapshot,
                        :delete,
                        :delete_disabled_adapters,
                        :delete_unused_host_only_networks,
                        :disable_password_restrictions,
                        :enable_adapters,
-                       :export,
                        :forward_ports,
                        :halt,
-                       :import,
+                       :clone_vm,
                        :read_bridged_interfaces,
+                       :read_current_snapshot,
                        :read_forwarded_ports,
                        :read_guest_ip,
                        :read_guest_tools_state,
@@ -98,12 +98,10 @@ module VagrantPlugins
                        :read_vm_option,
                        :read_vms,
                        :read_vms_info,
-                       :read_vms_paths,
                        :regenerate_src_uuid,
                        :register,
                        :resume,
                        :set_power_consumption_mode,
-                       :set_mac_address,
                        :set_name,
                        :share_folders,
                        :ssh_ip,
