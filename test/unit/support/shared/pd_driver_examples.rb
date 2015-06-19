@@ -258,18 +258,6 @@ shared_examples "parallels desktop driver" do |options|
     end
   end
 
-  describe "set_mac_address" do
-    it "sets base MAC address to the Shared network adapter" do
-      subprocess.should_receive(:execute).exactly(2).times.
-        with("prlctl", "set", uuid, '--device-set', 'net0', '--type', 'shared',
-             '--mac', an_instance_of(String), an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
-
-      subject.set_mac_address('001C42DD5902')
-      subject.set_mac_address('auto')
-    end
-  end
-
   describe "set_name" do
     it "sets new name for the VM" do
       subprocess.should_receive(:execute).

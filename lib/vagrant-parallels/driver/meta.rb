@@ -1,8 +1,7 @@
-require "forwardable"
+require 'forwardable'
+require 'log4r'
 
-require "log4r"
-
-require File.expand_path("../base", __FILE__)
+require File.expand_path('../base', __FILE__)
 
 module VagrantPlugins
   module Parallels
@@ -23,7 +22,7 @@ module VagrantPlugins
 
         def initialize(uuid=nil)
           # Setup the base
-          super()
+          super(uuid)
 
           @logger = Log4r::Logger.new('vagrant_parallels::driver::meta')
           @uuid = uuid
@@ -99,12 +98,10 @@ module VagrantPlugins
                        :read_vm_option,
                        :read_vms,
                        :read_vms_info,
-                       :read_vms_paths,
                        :regenerate_src_uuid,
                        :register,
                        :resume,
                        :set_power_consumption_mode,
-                       :set_mac_address,
                        :set_name,
                        :share_folders,
                        :ssh_ip,

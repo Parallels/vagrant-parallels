@@ -51,7 +51,7 @@ en:
         There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"
         network configurations consume a single network adapter slot on the
-        Parallels Desktop VM. Parallels Desktop limits the number of slots to 8, and it
+        Parallels Desktop VM. Parallels Desktop limits the number of slots to 16, and it
         appears that every slot is in use. Please lower the number of used
         network adapters.
       parallels_not_detected: |-
