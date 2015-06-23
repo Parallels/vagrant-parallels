@@ -1,6 +1,14 @@
 /* page */
 .page { //style all pages
 
+  min-height: ~'calc(100vh - 353px)';
+  min-height: ~'-webkit-calc(100vh - 353px)';
+
+  @media (max-width: 767px) {
+    min-height: ~'calc(100vh - 383px)';
+    min-height: ~'-webkit-calc(100vh - 383px)';
+  }
+
     .page-background { //page background color
         width: 100%;
         height: 100%;

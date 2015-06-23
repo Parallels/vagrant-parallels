@@ -4,6 +4,7 @@ html {
 		-ms-text-size-adjust: 100%;
 	text-rendering: optimizeLegibility;
 	-webkit-tap-highlight-color: transparent;
+    height:100%;
 }
 
 body {
@@ -13,10 +14,27 @@ body {
   color: @black;
   background-color: @white;
   .helvetica-neue-regular;
+  min-height: 100%;
 }
 
 .wrapper {
-margin-top: 100px;
+  padding-top: 100px;
+
+  min-height: ~'calc(100vh - 353px)';
+  min-height: ~'-webkit-calc(100vh - 353px)';
+}
+
+@media (max-width: 767px) {
+
+  body {
+    min-height: ~'calc(100vh - 383px)';
+    min-height: ~'-webkit-calc(100vh - 383px)';
+  }
+
+  .wrapper {
+    padding-top: 0px;
+    height: 100%;
+  }
 }
 
 .container {
