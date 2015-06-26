@@ -162,6 +162,13 @@
 
 
 @media (max-width: 767px) {
+  min-height: ~'calc(100vh - 383px)';
+  min-height: -webkit-calc(100vh - 383px);
+
+  body {
+    min-height: ~'calc(100vh - 383px)';
+    min-height: -webkit-calc(100vh - 383px);
+  }
 
   // these modules go full-width at smaller sizes
   footer {
@@ -218,6 +225,8 @@
   }
 
   .wrapper {
+    padding-top: 0;
+    height: 100%;
     margin-top: 130px;
   }
 
