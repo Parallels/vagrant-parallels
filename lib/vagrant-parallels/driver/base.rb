@@ -261,14 +261,15 @@ module VagrantPlugins
         # Returns an IP of the virtual machine. It requires that Shared network
         # adapter is configured for this VM and it obtains an IP via DHCP.
         #
-        #
         # @return [String] IP address leased by DHCP server in "Shared" network
         def read_guest_ip
           mac_addr = read_mac_address.downcase
           leases_file = '/Library/Preferences/Parallels/parallels_dhcp_leases'
+          leases = {}
           begin
             File.open(leases_file).grep(/#{mac_addr}/) do |line|
-              return line[/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/]
+              _, ip, exp, dur, _, _ = line.split /([\d.]*)="(\d*),(\d*),(\w*),(\w*)".*/
+              leases[ip] = exp.to_i - dur.to_i
             end
           rescue Errno::EACCES
             raise Errors::DhcpLeasesNotAccessible, :leases_file => leases_file.to_s
@@ -278,7 +279,10 @@ module VagrantPlugins
             return nil
           end
 
-          nil
+          return nil if leases.empty?
+
+          # Get the most resent lease and return an associated IP
+          leases.sort_by { |_ip, lease_time| lease_time }.last.first
         end
 
         # Returns path to the Parallels Tools ISO file.

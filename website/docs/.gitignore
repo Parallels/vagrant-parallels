@@ -1,0 +1,6 @@
+# Website: docs
+./build
+./Rakefile
+
+.DS_Store
+.idea/

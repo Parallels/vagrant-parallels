@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title><%= current_page.data.page_title ? " #{current_page.data.page_title} - " : "" %>Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<%= stylesheet_link_tag "bootstrap", "vagrant-parallels" %>
+
+		<!-- lib js -->
+		<%= javascript_include_tag "jquery" %>
+		<%= javascript_include_tag "modernizr" %>
+		<%= javascript_include_tag "bootstrap.min" %>
+		<%= javascript_include_tag "backstretch" %>
+		<%= javascript_include_tag "vagrant-parallels" %>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+            <div class="container">
+                <!-- vagrant logo -->
+                <%= link_to 'Vagrant Parallels Documentation', '/docs/index.html', class: 'vagrant-docs-logo' %>
+                <!-- nav -->
+                <ul class="pull-right">
+                    <li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+                    <li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+                </ul>
+            </div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+                    <div class="sidebar span4">
+                        <!-- get the sidebar nav -->
+                        <!-- side nav docs -->
+                        <aside class="sidebar-nav">
+
+                        <div class="toggle hidden-desktop">
+                            <div class="open-close open"></div>
+                            <a href="#">Contents</a>
+                        </div>
+
+                        <ul class="unstyled">
+                            <li<%= sidebar_current("overview") %>><%= link_to 'Overview', '/docs/index.html' %></li>
+
+                            <li<%= sidebar_current("installation") %>><%= link_to 'Installation', '/docs/installation/index.html' %></li>
+                            <% if sidebar_section == "installation" %>
+                            <ul class="sub unstyled">
+                                <li<%= sidebar_current("installation-updating") %>><%= link_to 'Updating', '/docs/installation/updating.html' %></li>
+                                <li<%= sidebar_current("installation-uninstallation") %>><%= link_to 'Uninstallation', '/docs/installation/uninstallation.html' %></li>
+                            </ul>
+                            <% end %>
+
+                            <li<%= sidebar_current("usage") %>><%= link_to 'Usage', '/docs/usage.html' %></li>
+
+                            <li<%= sidebar_current("gettingstarted") %>><%= link_to 'Getting Started', '/docs/getting-started.html' %></li>
+
+                            <li<%= sidebar_current("share") %>><%= link_to 'Vagrant Share', '/docs/share.html' %></li>
+
+                            <li<%= sidebar_current("boxes") %>><%= link_to 'Boxes', '/docs/boxes/index.html' %></li>
+                            <% if sidebar_section == "boxes" %>
+                            <ul class="sub unstyled">
+                                <li<%= sidebar_current("boxes-base") %>><%= link_to 'Creating a Base Box', '/docs/boxes/base.html' %></li>
+                                <li<%= sidebar_current("boxes-packer") %>><%= link_to 'Using Packer', '/docs/boxes/packer.html' %></li>
+                                <li<%= sidebar_current("boxes-veewee") %>><%= link_to 'Using Veewee', '/docs/boxes/veewee.html' %></li>
+                            </ul>
+                            <% end %>
+
+                            <li<%= sidebar_current("configuration") %>><%= link_to 'Configuration', '/docs/configuration.html' %></li>
+
+                            <li<%= sidebar_current("networking") %>><%= link_to 'Networking', '/docs/networking/index.html' %></li>
+                            <% if sidebar_section == "networking" %>
+                            <ul class="sub unstyled">
+                                <li<%= sidebar_current("networking-private") %>><%= link_to 'Private Network', '/docs/networking/private_network.html' %></li>
+                                <li<%= sidebar_current("networking-public") %>><%= link_to 'Public Network', '/docs/networking/public_network.html' %></li>
+                                <li<%= sidebar_current("networking-fp") %>><%= link_to 'Forwarded Ports', '/docs/networking/forwarded_ports.html' %></li>
+                            </ul>
+                            <% end %>
+
+                            <li<%= sidebar_current("contacts") %>><%= link_to 'Contacts', '/docs/contacts.html' %></li>
+
+                        </ul>
+                        </aside> <!-- /.sidebar -->
+                    </div> <!-- /.sidebar -->
+
+                    <div class="page-contents span9">
+                        <div class="page-background"></div>
+
+                        <!-- start page content -->
+                        <div class="row">
+                            <div class="span8 offset1">
+                                <%= yield %>
+                            </div> <!-- /.span8 -->
+                        </div> <!-- /.row -->
+                    </div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+			<div class="container">
+				<div class="row">
+                    <ul class="unstyled logos">
+                        <a href="http://www.vagrantup.com/downloads.html">
+                            <li class="vagrant-logo-monochrome">
+                                <p>Vagrant</p>
+                            </li>
+                        </a>
+                        <a href="http://www.parallels.com/downloads/desktop/">
+                            <li class="pd-logo-monochrome">
+                                <p>Parallels Desktop</p>
+                            </li>
+                        </a>
+                    </ul> <!-- /span -->
+
+				</div> <!-- /row -->
+
+				<div class="row">
+					<h6 class="legal">
+                        &copy; <%= Time.now.year %> Parallels IP Holdings GmbH.
+					</h6>
+				</div> <!-- row -->
+			</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>
