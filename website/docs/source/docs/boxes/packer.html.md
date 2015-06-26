@@ -14,7 +14,7 @@ sidebar_current: "boxes-packer"
 </div>
 
 Packer must be properly installed in order to build a new base box using templates. 
-Read the installation instruction here: https://packer.io/docs/installation.html
+Read the installation instruction here: [Install Packer](https://packer.io/docs/installation.html)
 
 ## Parallels Virtualization SDK
 
