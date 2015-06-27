@@ -76,6 +76,7 @@ module VagrantPlugins
                        :delete_unused_host_only_networks,
                        :disable_password_restrictions,
                        :enable_adapters,
+                       :execute_prlctl,
                        :forward_ports,
                        :halt,
                        :clone_vm,
@@ -125,7 +126,7 @@ module VagrantPlugins
           #
           # But we need exactly the first 3 numbers: "x.x.x"
 
-          if execute_prlctl('--version') =~ /prlctl version (\d+\.\d+.\d+)/
+          if execute(@prlctl_path, '--version') =~ /prlctl version (\d+\.\d+.\d+)/
             return $1
           end
 
