@@ -125,12 +125,13 @@ module VagrantPlugins
           # * prlctl version 10.0.0 (12345) rev 123456
           #
           # But we need exactly the first 3 numbers: "x.x.x"
+          output = execute(@prlctl_path, '--version')
 
-          if execute(@prlctl_path, '--version') =~ /prlctl version (\d+\.\d+.\d+)/
-            return $1
+          if output =~ /prlctl version (\d+\.\d+.\d+)/
+            Regexp.last_match(1)
+          else
+            raise Errors::ParallelsInvalidVersion, output: output
           end
-
-          nil
         end
       end
     end
