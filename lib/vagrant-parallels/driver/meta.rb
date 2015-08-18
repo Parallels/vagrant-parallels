@@ -43,6 +43,15 @@ module VagrantPlugins
               else raise Errors::ParallelsUnsupportedVersion
             end
 
+          # Starting since PD 11 only Pro and Business editions have CLI
+          # functionality and can be used with Vagrant.
+          if @version.split('.').first.to_i >= 11
+            edition = read_edition
+            if !edition || !%w(any pro business).include?(edition)
+              raise Errors::ParallelsUnsupportedEdition
+            end
+          end
+
           @logger.info("Using Parallels driver: #{driver_klass}")
           @driver = driver_klass.new(@uuid)
 
@@ -101,6 +110,18 @@ module VagrantPlugins
                        :vm_exists?
 
         protected
+
+        # Returns the edition of Parallels Desktop that is running. It makes
+        # sense only for Parallels Desktop 11 and later. For older versions
+        # it returns nil.
+        #
+        # @return [String]
+        def read_edition
+          lic_info = json({}) do
+            execute(@prlsrvctl_path, 'info', '--license', '--json')
+          end
+          lic_info['edition']
+        end
 
         # This returns the version of Parallels Desktop that is running.
         #

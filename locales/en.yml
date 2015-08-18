@@ -74,6 +74,13 @@ en:
         Could not find a required option of Parallels Desktop virtual machine:
           %{vm_option}
         This is an internal error that should be reported as a bug.
+      parallels_unsupported_edition: |-
+        Vagrant has detected that you have an edition of Parallels Desktop for Mac
+        installed that is not supported. Vagrant Parallels provider is compatible
+        only with Pro and Business editions of Parallels Desktop. Other editions
+        do not have command line functionality and can not be used with Vagrant.
+
+        Please upgrade your installation: http://parallels.com/desktop
       parallels_unsupported_version: |-
         Vagrant has detected that you have a version of Parallels Desktop for Mac
         installed that is not supported. Vagrant Parallels provider is compatible
