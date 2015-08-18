@@ -33,27 +33,15 @@ module VagrantPlugins
 
           # Instantiate the proper version driver for Parallels Desktop
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
-          driver_map   = {
-            '8' => PD_8,
-            '9' => PD_9,
-            '10' => PD_10,
-            '11' => PD_11
-          }
 
-          driver_klass = nil
-          driver_map.each do |key, klass|
-            if @version.start_with?(key)
-              driver_klass = klass
-              break
+          driver_klass =
+            case @version.split('.').first
+              when '8' then PD_8
+              when '9' then PD_9
+              when '10' then PD_10
+              when '11' then PD_11
+              else raise Errors::ParallelsUnsupportedVersion
             end
-          end
-
-          if !driver_klass
-            supported_versions = driver_map.keys.sort
-
-            raise VagrantPlugins::Parallels::Errors::ParallelsUnsupportedVersion,
-                  supported_versions: supported_versions.join(", ")
-          end
 
           @logger.info("Using Parallels driver: #{driver_klass}")
           @driver = driver_klass.new(@uuid)
