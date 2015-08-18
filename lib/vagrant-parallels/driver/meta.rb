@@ -51,7 +51,7 @@ module VagrantPlugins
           if !driver_klass
             supported_versions = driver_map.keys.sort
 
-            raise VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion,
+            raise VagrantPlugins::Parallels::Errors::ParallelsUnsupportedVersion,
                   supported_versions: supported_versions.join(", ")
           end
 

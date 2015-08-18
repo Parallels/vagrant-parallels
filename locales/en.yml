@@ -42,11 +42,10 @@ en:
         Parallels Desktop is complaining that the installation is incomplete.
         Try to reinstall Parallels Desktop or contact Parallels support.
       parallels_invalid_version: |-
-        Vagrant has detected that you have a version of Parallels Desktop installed
-        that is not supported. Please install or upgrade to one of the supported
-        versions listed below to use Vagrant:
+        Vagrant could not fetch Parallels Desktop version from output:
+          %{output}
 
-        %{supported_versions}
+        This is an internal error that should be reported as a bug.
       parallels_no_room_for_high_level_network: |-
         There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"
@@ -75,6 +74,15 @@ en:
         Could not find a required option of Parallels Desktop virtual machine:
           %{vm_option}
         This is an internal error that should be reported as a bug.
+      parallels_unsupported_version: |-
+        Vagrant has detected that you have a version of Parallels Desktop for Mac
+        installed that is not supported. Vagrant Parallels provider is compatible
+        only with Parallels Desktop 8 or later.
+        Please upgrade your installation: http://parallels.com/desktop
+
+        Note: Starting since Parallels Desktop 11 for Mac, Vagrant Parallels
+        provider can be only used with Pro or Business edition of Parallels
+        Desktop for Mac. Please, be aware while choosing the edition to upgrade to.
       snapshot_id_not_detected: |-
         ID of the newly created shapshod could not be detected. This is an
         internal error that users should never see. Please report a bug.
