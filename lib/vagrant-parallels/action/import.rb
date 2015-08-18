@@ -114,6 +114,13 @@ module VagrantPlugins
             @logger.info("Regenerate SourceVmUuid")
             @machine.provider.driver.regenerate_src_uuid
           end
+
+          # Remove 'Icon\r' file from VM home (bug in PD 11.0.0)
+          if @machine.provider.pd_version_satisfies?('= 11.0.0')
+            vm_home = @machine.provider.driver.read_settings.fetch('Home')
+            broken_icns = Dir[File.join(vm_home, 'Icon*')]
+            FileUtils.rm(broken_icns, :force => true)
+          end
         end
 
         def snapshot_id(tpl_name)
