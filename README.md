@@ -47,10 +47,21 @@ Having problems while using the provider? Ask your question on the official foru
 If you get an error while using the Parallels provider or discover a bug,
 please report it on the [IssueTracker](https://github.com/Parallels/vagrant-parallels).
 
-## Credits
-Great thanks to *Youssef Shahin* `@yshahin` for having initiated the development
-of this provider. You've done a great job, Youssef!
+## License and Authors
 
-Also, thanks to the people [who are contributing](https://github.com/Parallels/vagrant-parallels/graphs/contributors)
- to our provider.
+* Author: Youssef Shahin <yshahin@gmail.com>
+* Author: Mikhail Zholobov <legal90@gmail.com>
+* Copyright 2013-2015, Parallels IP Holdings GmbH.
 
+```text
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+```
