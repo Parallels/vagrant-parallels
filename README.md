@@ -7,22 +7,21 @@ This is a plugin for [Vagrant](http://www.vagrantup.com),
 allowing to power [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
 based virtual machines.
 
-If you're just getting started with Vagrant, it is highly recommended that you
-read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
-
 ### Requirements 
 - [Vagrant v1.5](http://www.vagrantup.com) or higher
 - [Parallels Desktop 8 for Mac](http://www.parallels.com/products/desktop/) or higher
 
-**Attention for Parallels Desktop 11 users!** 
-
-This plugin is compatible only with *Pro* and *Business* editions of Parallels 
-Desktop 11. Standard edition doesn't have a command line functionality and can 
-not be used with Vagrant. 
+*Note:* In [**Parallels Desktop 11 for Mac**](http://www.parallels.com/products/desktop/), 
+only **Pro** and **Business** editions are compatible with this Vagrant provider. 
+Standard edition doesn't have a command line functionality and can not be used 
+with Vagrant.
 
 ## Features
 The Parallels provider supports all basic Vagrant features, including shared folders,
 private and public networks, forwarded ports and so on. 
+
+If you're just getting started with Vagrant, it is highly recommended that you
+read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
 
 ## Installation
 First, make sure that you have [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
