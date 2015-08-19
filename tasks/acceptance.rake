@@ -8,6 +8,7 @@ namespace :acceptance do
   task :run do
     components = %w(
       basic
+      linked_clone
       network/forwarded_port
       network/private_network
       synced_folder

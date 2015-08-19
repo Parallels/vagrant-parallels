@@ -33,26 +33,23 @@ module VagrantPlugins
 
           # Instantiate the proper version driver for Parallels Desktop
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
-          driver_map   = {
-            '8' => PD_8,
-            '9' => PD_9,
-            '10' => PD_10,
-            '11' => PD_11
-          }
 
-          driver_klass = nil
-          driver_map.each do |key, klass|
-            if @version.start_with?(key)
-              driver_klass = klass
-              break
+          driver_klass =
+            case @version.split('.').first
+              when '8' then PD_8
+              when '9' then PD_9
+              when '10' then PD_10
+              when '11' then PD_11
+              else raise Errors::ParallelsUnsupportedVersion
             end
-          end
 
-          if !driver_klass
-            supported_versions = driver_map.keys.sort
-
-            raise VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion,
-                  supported_versions: supported_versions.join(", ")
+          # Starting since PD 11 only Pro and Business editions have CLI
+          # functionality and can be used with Vagrant.
+          if @version.split('.').first.to_i >= 11
+            edition = read_edition
+            if !edition || !%w(any pro business).include?(edition)
+              raise Errors::ParallelsUnsupportedEdition
+            end
           end
 
           @logger.info("Using Parallels driver: #{driver_klass}")
@@ -114,6 +111,18 @@ module VagrantPlugins
 
         protected
 
+        # Returns the edition of Parallels Desktop that is running. It makes
+        # sense only for Parallels Desktop 11 and later. For older versions
+        # it returns nil.
+        #
+        # @return [String]
+        def read_edition
+          lic_info = json({}) do
+            execute(@prlsrvctl_path, 'info', '--license', '--json')
+          end
+          lic_info['edition']
+        end
+
         # This returns the version of Parallels Desktop that is running.
         #
         # @return [String]
@@ -125,12 +134,13 @@ module VagrantPlugins
           # * prlctl version 10.0.0 (12345) rev 123456
           #
           # But we need exactly the first 3 numbers: "x.x.x"
+          output = execute(@prlctl_path, '--version')
 
-          if execute(@prlctl_path, '--version') =~ /prlctl version (\d+\.\d+.\d+)/
-            return $1
+          if output =~ /prlctl version (\d+\.\d+.\d+)/
+            Regexp.last_match(1)
+          else
+            raise Errors::ParallelsInvalidVersion, output: output
           end
-
-          nil
         end
       end
     end

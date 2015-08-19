@@ -323,10 +323,18 @@ shared_examples "parallels desktop driver" do |options|
       subject.version.should match(/^#{parallels_version}.\d+\.\d+$/)
     end
 
-    it "raises ParallelsInvalidVersion exception for unsupported version" do
+    it "raises an exception for unsupported version" do
       subprocess.should_receive(:execute).
         with("prlctl", "--version", an_instance_of(Hash)).
         and_return(subprocess_result(stdout: "prlctl version 7.0.12345"))
+      expect { subject.version }.
+        to raise_error(VagrantPlugins::Parallels::Errors::ParallelsUnsupportedVersion)
+    end
+
+    it "raises an exception for invalid version output" do
+      subprocess.should_receive(:execute).
+        with("prlctl", "--version", an_instance_of(Hash)).
+        and_return(subprocess_result(stdout: "prlctl version 1.2.foo.bar"))
       expect { subject.version }.
         to raise_error(VagrantPlugins::Parallels::Errors::ParallelsInvalidVersion)
     end

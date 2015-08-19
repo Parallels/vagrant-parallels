@@ -55,6 +55,14 @@ module VagrantPlugins
         error_key(:parallels_vm_option_not_found)
       end
 
+      class ParallelsUnsupportedEdition < VagrantParallelsError
+        error_key(:parallels_unsupported_edition)
+      end
+
+      class ParallelsUnsupportedVersion < VagrantParallelsError
+        error_key(:parallels_unsupported_version)
+      end
+
       class SharedAdapterNotFound < VagrantParallelsError
         error_key(:shared_adapter_not_found)
       end

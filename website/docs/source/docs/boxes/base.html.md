@@ -66,7 +66,7 @@ Prior to packaging up a box, you should shrink the hard drives as much as
 possible. This can be done with `prl_disk_tool`:
 
 ```
-$ prl_disk_tool compact /path/to/harddisk.hdd
+$ prl_disk_tool compact --hdd /path/to/harddisk.hdd
 ```
 
 ## Packaging

@@ -4,20 +4,25 @@
 [![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.png)](https://codeclimate.com/github/Parallels/vagrant-parallels)
 
 This is a plugin for [Vagrant](http://www.vagrantup.com),
-allowing to power [Parallels Desktop for Mac](http://www.parallels.com/downloads/desktop/)
+allowing to power [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
 based virtual machines.
-
-### Requirements
-- Parallels Desktop for Mac 8 or higher
-- Vagrant v1.5 or higher
 
 If you're just getting started with Vagrant, it is highly recommended that you
 read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
 
-## Features
-The Parallels provider supports all basic Vagrant features, but "Forwarded ports"
- configuration is available only if you are using Parallels Desktop **10** for Mac.
+### Requirements 
+- [Vagrant v1.5](http://www.vagrantup.com) or higher
+- [Parallels Desktop 8 for Mac](http://www.parallels.com/products/desktop/) or higher
 
+**Attention for Parallels Desktop 11 users!** 
+
+This plugin is compatible only with *Pro* and *Business* editions of Parallels 
+Desktop 11. Standard edition doesn't have a command line functionality and can 
+not be used with Vagrant. 
+
+## Features
+The Parallels provider supports all basic Vagrant features, including shared folders,
+private and public networks, forwarded ports and so on. 
 
 ## Installation
 First, make sure that you have [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
@@ -47,10 +52,21 @@ Having problems while using the provider? Ask your question on the official foru
 If you get an error while using the Parallels provider or discover a bug,
 please report it on the [IssueTracker](https://github.com/Parallels/vagrant-parallels).
 
-## Credits
-Great thanks to *Youssef Shahin* `@yshahin` for having initiated the development
-of this provider. You've done a great job, Youssef!
+## License and Authors
 
-Also, thanks to the people [who are contributing](https://github.com/Parallels/vagrant-parallels/graphs/contributors)
- to our provider.
+* Author: Youssef Shahin <yshahin@gmail.com>
+* Author: Mikhail Zholobov <legal90@gmail.com>
+* Copyright 2013-2015, Parallels IP Holdings GmbH.
 
+```text
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+```
