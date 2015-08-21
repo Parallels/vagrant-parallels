@@ -6,7 +6,7 @@ sidebar_current: "overview"
 
 Welcome to the Parallels provider for Vagrant documentation! This site documents
 the Parallels provider, which allows Vagrant to power
-[Parallels Desktop for Mac](http://www.parallels.com/downloads/desktop/) based
+[Parallels Desktop for Mac](http://www.parallels.com/products/desktop/) based
 virtual machines.
 
 If you're just getting started with Vagrant, it is highly recommended you start
@@ -25,7 +25,7 @@ Vagrant ships out of the box with support for VirtualBox and HyperV only.
 
 The Parallels provider for Vagrant is a plugin officially supported by
 [Parallels](http://www.parallels.com/). The plugin allows Vagrant to power
-[Parallels Desktop for Mac](http://www.parallels.com/downloads/desktop/) based
+[Parallels Desktop for Mac](http://www.parallels.com/products/desktop/) based
 virtual machines and take advantage of the world's bestselling, top-rated, and
 most trusted solution for running virtual machines in Mac OS X.
 
