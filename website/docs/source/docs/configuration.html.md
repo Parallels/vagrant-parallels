@@ -31,7 +31,7 @@ end
 	</p>
 </div>
 
-When you run `vagrant up` at the first time, the new virtual machine
+When you run `vagrant up` for the first time, the new virtual machine
 will be created by cloning the box image. By default the Parallels provider 
 creates a regular clone, e.q. the full copy of the box image.
 
