@@ -23,6 +23,37 @@ config.vm.provider "parallels" do |prl|
 end
 ```
 
+## Create VM as a Linked Clone
+<div class="alert alert-info">
+	<p>
+        <strong>Note:</strong> This feature is available only with Parallels
+        Desktop 11 or higher.
+	</p>
+</div>
+
+When you run `vagrant up` at the first time, the new virtual machine
+will be created by cloning the box image. By default the Parallels provider 
+creates a regular clone, e.q. the full copy of the box image.
+
+You can configure it to create a linked clone instead:
+
+```ruby
+config.vm.provider "parallels" do |prl|
+  prl.use_linked_clone = true
+end
+```
+
+Difference between linked and regular clones:
+
+- Linked clone creation is extremely faster than the regular cloning, because 
+there is no image copying process.
+- Linked clone require much less disk space, because its hard disk image is less 
+than 1Mb initially (it is bound to the parent's snapshot).
+- Regular clone is a full image copy, which is independent from the box. 
+The linked clone is bound to the specific snapshot of the box image. It means 
+that box deletion will cause all its linked clones being corrupted. Then please,
+delete your boxes carefully!
+
 ## Parallels Tools Auto-Update
 <div class="alert alert-info">
 	<p>
