@@ -10,7 +10,7 @@ sidebar_current: "networking-fp"
 
 <div class="alert alert-info">
 	<p>
-		"Forwarded ports" feature is available only with Parallels Desktop 10 for Mac.
+		"Forwarded ports" feature is available only with Parallels Desktop 10 and higher.
 	</p>
 </div>
 

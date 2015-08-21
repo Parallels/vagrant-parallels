@@ -18,27 +18,65 @@ Vagrantfile plus a timestamp of when the machine was created.
 To change the name, set the `name` property to the desired value:
 
 ```ruby
-config.vm.provider "parallels" do |v|
-  v.name = "my_vm"
+config.vm.provider "parallels" do |prl|
+  prl.name = "my_vm"
 end
 ```
 
+## Create VM as a Linked Clone
+<div class="alert alert-info">
+	<p>
+        <strong>Note:</strong> This feature is available only with Parallels
+        Desktop 11 or higher.
+	</p>
+</div>
+
+When you run `vagrant up` at the first time, the new virtual machine
+will be created by cloning the box image. By default the Parallels provider 
+creates a regular clone, e.q. the full copy of the box image.
+
+You can configure it to create a linked clone instead:
+
+```ruby
+config.vm.provider "parallels" do |prl|
+  prl.use_linked_clone = true
+end
+```
+
+Difference between linked and regular clones:
+
+- Linked clone creation is extremely faster than the regular cloning, because 
+there is no image copying process.
+- Linked clone require much less disk space, because its hard disk image is less 
+than 1Mb initially (it is bound to the parent's snapshot).
+- Regular clone is a full image copy, which is independent from the box. 
+The linked clone is bound to the specific snapshot of the box image. It means 
+that box deletion will cause all its linked clones being corrupted. Then please,
+delete your boxes carefully!
+
 ## Parallels Tools Auto-Update
+<div class="alert alert-info">
+	<p>
+        <strong>Note:</strong> This feature makes sense to Linux guests only.
+        In Windows and Mac OS guests Parallels Tools will be always updated
+        automatically by the special installation agent running in GUI mode.
+	</p>
+</div>
+
 Parallels Tools is a set of Parallels utilities that ensures a high level of
 integration between the host and the guest operating systems (read more:
 [Parallels Tools Overview](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Desktop%20User's%20Guide/32789.htm)).
 
-By default, the Parallels provider checks the status of Parallels Tools after
+By default the Parallels provider checks the status of Parallels Tools after
 booting the machine. If they are outdated or newer, a warning message will be
 displayed.
-
 
 You can configure the Parallels provider to update Parallels Tools
 automatically:
 
 ```ruby
-config.vm.provider "parallels" do |v|
-  v.update_guest_tools = true
+config.vm.provider "parallels" do |prl|
+  prl.update_guest_tools = true
 end
 ```
 
@@ -49,22 +87,13 @@ version mismatch.
 Also, you can completely disable the Parallels Tools version check, if you want:
 
 ```ruby
-config.vm.provider "parallels" do |v|
-  v.check_guest_tools = false
+config.vm.provider "parallels" do |prl|
+  prl.check_guest_tools = false
 end
 ```
 
 In this case the both of Parallels Tools status check and an automatic update
 procedure will be skipped as well.
-
-<div class="alert alert-info">
-	<p>
-        <strong>Note:</strong> The feature of Parallels Tools Auto-Update is
-        related to Linux guest OS only.
-        In Windows and Mac OS guests Parallels Tools will be always updated
-        automatically by the special installation agent running in GUI mode.
-	</p>
-</div>
 
 ## Power Consumption Mode
 The Parallels provider sets power consumption method as "Longer Battery 
@@ -72,15 +101,15 @@ Life" by default. You can override it to "Better Performance" using this
 customisation parameter:
 
 ```ruby
-config.vm.provider "parallels" do |v| 
-  v.optimize_power_consumption = false
+config.vm.provider "parallels" do |prl| 
+  prl.optimize_power_consumption = false
 end
 ```
 
 P.s. Read more about power consumption modes in Parallels Desktop: [KB #9607]
 (http://kb.parallels.com/en/9607)
 
-## prlctl Customization
+## Customization with prlctl
 
 Parallels Desktop includes the `prlctl` command-line utility that can be used to
 modify the virtual machines settings.
@@ -90,8 +119,8 @@ The Parallels provider allows to execute the prlctl command with any of the
 available options just prior to booting the virtual machine:
 
 ```ruby
-config.vm.provider "parallels" do |v|
-  v.customize ["set", :id, "--device-set", "cdrom0", "--image",
+config.vm.provider "parallels" do |prl|
+  prl.customize ["set", :id, "--device-set", "cdrom0", "--image",
                "/path/to/disk.iso", "--connect"]
 end
 ```
@@ -106,9 +135,9 @@ executed in the given order.
 A simple way is provided to change the memory and CPU settings:
 
 ```ruby
-config.vm.provider "parallels" do |v|
-  v.memory = 1024
-  v.cpus = 2
+config.vm.provider "parallels" do |prl|
+  prl.memory = 1024
+  prl.cpus = 2
 end
 ```
 
