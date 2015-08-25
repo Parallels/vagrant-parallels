@@ -2,7 +2,7 @@ module VagrantPlugins
   module Parallels
     module Action
       class ForwardPorts
-        include Util::CompileForwardedPorts
+        include VagrantPlugins::Parallels::Util::CompileForwardedPorts
 
         def initialize(app, env)
           @app = app
