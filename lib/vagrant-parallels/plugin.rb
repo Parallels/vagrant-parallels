@@ -30,7 +30,7 @@ module VagrantPlugins
       end
 
       config(:parallels, :provider) do
-        require File.expand_path("../config", __FILE__)
+        require_relative 'config'
         Config
       end
 
@@ -80,7 +80,7 @@ module VagrantPlugins
       end
 
       synced_folder(:parallels) do
-        require File.expand_path("../synced_folder", __FILE__)
+        require_relative 'synced_folder'
         SyncedFolder
       end
 
