@@ -37,7 +37,7 @@ module VagrantPlugins
           options ||= {}
           @auto_correct = false
           @auto_correct = options[:auto_correct] if options.has_key?(:auto_correct)
-          @protocol = options[:protocol] || "tcp"
+          @protocol = options[:protocol] || 'tcp'
         end
 
         # This corrects the host port and changes it to the given new port.

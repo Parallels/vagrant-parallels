@@ -1,10 +1,10 @@
 namespace :acceptance do
-  desc "shows components that can be tested separately"
+  desc 'shows components that can be tested separately'
   task :components do
-    exec("vagrant-spec components")
+    exec('vagrant-spec components')
   end
 
-  desc "runs acceptance tests using vagrant-spec"
+  desc 'runs acceptance tests using vagrant-spec'
   task :run do
     components = %w(
       basic
@@ -19,7 +19,7 @@ namespace :acceptance do
       package
     ).map{ |s| "provider/parallels/#{s}" }
 
-    command = "vagrant-spec test --components=#{components.join(" ")}"
+    command = "vagrant-spec test --components=#{components.join(' ')}"
     puts command
     puts
     exec(command)

@@ -1,8 +1,8 @@
-require "vagrant/util/platform"
+require 'vagrant/util/platform'
 
 module VagrantPlugins
   module Parallels
-    class SyncedFolder < Vagrant.plugin("2", :synced_folder)
+    class SyncedFolder < Vagrant.plugin('2', :synced_folder)
       def usable?(machine, raise_errors=false)
         # These synced folders only work if the provider is Parallels
         machine.provider_name == :parallels &&
@@ -48,7 +48,7 @@ module VagrantPlugins
         end
 
         # Go through each folder and mount
-        machine.ui.output(I18n.t("vagrant.actions.vm.share_folders.mounting"))
+        machine.ui.output(I18n.t('vagrant.actions.vm.share_folders.mounting'))
         folders.each do |_ , data|
           # Parallels specific: get id from the VM setting
           # It allows to mount one host folder more then one time [GH-105]
@@ -56,7 +56,7 @@ module VagrantPlugins
 
           if data[:guestpath] and id
             # Guest path specified, so mount the folder to specified point
-            machine.ui.detail(I18n.t("vagrant.actions.vm.share_folders.mounting_entry",
+            machine.ui.detail(I18n.t('vagrant.actions.vm.share_folders.mounting_entry',
                                      guestpath: data[:guestpath],
                                      hostpath: data[:hostpath]))
 
@@ -73,7 +73,7 @@ module VagrantPlugins
                 :mount_parallels_shared_folder, id, data[:guestpath], data)
           else
             # If no guest path is specified, then automounting is disabled
-            machine.ui.detail(I18n.t("vagrant.actions.vm.share_folders.nomount_entry",
+            machine.ui.detail(I18n.t('vagrant.actions.vm.share_folders.nomount_entry',
                                    :hostpath => data[:hostpath]))
           end
         end
@@ -94,7 +94,7 @@ module VagrantPlugins
       end
 
       def cleanup(machine, opts)
-        driver(machine).clear_shared_folders if machine.id && machine.id != ""
+        driver(machine).clear_shared_folders if machine.id && machine.id != ''
       end
 
       protected

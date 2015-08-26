@@ -18,8 +18,8 @@ shared_examples 'provider/linked_clone' do |provider, options|
   end
 
   it 'creates machine as linked clone' do
-    status("Test: machine is running after up")
-    result = execute("vagrant", "ssh", "-c", "echo foo")
+    status('Test: machine is running after up')
+    result = execute('vagrant', 'ssh', '-c', 'echo foo')
     expect(result).to exit_with(0)
     expect(result.stdout).to match(/foo\n$/)
   end
