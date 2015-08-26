@@ -18,10 +18,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '>= 1.5.2'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'nokogiri'
   spec.add_development_dependency 'rspec', '~> 2.14.0'
-  spec.add_development_dependency 'i18n-tasks', '~> 0.3.9'
 
   # The following block of code determines the files that should be included
   # in the gem. It does this by reading all the files in the directory where
