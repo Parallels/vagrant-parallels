@@ -109,9 +109,7 @@ module VagrantPlugins
         end
 
         { 'Parallels Provider' => errors }
-
       end
-
     end
   end
 end

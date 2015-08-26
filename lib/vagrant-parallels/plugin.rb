@@ -12,12 +12,11 @@ end
 
 module VagrantPlugins
   module Parallels
-
     class Plugin < Vagrant.plugin('2')
       name 'vagrant-parallels'
       description <<-EOF
       The Parallels provider allows Vagrant to manage and control
-      Parallels-based virtual machines.
+      Parallels Desktop virtual machines.
       EOF
 
       provider(:parallels, parallel: true, priority: 7) do

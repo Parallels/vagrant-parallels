@@ -48,7 +48,6 @@ module VagrantPlugins
             @env[:machine].provider.driver.set_power_consumption_mode(new_val)
           end
         end
-
       end
     end
   end

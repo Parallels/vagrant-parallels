@@ -67,7 +67,6 @@ module VagrantPlugins
 
           @machine.provider.driver.read_guest_tools_state
         end
-
       end
     end
   end

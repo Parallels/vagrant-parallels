@@ -23,7 +23,8 @@ module VagrantPlugins
           end
         end
 
-      private
+        private
+
         def template_metadatafile
           %Q({"provider": "parallels"}\n)
         end
