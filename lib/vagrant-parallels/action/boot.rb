@@ -9,12 +9,11 @@ module VagrantPlugins
         def call(env)
           @env = env
 
-          env[:ui].info I18n.t("vagrant.actions.vm.boot.booting")
+          env[:ui].info I18n.t('vagrant.actions.vm.boot.booting')
           env[:machine].provider.driver.start
 
           @app.call(env)
         end
-
       end
     end
   end

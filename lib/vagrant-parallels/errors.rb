@@ -1,10 +1,10 @@
-require "vagrant"
+require 'vagrant'
 
 module VagrantPlugins
   module Parallels
     module Errors
       class VagrantParallelsError < Vagrant::Errors::VagrantError
-        error_namespace("vagrant_parallels.errors")
+        error_namespace('vagrant_parallels.errors')
       end
 
       class DhcpLeasesNotAccessible < VagrantParallelsError

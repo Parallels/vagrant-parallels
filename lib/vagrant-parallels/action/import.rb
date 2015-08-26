@@ -38,8 +38,8 @@ module VagrantPlugins
           unregister_template(tpl_name)
 
           if @machine.state.id != :not_created
-            return if env["vagrant.error"].is_a?(Vagrant::Errors::VagrantError)
-            return if env["vagrant_parallels.error"].is_a?(Errors::VagrantParallelsError)
+            return if env['vagrant.error'].is_a?(Vagrant::Errors::VagrantError)
+            return if env['vagrant_parallels.error'].is_a?(Errors::VagrantParallelsError)
 
             # If we're not supposed to destroy on error then just return
             return if !env[:destroy_on_error]
@@ -79,24 +79,48 @@ module VagrantPlugins
         end
 
         def import(env, tpl_name)
-          # Generate virtual machine name
-          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
-          opts = {}
-
           # Linked clones are supported only for PD 11 and higher
-          if @machine.provider_config.use_linked_clone &&
-            @machine.provider.pd_version_satisfies?('>= 11')
+          if @machine.provider_config.use_linked_clone \
+            && @machine.provider.pd_version_satisfies?('>= 11')
 
             env[:ui].info I18n.t('vagrant_parallels.actions.vm.import.importing_linked',
                                  :name => @machine.box.name)
-            opts[:snapshot_id] = snapshot_id(tpl_name)
-            opts[:linked] = true
+            opts = {
+              snapshot_id: snapshot_id(tpl_name),
+              linked: true
+            }
+            # Linked clone creation should not be concurrent [GH-206]
+            begin
+              @machine.env.lock("parallels_linked_clone") do
+                clone(env, tpl_name, opts)
+              end
+            rescue Vagrant::Errors::EnvironmentLockedError
+              sleep 1
+              retry
+            end
           else
-            env[:ui].info I18n.t("vagrant.actions.vm.import.importing",
+            env[:ui].info I18n.t('vagrant.actions.vm.import.importing',
                                  :name => @machine.box.name)
+            clone(env, tpl_name)
           end
 
-          # Import the virtual machine
+          if @machine.provider_config.regen_src_uuid
+            @logger.info('Regenerate SourceVmUuid')
+            @machine.provider.driver.regenerate_src_uuid
+          end
+
+          # Remove 'Icon\r' file from VM home (bug in PD 11.0.0)
+          if @machine.provider.pd_version_satisfies?('= 11.0.0')
+            vm_home = @machine.provider.driver.read_settings.fetch('Home')
+            broken_icns = Dir[File.join(vm_home, 'Icon*')]
+            FileUtils.rm(broken_icns, :force => true)
+          end
+        end
+
+        def clone(env, tpl_name, opts={})
+          # Generate virtual machine name
+          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+
           @machine.id = @machine.provider.driver.clone_vm(tpl_name, vm_name, opts) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
@@ -109,18 +133,6 @@ module VagrantPlugins
           # Clear the line one last time since the progress meter doesn't disappear
           # immediately.
           env[:ui].clear_line
-
-          if @machine.provider_config.regen_src_uuid
-            @logger.info("Regenerate SourceVmUuid")
-            @machine.provider.driver.regenerate_src_uuid
-          end
-
-          # Remove 'Icon\r' file from VM home (bug in PD 11.0.0)
-          if @machine.provider.pd_version_satisfies?('= 11.0.0')
-            vm_home = @machine.provider.driver.read_settings.fetch('Home')
-            broken_icns = Dir[File.join(vm_home, 'Icon*')]
-            FileUtils.rm(broken_icns, :force => true)
-          end
         end
 
         def snapshot_id(tpl_name)

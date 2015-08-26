@@ -1,4 +1,4 @@
-require "log4r"
+require 'log4r'
 
 module VagrantPlugins
   module Parallels
@@ -10,7 +10,7 @@ module VagrantPlugins
 
         def call(env)
           if env[:machine].provider_config.destroy_unused_network_interfaces
-            env[:ui].info I18n.t("vagrant.actions.vm.destroy_network.destroying")
+            env[:ui].info I18n.t('vagrant.actions.vm.destroy_network.destroying')
             env[:machine].provider.driver.delete_unused_host_only_networks
           end
 

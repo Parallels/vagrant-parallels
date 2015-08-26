@@ -1,2 +1,2 @@
-shared_context "provider-context/parallels" do
+shared_context 'provider-context/parallels' do
 end

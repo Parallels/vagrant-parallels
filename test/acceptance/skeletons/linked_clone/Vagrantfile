@@ -1,7 +1,7 @@
-Vagrant.configure("2") do |config|
-  config.vm.box = "basic"
+Vagrant.configure('2') do |config|
+  config.vm.box = 'basic'
 
-  config.vm.provider "parallels" do |prl|
+  config.vm.provider 'parallels' do |prl|
     prl.use_linked_clone = true
   end
 end

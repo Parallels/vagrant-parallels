@@ -2,7 +2,7 @@ require 'log4r'
 
 require 'vagrant/util/platform'
 
-require File.expand_path('../pd_8', __FILE__)
+require_relative 'pd_8'
 
 module VagrantPlugins
   module Parallels

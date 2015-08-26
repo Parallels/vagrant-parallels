@@ -36,12 +36,12 @@ module VagrantPlugins
 
           # First mount command uses getent to get the group
           mount_options = "-o uid=#{mount_uid},gid=#{mount_gid}"
-          mount_options += ",#{options[:mount_options].join(",")}" if options[:mount_options]
+          mount_options += ",#{options[:mount_options].join(',')}" if options[:mount_options]
           mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
 
           # Second mount command uses the old style `id -g`
           mount_options = "-o uid=#{mount_uid},gid=#{mount_gid_old}"
-          mount_options += ",#{options[:mount_options].join(",")}" if options[:mount_options]
+          mount_options += ",#{options[:mount_options].join(',')}" if options[:mount_options]
           mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
 
           # Clear prior symlink if exists
@@ -80,7 +80,7 @@ module VagrantPlugins
           end
 
           # Emit an upstart event if we can
-          if machine.communicate.test("test -x /sbin/initctl")
+          if machine.communicate.test('test -x /sbin/initctl')
             machine.communicate.sudo(
               "/sbin/initctl emit --no-wait vagrant-mounted MOUNTPOINT=#{expanded_guest_path}")
           end

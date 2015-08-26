@@ -10,7 +10,7 @@ module VagrantPlugins
           current_state = env[:machine].state.id
 
           if current_state == :suspended
-            env[:ui].info I18n.t("vagrant.actions.vm.resume.resuming")
+            env[:ui].info I18n.t('vagrant.actions.vm.resume.resuming')
             env[:machine].provider.driver.resume
           end
 
