@@ -136,7 +136,7 @@ A simple way is provided to change the memory and CPU settings:
 
 ```ruby
 config.vm.provider "parallels" do |prl|
-  prl.memory = 1024
+  prl.memsize = 1024
   prl.cpus = 2
 end
 ```
