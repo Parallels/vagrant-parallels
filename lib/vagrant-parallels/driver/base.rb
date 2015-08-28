@@ -670,7 +670,13 @@ module VagrantPlugins
         # Parses given block (JSON string) to object
         def json(default=nil)
           data = yield
-          JSON.parse(data) rescue default
+          begin
+            JSON.parse(data)
+          rescue JSON::ParserError
+            # Try to cleanup the data and parse it again [GH-204]
+            data = data[/(\{.*\}|\[.*\])/m]
+            JSON.parse(data) rescue default
+          end
         end
 
         # Executes a command and returns the raw result object.
