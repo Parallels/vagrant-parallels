@@ -156,7 +156,9 @@ module VagrantPlugins
         # Disables requiring password on such operations as creating, adding,
         # removing or cloning the virtual machine.
         #
-        def disable_password_restrictions
+        # @param [Array<String>] acts List of actions. Available values:
+        # ['create-vm', 'add-vm', 'remove-vm', 'clone-vm']
+        def disable_password_restrictions(acts)
           raise NotImplementedError
         end
 
