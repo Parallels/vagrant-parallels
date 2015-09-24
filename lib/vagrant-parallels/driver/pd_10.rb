@@ -49,7 +49,7 @@ module VagrantPlugins
           end
         end
 
-        def disable_password_restriction(acts)
+        def disable_password_restrictions(acts)
           server_info = json { execute_prlsrvctl('info', '--json') }
           server_info.fetch('Require password to',[]).each do |act|
             execute_prlsrvctl('set', '--require-pwd', "#{act}:off") if acts.include? act
