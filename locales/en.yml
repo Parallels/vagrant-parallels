@@ -1,9 +1,6 @@
 en:
   vagrant_parallels:
     parallels:
-      power_consumption:
-        set_mode: |-
-          Setting power consumption mode: "%{mode}"
       network_adapter: |-
         Adapter %{adapter}: %{type}%{extra}
 #-------------------------------------------------------------------------------
@@ -186,3 +183,5 @@ en:
             %{guest_port} => %{host_port}
         import:
           importing_linked: Importing base box '%{name}' as a linked clone...
+        sane_defaults:
+          setting: Setting the default configuration for VM...
