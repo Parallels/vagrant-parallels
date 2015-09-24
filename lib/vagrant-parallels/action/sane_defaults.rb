@@ -14,14 +14,6 @@ module VagrantPlugins
           # helpers.
           @env = env
 
-          # Disable requiring password on such operations as creating, adding,
-          # removing or coning the virtual machine. [GH-67]
-          # It is available only since PD 10.
-          if env[:machine].provider.pd_version_satisfies?('>= 10')
-            @logger.info('Disabling any password restrictions...')
-            env[:machine].provider.driver.disable_password_restrictions
-          end
-
           if env[:machine].provider.pd_version_satisfies?('>= 9')
             @logger.info('Setting the power consumption mode...')
             set_power_consumption
