@@ -24,7 +24,6 @@ module VagrantPlugins
           b.use ClearNetworkInterfaces
           b.use ForwardPorts
           b.use SetHostname
-          b.use SaneDefaults
           b.use Customize, 'pre-boot'
           b.use Boot
           b.use Customize, 'post-boot'
@@ -278,6 +277,7 @@ module VagrantPlugins
             if env1[:result]
               b1.use Customize, 'pre-import'
               b1.use Import
+              b1.use SaneDefaults
               b1.use Customize, 'post-import'
             end
           end

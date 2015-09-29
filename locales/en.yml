@@ -1,9 +1,6 @@
 en:
   vagrant_parallels:
     parallels:
-      power_consumption:
-        set_mode: |-
-          Setting power consumption mode: "%{mode}"
       network_adapter: |-
         Adapter %{adapter}: %{type}%{extra}
 #-------------------------------------------------------------------------------
@@ -117,6 +114,17 @@ en:
       invalid_event: |-
         %{event} is not a valid event for customization. Valid events
         are: %{valid_events}
+      deprecate_power_consumption: |-
+        Setting "optimize_power_consumption" has been deprecated in the Parallels
+        provider and will be removed in the future releases. Power consumption
+        is enabled by default. If you want to keep it enabled, then just remove
+        this setting from your Vagrantfile. Otherwise, please replace it with
+        this block in order to disable the power consumption:
+
+          config.vm.provider "parallels" do |prl|
+            prl.customize ["set", :id, "--longer-battery-life", "off"]
+          end
+
 #-------------------------------------------------------------------------------
 # Translations for commands. e.g. `vagrant x`
 #-------------------------------------------------------------------------------
@@ -186,3 +194,5 @@ en:
             %{guest_port} => %{host_port}
         import:
           importing_linked: Importing base box '%{name}' as a linked clone...
+        sane_defaults:
+          setting: Setting the default configuration for VM...

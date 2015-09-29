@@ -12,6 +12,14 @@ module VagrantPlugins
         def call(env)
           @machine = env[:machine]
 
+          # Disable requiring password for register and clone actions [GH-67].
+          # It is available only since PD 10.
+          if env[:machine].provider.pd_version_satisfies?('>= 10')
+            acts = ['clone-vm']
+            @logger.info("Disabling password restrictions: #{acts.join(', ')}")
+            env[:machine].provider.driver.disable_password_restrictions(acts)
+          end
+
           # Register template to be able to clone it further
           register_template(template_path.to_s)
 
