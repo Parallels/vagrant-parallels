@@ -77,10 +77,6 @@ module VagrantPlugins
           @functional_psf = true
         end
 
-        if @optimize_power_consumption == UNSET_VALUE
-          @optimize_power_consumption = true
-        end
-
         @use_linked_clone = false if @use_linked_clone == UNSET_VALUE
 
         @name = nil if @name == UNSET_VALUE
@@ -106,6 +102,10 @@ module VagrantPlugins
           if event == 'pre-import' && command.index(:id)
             errors << I18n.t('vagrant_parallels.config.id_in_pre_import')
           end
+        end
+
+        if @optimize_power_consumption != UNSET_VALUE
+          machine.env.ui.warn I18n.t('vagrant_parallels.config.deprecate_power_consumption')
         end
 
         { 'Parallels Provider' => errors }
