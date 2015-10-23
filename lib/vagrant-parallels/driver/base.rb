@@ -454,8 +454,8 @@ module VagrantPlugins
         # @return [<String => String>]
         def read_vms
           args = %w(list --all --no-header --json -o name,uuid)
-          vms_arr = json([]) { execute_prlctl(*args) }
-          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+          vms_arr = json { execute_prlctl(*args) }
+          templates_arr = json { execute_prlctl(*args, '--template') }
 
           vms = vms_arr | templates_arr
           Hash[vms.map { |i| [i.fetch('name'), i.fetch('uuid')] }]
@@ -466,8 +466,8 @@ module VagrantPlugins
         # @return [Array <String => String>]
         def read_vms_info
           args = %w(list --all --info --no-header --json)
-          vms_arr = json([]) { execute_prlctl(*args) }
-          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+          vms_arr = json { execute_prlctl(*args) }
+          templates_arr = json { execute_prlctl(*args, '--template') }
 
           vms_arr | templates_arr
         end
@@ -670,7 +670,7 @@ module VagrantPlugins
         end
 
         # Parses given block (JSON string) to object
-        def json(default=nil)
+        def json
           data = yield
           raise_error = false
 
