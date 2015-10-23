@@ -672,12 +672,22 @@ module VagrantPlugins
         # Parses given block (JSON string) to object
         def json(default=nil)
           data = yield
+          raise_error = false
+
           begin
             JSON.parse(data)
-          rescue JSON::ParserError
-            # Try to cleanup the data and parse it again [GH-204]
+          rescue JSON::JSONError
+            # We retried already, raise the issue and be done
+            raise if raise_error
+
+            # Remove garbage before/after json string[GH-204]
             data = data[/(\{.*\}|\[.*\])/m]
-            JSON.parse(data) rescue default
+
+            # Remove all control characters unsupported by JSON [GH-219]
+            data.tr!("\u0000-\u001f", '')
+
+            raise_error = true
+            retry
           end
         end
 
