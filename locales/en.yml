@@ -20,6 +20,12 @@ en:
 
         Stderr: %{stderr}
 
+      json_parse_error: |-
+        Failed to parse the JSON string! Please report this as a bug of Parallels
+        provider: https://github.com/Parallels/vagrant-parallels/issues
+        JSON string is shown below:
+
+        %{data}
       linux_mount_failed: |-
         Failed to mount folders in Linux guest. This is usually because
         the "prl_fs" file system is not available. Please verify that

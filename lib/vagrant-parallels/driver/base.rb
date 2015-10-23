@@ -678,7 +678,9 @@ module VagrantPlugins
             JSON.parse(data)
           rescue JSON::JSONError
             # We retried already, raise the issue and be done
-            raise if raise_error
+            if raise_error
+              raise VagrantPlugins::Parallels::Errors::JSONParseError, data: data
+            end
 
             # Remove garbage before/after json string[GH-204]
             data = data[/(\{.*\}|\[.*\])/m]
