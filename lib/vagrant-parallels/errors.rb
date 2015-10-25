@@ -11,6 +11,10 @@ module VagrantPlugins
         error_key(:dhcp_leases_file_not_accessible)
       end
 
+      class JSONParseError < VagrantParallelsError
+        error_key(:json_parse_error)
+      end
+
       class LinuxMountFailed < VagrantParallelsError
         error_key(:linux_mount_failed)
       end

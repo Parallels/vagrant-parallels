@@ -454,8 +454,8 @@ module VagrantPlugins
         # @return [<String => String>]
         def read_vms
           args = %w(list --all --no-header --json -o name,uuid)
-          vms_arr = json([]) { execute_prlctl(*args) }
-          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+          vms_arr = json { execute_prlctl(*args) }
+          templates_arr = json { execute_prlctl(*args, '--template') }
 
           vms = vms_arr | templates_arr
           Hash[vms.map { |i| [i.fetch('name'), i.fetch('uuid')] }]
@@ -466,8 +466,8 @@ module VagrantPlugins
         # @return [Array <String => String>]
         def read_vms_info
           args = %w(list --all --info --no-header --json)
-          vms_arr = json([]) { execute_prlctl(*args) }
-          templates_arr = json([]) { execute_prlctl(*args, '--template') }
+          vms_arr = json { execute_prlctl(*args) }
+          templates_arr = json { execute_prlctl(*args, '--template') }
 
           vms_arr | templates_arr
         end
@@ -670,14 +670,26 @@ module VagrantPlugins
         end
 
         # Parses given block (JSON string) to object
-        def json(default=nil)
+        def json
           data = yield
+          raise_error = false
+
           begin
             JSON.parse(data)
-          rescue JSON::ParserError
-            # Try to cleanup the data and parse it again [GH-204]
+          rescue JSON::JSONError
+            # We retried already, raise the issue and be done
+            if raise_error
+              raise VagrantPlugins::Parallels::Errors::JSONParseError, data: data
+            end
+
+            # Remove garbage before/after json string[GH-204]
             data = data[/(\{.*\}|\[.*\])/m]
-            JSON.parse(data) rescue default
+
+            # Remove all control characters unsupported by JSON [GH-219]
+            data.tr!("\u0000-\u001f", '')
+
+            raise_error = true
+            retry
           end
         end
 

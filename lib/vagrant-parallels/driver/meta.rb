@@ -117,7 +117,7 @@ module VagrantPlugins
         #
         # @return [String]
         def read_edition
-          lic_info = json({}) do
+          lic_info = json do
             execute(@prlsrvctl_path, 'info', '--license', '--json')
           end
           lic_info['edition']
