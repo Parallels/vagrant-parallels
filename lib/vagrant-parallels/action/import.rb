@@ -88,7 +88,7 @@ module VagrantPlugins
 
         def import(env, tpl_name)
           # Linked clones are supported only for PD 11 and higher
-          if @machine.provider_config.use_linked_clone \
+          if @machine.provider_config.linked_clone \
             && @machine.provider.pd_version_satisfies?('>= 11')
 
             env[:ui].info I18n.t('vagrant_parallels.actions.vm.import.importing_linked',

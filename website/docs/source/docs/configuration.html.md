@@ -39,7 +39,7 @@ You can configure it to create a linked clone instead:
 
 ```ruby
 config.vm.provider "parallels" do |prl|
-  prl.use_linked_clone = true
+  prl.linked_clone = true
 end
 ```
 
