@@ -20,18 +20,8 @@ module VagrantPlugins
             env[:machine].provider.driver.disable_password_restrictions(acts)
           end
 
-          # Register template to be able to clone it further
-          register_template(template_path.to_s)
-
-          # Get template name. It might be changed during registration if name
-          # collision has been occurred
-          tpl_name = template_name(template_path)
-
           # Import VM, e.q. clone it from registered template
-          import(env, tpl_name)
-
-          # Hide template since we dont need it anymore
-          unregister_template(tpl_name)
+          import(env)
 
           # Flag as erroneous and return if import failed
           raise Errors::VMImportFailure if !@machine.id
@@ -41,10 +31,6 @@ module VagrantPlugins
         end
 
         def recover(env)
-          # We should to unregister template
-          tpl_name = template_name(template_path)
-          unregister_template(tpl_name)
-
           if @machine.state.id != :not_created
             return if env['vagrant.error'].is_a?(Vagrant::Errors::VagrantError)
             return if env['vagrant_parallels.error'].is_a?(Errors::VagrantParallelsError)
@@ -64,29 +50,7 @@ module VagrantPlugins
 
         protected
 
-        def register_template(tpl_path_s)
-          @logger.info("Register the box template: '#{tpl_path_s}'")
-          @machine.provider.driver.register(tpl_path_s)
-        end
-
-        def template_path
-          Pathname.glob(@machine.box.directory.join('*.pvm')).first
-        end
-
-        def template_name(tpl_path)
-          # Get template name from XML-based configuration file
-          tpl_config = tpl_path.join('config.pvs')
-          xml = Nokogiri::XML(File.open(tpl_config))
-          name = xml.xpath('//ParallelsVirtualMachine/Identification/VmName').text
-
-          if !name
-            raise Errors::ParallelsTplNameNotFound, config_path: tpl_config
-          end
-
-          name
-        end
-
-        def import(env, tpl_name)
+        def import(env)
           # Linked clones are supported only for PD 11 and higher
           if @machine.provider_config.linked_clone \
             && @machine.provider.pd_version_satisfies?('>= 11')
@@ -94,13 +58,13 @@ module VagrantPlugins
             env[:ui].info I18n.t('vagrant_parallels.actions.vm.import.importing_linked',
                                  :name => @machine.box.name)
             opts = {
-              snapshot_id: snapshot_id(tpl_name),
+              snapshot_id: snapshot_id(env[:clone_id]),
               linked: true
             }
             # Linked clone creation should not be concurrent [GH-206]
             begin
               @machine.env.lock("parallels_linked_clone") do
-                clone(env, tpl_name, opts)
+                clone(env, opts)
               end
             rescue Vagrant::Errors::EnvironmentLockedError
               sleep 1
@@ -109,7 +73,7 @@ module VagrantPlugins
           else
             env[:ui].info I18n.t('vagrant.actions.vm.import.importing',
                                  :name => @machine.box.name)
-            clone(env, tpl_name)
+            clone(env)
           end
 
           if @machine.provider_config.regen_src_uuid
@@ -125,11 +89,11 @@ module VagrantPlugins
           end
         end
 
-        def clone(env, tpl_name, opts={})
+        def clone(env, opts={})
           # Generate virtual machine name
-          vm_name = "#{tpl_name}_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+          vm_name = "vagrant_vm_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
 
-          @machine.id = @machine.provider.driver.clone_vm(tpl_name, vm_name, opts) do |progress|
+          @machine.id = @machine.provider.driver.clone_vm(env[:clone_id], vm_name, opts) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
 
@@ -143,8 +107,8 @@ module VagrantPlugins
           env[:ui].clear_line
         end
 
-        def snapshot_id(tpl_name)
-          snap_id = @machine.provider.driver.read_current_snapshot(tpl_name)
+        def snapshot_id(vm_uuid)
+          snap_id = @machine.provider.driver.read_current_snapshot(vm_uuid)
 
           # If there is no current snapshot, just create the new one.
           if !snap_id
@@ -153,17 +117,13 @@ module VagrantPlugins
               name: 'vagrant_linked_clone',
               desc: 'Snapshot to create linked clones for Vagrant'
             }
-            snap_id = @machine.provider.driver.create_snapshot(tpl_name, opts)
+            snap_id = @machine.provider.driver.create_snapshot(vm_uuid, opts)
           end
 
           @logger.info("User this snapshot ID to create a linked clone: #{snap_id}")
           snap_id
         end
 
-        def unregister_template(tpl_name)
-          @logger.info("Unregister the box template: '#{tpl_name}'")
-          @machine.provider.driver.unregister(tpl_name)
-        end
       end
     end
   end

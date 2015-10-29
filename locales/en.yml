@@ -7,6 +7,18 @@ en:
 # Translations for exception classes
 #-------------------------------------------------------------------------------
     errors:
+      box_id_not_found: |-
+        Parallels provider couldn't fetch the box image ID. This is usually because
+        the "config.pvs" file is corrupted or doesn't exist. Please remove the box,
+        re-add it, and try again.
+
+        Box: "%{name}"
+        Box VM config: "%{config}"
+
+      box_image_not_found: |-
+        Parallels VM image (*.pvm) could not be found in the directory of
+        '%{name}' box. This is usually because the image has been removed manually.
+        Please remove the box, re-add it, and try again.
       dhcp_leases_file_not_accessible: |-
         Parallels DHCP leases file is not accessible. The Parallels provider
         uses it to detect an IP address of virtual machine. This file must be
@@ -67,12 +79,6 @@ en:
         reinstall Parallels Desktop.
 
         Expected ISO path: "%{iso_path}"
-      parallels_tpl_name_not_found: |-
-        The VM import failed! Template name not found. Please verify that
-        the box you're using is not corrupted and try again.
-
-        Template config path: "%{config_path}"
-
       parallels_vm_option_not_found: |-
         Could not find a required option of Parallels Desktop virtual machine:
           %{vm_option}
@@ -170,6 +176,9 @@ en:
 #-------------------------------------------------------------------------------
     actions:
       vm:
+        box:
+          register: Registering VM template from the base box '%{name}'...
+          unregister: Unregistering VM template...
         handle_guest_tools:
           cant_install: |-
             Vagrant doesn't support installing Parallels Tools for the guest OS

@@ -7,6 +7,14 @@ module VagrantPlugins
         error_namespace('vagrant_parallels.errors')
       end
 
+      class BoxImageNotFound < VagrantParallelsError
+        error_key(:box_image_not_found)
+      end
+
+      class BoxIDNotFound < VagrantParallelsError
+        error_key(:box_id_not_found)
+      end
+
       class DhcpLeasesNotAccessible < VagrantParallelsError
         error_key(:dhcp_leases_file_not_accessible)
       end
@@ -49,10 +57,6 @@ module VagrantPlugins
 
       class ParallelsToolsIsoNotFound < VagrantParallelsError
         error_key(:parallels_tools_iso_not_found)
-      end
-
-      class ParallelsTplNameNotFound < VagrantParallelsError
-        error_key(:parallels_tpl_name_not_found)
       end
 
       class ParallelsVMOptionNotFound < VagrantParallelsError
