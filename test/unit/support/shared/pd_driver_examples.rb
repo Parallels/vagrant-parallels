@@ -265,7 +265,7 @@ shared_examples 'parallels desktop driver' do |options|
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
 
-      subject.set_name('new_vm_name')
+      subject.set_name(uuid, 'new_vm_name')
     end
   end
 

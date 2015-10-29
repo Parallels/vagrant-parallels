@@ -522,9 +522,10 @@ module VagrantPlugins
 
         # Sets the name of the virtual machine.
         #
-        # @param [String] name New VM name.
-        def set_name(name)
-          execute_prlctl('set', @uuid, '--name', name)
+        # @param [String] uuid VM name or UUID
+        # @param [String] new_name New VM name
+        def set_name(uuid, new_name)
+          execute_prlctl('set', uuid, '--name', new_name)
         end
 
         # Sets Power Consumption method.
