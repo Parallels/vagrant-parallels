@@ -491,8 +491,9 @@ module VagrantPlugins
         # Registers the virtual machine
         #
         # @param [String] pvm_file Path to the machine image (*.pvm)
-        def register(pvm_file)
-          args = [@prlctl_path, 'register', pvm_file]
+        # @param [Array<String>] opts List of options for "prlctl register"
+        def register(pvm_file, opts=[])
+          args = [@prlctl_path, 'register', pvm_file, *opts]
 
           3.times do
             result = raw(*args)
