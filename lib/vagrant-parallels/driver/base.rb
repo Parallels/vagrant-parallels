@@ -513,16 +513,6 @@ module VagrantPlugins
           execute(*args)
         end
 
-        # Checks that specified virtual machine is registered
-        #
-        # @return [Boolean]
-        def registered?(uuid)
-          args = %w(list --all --info --no-header -o uuid)
-
-          execute_prlctl(*args).include?(uuid) ||
-            execute_prlctl(*args, '--template').include?(uuid)
-        end
-
         # Resumes the virtual machine.
         #
         def resume
