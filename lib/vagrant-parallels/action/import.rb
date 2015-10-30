@@ -90,10 +90,7 @@ module VagrantPlugins
         end
 
         def clone(env, opts={})
-          # Generate virtual machine name
-          vm_name = "vagrant_vm_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
-
-          @machine.id = @machine.provider.driver.clone_vm(env[:clone_id], vm_name, opts) do |progress|
+          @machine.id = @machine.provider.driver.clone_vm(env[:clone_id], opts) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
 

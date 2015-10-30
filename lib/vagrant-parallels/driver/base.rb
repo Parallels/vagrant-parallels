@@ -55,10 +55,11 @@ module VagrantPlugins
         # Makes a clone of the virtual machine.
         #
         # @param [String] src_name Name or UUID of the source VM or template.
-        # @param [String] dst_name Name of the destination VM.
         # @param [<String => String>] options Options to clone virtual machine.
         # @return [String] UUID of the new VM.
-        def clone_vm(src_name, dst_name, options={})
+        def clone_vm(src_name, options={})
+          dst_name = "vagrant_temp_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+
           args = ['clone', src_name, '--name', dst_name]
           args << '--template' if options[:template]
           args.concat(['--dst', options[:dst]]) if options[:dst]

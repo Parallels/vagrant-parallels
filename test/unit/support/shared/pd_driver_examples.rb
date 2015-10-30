@@ -118,21 +118,19 @@ shared_examples 'parallels desktop driver' do |options|
   describe 'clone_vm' do
     it 'clones VM to the new one' do
       subprocess.should_receive(:execute).
-        with('prlctl', 'clone', tpl_uuid, '--name', vm_name,
+        with('prlctl', 'clone', tpl_uuid, '--name', an_instance_of(String),
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
-      subject.clone_vm(tpl_uuid, vm_name).should == uuid
+      subject.clone_vm(tpl_uuid)
     end
 
     it 'clones VM to template' do
       subprocess.should_receive(:execute).
-        with('prlctl', 'clone', uuid, '--name', tpl_name,
+        with('prlctl', 'clone', uuid, '--name', an_instance_of(String),
              '--template', '--dst', an_instance_of(String),
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
-      subject.clone_vm(uuid, tpl_name,
-                       {dst: '/path/to/template', template: true}).
-        should == tpl_uuid
+      subject.clone_vm(uuid, {dst: '/path/to/template', template: true})
     end
   end
 
