@@ -28,6 +28,10 @@ module VagrantPlugins
           raise Errors::SnapshotIdNotDetected, stdout: stdout
         end
 
+        def list_snapshots(uuid)
+          execute_prlctl('snapshot-list', uuid).scan(/\{([\w-]+)\}$/).flatten
+        end
+
         def read_current_snapshot(uuid)
           if execute_prlctl('snapshot-list', uuid) =~ /\*\{([\w-]+)\}/
             return $1

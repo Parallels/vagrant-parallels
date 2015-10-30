@@ -101,17 +101,22 @@ en:
         Desktop for Mac. Please, be aware while choosing the edition to upgrade to.
       snapshot_id_not_detected: |-
         ID of the newly created shapshod could not be detected. This is an
-        internal error that users should never see. Please report a bug.
+        internal error that users should never see. Please report a bug to
+        Parallels provider.
 
         stdout: %{stdout}
+      snapshot_not_found: |-
+        The 'linked_clone_snapshot' specified could not be found. Please double
+        check and try again.
+
+         Snapshot ID: %{snapshot}
       shared_adapter_not_found: |-
         Shared network adapter was not found in your virtual machine configuration.
         It is required to communicate with VM and forward ports. Please check
         network configuration in your Vagrantfile.
-      vm_import_failure: |-
-        The VM import failed! Please verify that the box you're using is not
+      vm_clone_failure: |-
+        The VM cloning failed! Please ensure that the box you're using is not
         corrupted and try again.
-
       vm_name_exists: |-
         Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing
@@ -179,6 +184,9 @@ en:
         box:
           register: Registering VM template from the base box '%{name}'...
           unregister: Unregistering VM template...
+        clone:
+          full: Cloning new virtual machine...
+          linked: Creating new virtual machine as a linked clone...
         handle_guest_tools:
           cant_install: |-
             Vagrant doesn't support installing Parallels Tools for the guest OS
@@ -200,14 +208,12 @@ en:
             Parallels Tools installed on this VM are outdated! In most cases
             this is fine but in rare cases it can cause things such as shared
             folders to not work properly. If you see shared folder errors,
-            please update Parallels Tools within the virtual machine and 
+            please update Parallels Tools within the virtual machine and
             reload your VM.
         export:
           compacting: Compacting exported HDDs...
         forward_ports:
           forwarding_entry: |-
             %{guest_port} => %{host_port}
-        import:
-          importing_linked: Importing base box '%{name}' as a linked clone...
         sane_defaults:
           setting: Setting the default configuration for VM...

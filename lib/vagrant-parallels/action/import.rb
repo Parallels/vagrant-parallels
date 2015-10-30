@@ -1,5 +1,7 @@
 require 'nokogiri'
 
+require 'digest/md5'
+
 module VagrantPlugins
   module Parallels
     module Action
@@ -10,8 +12,6 @@ module VagrantPlugins
         end
 
         def call(env)
-          @machine = env[:machine]
-
           # Disable requiring password for register and clone actions [GH-67].
           # It is available only since PD 10.
           if env[:machine].provider.pd_version_satisfies?('>= 10')
@@ -20,18 +20,52 @@ module VagrantPlugins
             env[:machine].provider.driver.disable_password_restrictions(acts)
           end
 
-          # Import VM, e.q. clone it from registered template
-          import(env)
+          # Linked clones are supported only for PD 11 and higher
+          if env[:machine].provider_config.linked_clone \
+            && env[:machine].provider.pd_version_satisfies?('>= 11')
+            # Linked clone creation should not be concurrent [GH-206]
+            lock_key = Digest::MD5.hexdigest("#{env[:clone_id]}-linked-clone")
+            env[:machine].env.lock(lock_key, retry: true) do
+              clone_linked(env)
+            end
+          else
+            clone_full(env)
+          end
+
+          # If we got interrupted, then the import could have been
+          # interrupted and its not a big deal. Just return out.
+          return if env[:interrupted]
 
           # Flag as erroneous and return if import failed
-          raise Errors::VMImportFailure if !@machine.id
+          raise Errors::VMCloneFailure if !env[:machine].id
+
+          if env[:machine].provider_config.regen_src_uuid \
+            && env[:machine].provider.pd_version_satisfies?('< 11')
+            @logger.info('Regenerate SourceVmUuid by editing config.pvs file')
+            env[:machine].provider.driver.regenerate_src_uuid
+          end
+
+          # Remove 'Icon\r' file from VM home (bug in PD 11.0.0)
+          if env[:machine].provider.pd_version_satisfies?('= 11.0.0')
+            vm_home = env[:machine].provider.driver.read_settings.fetch('Home')
+            broken_icns = Dir[File.join(vm_home, 'Icon*')]
+            FileUtils.rm(broken_icns, :force => true)
+          end
+
+          # Copy the SSH key from the clone machine if we can
+          if env[:clone_machine]
+            key_path = env[:clone_machine].data_dir.join('private_key')
+            if key_path.file?
+              FileUtils.cp(key_path, env[:machine].data_dir.join('private_key'))
+            end
+          end
 
           # Import completed successfully. Continue the chain
           @app.call(env)
         end
 
         def recover(env)
-          if @machine.state.id != :not_created
+          if env[:machine] && env[:machine].state.id != :not_created
             return if env['vagrant.error'].is_a?(Vagrant::Errors::VagrantError)
             return if env['vagrant_parallels.error'].is_a?(Errors::VagrantParallelsError)
 
@@ -50,53 +84,12 @@ module VagrantPlugins
 
         protected
 
-        def import(env)
-          # Linked clones are supported only for PD 11 and higher
-          if @machine.provider_config.linked_clone \
-            && @machine.provider.pd_version_satisfies?('>= 11')
-
-            env[:ui].info I18n.t('vagrant_parallels.actions.vm.import.importing_linked',
-                                 :name => @machine.box.name)
-            opts = {
-              snapshot_id: snapshot_id(env[:clone_id]),
-              linked: true
-            }
-            # Linked clone creation should not be concurrent [GH-206]
-            begin
-              @machine.env.lock("parallels_linked_clone") do
-                clone(env, opts)
-              end
-            rescue Vagrant::Errors::EnvironmentLockedError
-              sleep 1
-              retry
-            end
-          else
-            env[:ui].info I18n.t('vagrant.actions.vm.import.importing',
-                                 :name => @machine.box.name)
-            clone(env)
-          end
-
-          if @machine.provider_config.regen_src_uuid
-            @logger.info('Regenerate SourceVmUuid')
-            @machine.provider.driver.regenerate_src_uuid
-          end
-
-          # Remove 'Icon\r' file from VM home (bug in PD 11.0.0)
-          if @machine.provider.pd_version_satisfies?('= 11.0.0')
-            vm_home = @machine.provider.driver.read_settings.fetch('Home')
-            broken_icns = Dir[File.join(vm_home, 'Icon*')]
-            FileUtils.rm(broken_icns, :force => true)
-          end
-        end
-
-        def clone(env, opts={})
-          @machine.id = @machine.provider.driver.clone_vm(env[:clone_id], opts) do |progress|
+        def clone_full(env)
+          env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.full')
+          env[:machine].id = env[:machine].provider.driver.clone_vm(
+            env[:clone_id]) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
-
-            # # If we got interrupted, then the import could have been interrupted.
-            # Just rise an exception and then 'recover' will be called to cleanup.
-            raise Vagrant::Errors::VagrantInterrupt if env[:interrupted]
           end
 
           # Clear the line one last time since the progress meter doesn't disappear
@@ -104,23 +97,22 @@ module VagrantPlugins
           env[:ui].clear_line
         end
 
-        def snapshot_id(vm_uuid)
-          snap_id = @machine.provider.driver.read_current_snapshot(vm_uuid)
-
-          # If there is no current snapshot, just create the new one.
-          if !snap_id
-            @logger.info('Create a new snapshot')
-            opts = {
-              name: 'vagrant_linked_clone',
-              desc: 'Snapshot to create linked clones for Vagrant'
-            }
-            snap_id = @machine.provider.driver.create_snapshot(vm_uuid, opts)
+        def clone_linked(env)
+          opts = {
+            snapshot_id: env[:clone_snapshot],
+            linked: true
+          }
+          env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.linked')
+          env[:machine].id = env[:machine].provider.driver.clone_vm(
+            env[:clone_id], opts) do |progress|
+            env[:ui].clear_line
+            env[:ui].report_progress(progress, 100, false)
           end
 
-          @logger.info("User this snapshot ID to create a linked clone: #{snap_id}")
-          snap_id
+          # Clear the line one last time since the progress meter doesn't disappear
+          # immediately.
+          env[:ui].clear_line
         end
-
       end
     end
   end

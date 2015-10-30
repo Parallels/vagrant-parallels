@@ -277,6 +277,8 @@ module VagrantPlugins
             if env1[:result]
               b1.use Customize, 'pre-import'
               b1.use BoxRegister
+              b1.use PrepareClone
+              b1.use PrepareCloneSnapshot
               b1.use Import
               b1.use BoxUnregister
               b1.use SaneDefaults
@@ -348,6 +350,7 @@ module VagrantPlugins
       autoload :Network, File.expand_path('../action/network', __FILE__)
       autoload :Package, File.expand_path('../action/package', __FILE__)
       autoload :PackageConfigFiles, File.expand_path('../action/package_config_files', __FILE__)
+      autoload :PrepareCloneSnapshot, File.expand_path('../action/prepare_clone_snapshot', __FILE__)
       autoload :PrepareForwardedPortCollisionParams, File.expand_path('../action/prepare_forwarded_port_collision_params', __FILE__)
       autoload :PrepareNFSSettings, File.expand_path('../action/prepare_nfs_settings', __FILE__)
       autoload :PrepareNFSValidIds, File.expand_path('../action/prepare_nfs_valid_ids', __FILE__)

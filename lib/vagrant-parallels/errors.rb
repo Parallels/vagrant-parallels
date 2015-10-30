@@ -79,8 +79,12 @@ module VagrantPlugins
         error_key(:snapshot_id_not_detected)
       end
 
-      class VMImportFailure < VagrantParallelsError
-        error_key(:vm_import_failure)
+      class SnapshotNotFound < VagrantParallelsError
+        error_key(:snapshot_not_found)
+      end
+
+      class VMCloneFailure < VagrantParallelsError
+        error_key(:vm_clone_failure)
       end
 
       class VMNameExists < VagrantParallelsError

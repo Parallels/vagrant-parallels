@@ -204,6 +204,15 @@ module VagrantPlugins
           raise NotImplementedError
         end
 
+        # Lists all snapshots of the specified VM. Returns empty array is
+        # there are no snapshots.
+        #
+        # @param [String] uuid Name or UUID of the target VM.
+        # @return [String]
+        def list_snapshots(uuid)
+          raise NotImplementedError
+        end
+
         # Halts the virtual machine (pulls the plug).
         def halt(force=false)
           args = ['stop', @uuid]
