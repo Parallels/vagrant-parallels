@@ -14,14 +14,6 @@ module VagrantPlugins
 
           @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_11')
         end
-
-        def read_current_snapshot(uuid)
-          if execute_prlctl('snapshot-list', uuid) =~ /\*\{([\w-]+)\}/
-            return $1
-          end
-
-          nil
-        end
       end
     end
   end

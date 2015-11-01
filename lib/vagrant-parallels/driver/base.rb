@@ -282,15 +282,6 @@ module VagrantPlugins
           bridged_ifaces
         end
 
-        # Returns current snapshot ID for the specified VM. Returns nil if
-        # the VM doesn't have any snapshot.
-        #
-        # @param [String] uuid Name or UUID of the target VM.
-        # @return [String]
-        def read_current_snapshot(uuid)
-          raise NotImplementedError
-        end
-
         def read_forwarded_ports(global=false)
           raise NotImplementedError
         end
