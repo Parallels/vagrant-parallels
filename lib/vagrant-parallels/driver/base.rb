@@ -128,11 +128,16 @@ module VagrantPlugins
 
         # Creates a snapshot for the specified virtual machine.
         #
-        # @param [String] uuid Name or UUID of the target VM.
-        # @param [<Symbol => String, Boolean>] options Snapshot options.
+        # @param [String] uuid Name or UUID of the target VM
+        # @param [String] snapshot_name Snapshot name
         # @return [String] ID of the created snapshot.
-        def create_snapshot(uuid, options)
-          raise NotImplementedError
+        def create_snapshot(uuid, snapshot_name)
+          stdout = execute_prlctl('snapshot', uuid, '--name', snapshot_name)
+          if stdout =~ /\{([\w-]+)\}/
+            return Regexp.last_match(1)
+          end
+
+          raise Errors::SnapshotIdNotDetected, stdout: stdout
         end
 
         # Deletes the virtual machine references by this driver.
@@ -204,13 +209,33 @@ module VagrantPlugins
           raise NotImplementedError
         end
 
-        # Lists all snapshots of the specified VM. Returns empty array is
+        # Lists all snapshots for the specified VM. Returns an empty hash if
         # there are no snapshots.
         #
         # @param [String] uuid Name or UUID of the target VM.
-        # @return [String]
+        # @return [<String => String>] {'Snapshot Name' => 'Snapshot UUID'}
         def list_snapshots(uuid)
-          raise NotImplementedError
+          settings = read_settings(uuid)
+          snap_config = File.join(settings.fetch('Home'), 'Snapshots.xml')
+
+          # There are no snapshots, exit
+          return {} if !File.exist?(snap_config)
+
+          xml = Nokogiri::XML(File.read(snap_config))
+          snapshots = {}
+
+          # Loop over all 'SavedStateItem' and fetch 'Name' => 'ID' pairs
+          xml.xpath('//SavedStateItem').each do |snap|
+            snap_id = snap.attr('guid')
+
+            # The first entry is always empty (the base sate)
+            next if snap_id.empty?
+
+            snap_name = snap.at('Name').text
+            snapshots[snap_name] = snap_id
+          end
+
+          snapshots
         end
 
         # Halts the virtual machine (pulls the plug).

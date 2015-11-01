@@ -15,23 +15,6 @@ module VagrantPlugins
           @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_11')
         end
 
-        def create_snapshot(uuid, options)
-          args = ['snapshot', uuid]
-          args.concat(['--name', options[:name]]) if options[:name]
-          args.concat(['--description', options[:desc]]) if options[:desc]
-
-          stdout = execute_prlctl(*args)
-          if stdout =~ /\{([\w-]+)\}/
-            return $1
-          end
-
-          raise Errors::SnapshotIdNotDetected, stdout: stdout
-        end
-
-        def list_snapshots(uuid)
-          execute_prlctl('snapshot-list', uuid).scan(/\{([\w-]+)\}$/).flatten
-        end
-
         def read_current_snapshot(uuid)
           if execute_prlctl('snapshot-list', uuid) =~ /\*\{([\w-]+)\}/
             return $1

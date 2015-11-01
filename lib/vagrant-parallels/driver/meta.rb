@@ -77,6 +77,7 @@ module VagrantPlugins
                        :forward_ports,
                        :halt,
                        :clone_vm,
+                       :list_snapshots,
                        :read_bridged_interfaces,
                        :read_current_snapshot,
                        :read_forwarded_ports,

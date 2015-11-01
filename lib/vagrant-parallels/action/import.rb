@@ -99,7 +99,7 @@ module VagrantPlugins
 
         def clone_linked(env)
           opts = {
-            snapshot_id: env[:clone_snapshot],
+            snapshot_id: env[:clone_snapshot_id],
             linked: true
           }
           env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.linked')
