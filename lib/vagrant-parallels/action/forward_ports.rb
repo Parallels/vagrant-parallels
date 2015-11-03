@@ -3,6 +3,7 @@ module VagrantPlugins
     module Action
       class ForwardPorts
         include VagrantPlugins::Parallels::Util::CompileForwardedPorts
+        @@lock = Mutex.new
 
         def initialize(app, env)
           @app = app
@@ -21,8 +22,20 @@ module VagrantPlugins
 
           # Get the ports we're forwarding
           env[:forwarded_ports] ||= compile_forwarded_ports(env[:machine].config)
-          env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
-          forward_ports
+
+          # Acquire both of class- and process-level locks so that we don't
+          # forward ports simultaneousely with someone else.
+          @@lock.synchronize do
+            begin
+              env[:machine].env.lock('forward_ports') do
+                env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
+                forward_ports
+              end
+            rescue Errors::EnvironmentLockedError
+              sleep 1
+              retry
+            end
+          end
 
           @app.call(env)
         end
