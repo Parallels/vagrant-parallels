@@ -124,13 +124,12 @@ shared_examples 'parallels desktop driver' do |options|
       subject.clone_vm(tpl_uuid)
     end
 
-    it 'clones VM to template' do
+    it 'clones VM to the exported VM' do
       subprocess.should_receive(:execute).
         with('prlctl', 'clone', uuid, '--name', an_instance_of(String),
-             '--template', '--dst', an_instance_of(String),
-             an_instance_of(Hash)).
+             '--dst', an_instance_of(String), an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
-      subject.clone_vm(uuid, {dst: '/path/to/template', template: true})
+      subject.clone_vm(uuid, {dst: '/path/to/template'})
     end
   end
 

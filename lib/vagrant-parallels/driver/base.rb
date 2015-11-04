@@ -61,7 +61,6 @@ module VagrantPlugins
           dst_name = "vagrant_temp_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
 
           args = ['clone', src_name, '--name', dst_name]
-          args << '--template' if options[:template]
           args.concat(['--dst', options[:dst]]) if options[:dst]
 
           # Linked clone options
