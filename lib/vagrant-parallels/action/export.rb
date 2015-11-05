@@ -13,8 +13,6 @@ module VagrantPlugins
             raise Vagrant::Errors::VMPowerOffToPackage
           end
 
-          @tpl_name = gen_template_name
-
           export
           compact_template
           unregister_template
@@ -29,7 +27,7 @@ module VagrantPlugins
 
         private
 
-        def gen_template_name
+        def box_template_name
           # Use configured name if it is specified, or generate the new one
           name = @env[:machine].provider_config.name
           if !name
@@ -57,7 +55,8 @@ module VagrantPlugins
             dst: @env['export.temp_dir'].to_s
           }
 
-          @env[:machine].provider.driver.clone_vm(@env[:machine].id, @tpl_name, options) do |progress|
+          @env[:package_box_id] = @env[:machine].provider.driver.clone_vm(
+            @env[:machine].id, options) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
 
@@ -66,6 +65,10 @@ module VagrantPlugins
             raise Vagrant::Errors::VagrantInterrupt if @env[:interrupted]
           end
 
+          # Set the template name
+          tpl_name = box_template_name
+          @env[:machine].provider.driver.set_name(@env[:package_box_id], tpl_name)
+
           # Clear the line a final time so the next data can appear
           # alone on the line.
           @env[:ui].clear_line
@@ -73,7 +76,7 @@ module VagrantPlugins
 
         def compact_template
           @env[:ui].info I18n.t('vagrant_parallels.actions.vm.export.compacting')
-          @env[:machine].provider.driver.compact(@tpl_name) do |progress|
+          @env[:machine].provider.driver.compact(@env[:package_box_id]) do |progress|
             @env[:ui].clear_line
             @env[:ui].report_progress(progress, 100, false)
           end
@@ -84,8 +87,9 @@ module VagrantPlugins
         end
 
         def unregister_template
-          @logger.info("Unregister the box template: '#{@tpl_name}'")
-          @env[:machine].provider.driver.unregister(@tpl_name)
+          return if !@env[:package_box_id]
+          @logger.info("Unregister the box template: '#{@env[:package_box_id]}'")
+          @env[:machine].provider.driver.unregister(@env[:package_box_id])
         end
       end
     end

@@ -55,10 +55,11 @@ module VagrantPlugins
         # Makes a clone of the virtual machine.
         #
         # @param [String] src_name Name or UUID of the source VM or template.
-        # @param [String] dst_name Name of the destination VM.
         # @param [<String => String>] options Options to clone virtual machine.
         # @return [String] UUID of the new VM.
-        def clone_vm(src_name, dst_name, options={})
+        def clone_vm(src_name, options={})
+          dst_name = "vagrant_temp_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
+
           args = ['clone', src_name, '--name', dst_name]
           args << '--template' if options[:template]
           args.concat(['--dst', options[:dst]]) if options[:dst]
@@ -127,11 +128,16 @@ module VagrantPlugins
 
         # Creates a snapshot for the specified virtual machine.
         #
-        # @param [String] uuid Name or UUID of the target VM.
-        # @param [<Symbol => String, Boolean>] options Snapshot options.
+        # @param [String] uuid Name or UUID of the target VM
+        # @param [String] snapshot_name Snapshot name
         # @return [String] ID of the created snapshot.
-        def create_snapshot(uuid, options)
-          raise NotImplementedError
+        def create_snapshot(uuid, snapshot_name)
+          stdout = execute_prlctl('snapshot', uuid, '--name', snapshot_name)
+          if stdout =~ /\{([\w-]+)\}/
+            return Regexp.last_match(1)
+          end
+
+          raise Errors::SnapshotIdNotDetected, stdout: stdout
         end
 
         # Deletes the virtual machine references by this driver.
@@ -203,6 +209,35 @@ module VagrantPlugins
           raise NotImplementedError
         end
 
+        # Lists all snapshots for the specified VM. Returns an empty hash if
+        # there are no snapshots.
+        #
+        # @param [String] uuid Name or UUID of the target VM.
+        # @return [<String => String>] {'Snapshot Name' => 'Snapshot UUID'}
+        def list_snapshots(uuid)
+          settings = read_settings(uuid)
+          snap_config = File.join(settings.fetch('Home'), 'Snapshots.xml')
+
+          # There are no snapshots, exit
+          return {} if !File.exist?(snap_config)
+
+          xml = Nokogiri::XML(File.read(snap_config))
+          snapshots = {}
+
+          # Loop over all 'SavedStateItem' and fetch 'Name' => 'ID' pairs
+          xml.xpath('//SavedStateItem').each do |snap|
+            snap_id = snap.attr('guid')
+
+            # The first entry is always empty (the base sate)
+            next if snap_id.empty?
+
+            snap_name = snap.at('Name').text
+            snapshots[snap_name] = snap_id
+          end
+
+          snapshots
+        end
+
         # Halts the virtual machine (pulls the plug).
         def halt(force=false)
           args = ['stop', @uuid]
@@ -245,15 +280,6 @@ module VagrantPlugins
             bridged_ifaces << info
           end
           bridged_ifaces
-        end
-
-        # Returns current snapshot ID for the specified VM. Returns nil if
-        # the VM doesn't have any snapshot.
-        #
-        # @param [String] uuid Name or UUID of the target VM.
-        # @return [String]
-        def read_current_snapshot(uuid)
-          raise NotImplementedError
         end
 
         def read_forwarded_ports(global=false)
@@ -491,8 +517,9 @@ module VagrantPlugins
         # Registers the virtual machine
         #
         # @param [String] pvm_file Path to the machine image (*.pvm)
-        def register(pvm_file)
-          args = [@prlctl_path, 'register', pvm_file]
+        # @param [Array<String>] opts List of options for "prlctl register"
+        def register(pvm_file, opts=[])
+          args = [@prlctl_path, 'register', pvm_file, *opts]
 
           3.times do
             result = raw(*args)
@@ -521,9 +548,10 @@ module VagrantPlugins
 
         # Sets the name of the virtual machine.
         #
-        # @param [String] name New VM name.
-        def set_name(name)
-          execute_prlctl('set', @uuid, '--name', name)
+        # @param [String] uuid VM name or UUID
+        # @param [String] new_name New VM name
+        def set_name(uuid, new_name)
+          execute_prlctl('set', uuid, '--name', new_name)
         end
 
         # Sets Power Consumption method.

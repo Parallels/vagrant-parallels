@@ -276,7 +276,11 @@ module VagrantPlugins
             # If the VM is NOT created yet, then do the setup steps
             if env1[:result]
               b1.use Customize, 'pre-import'
+              b1.use BoxRegister
+              b1.use PrepareClone
+              b1.use PrepareCloneSnapshot
               b1.use Import
+              b1.use BoxUnregister
               b1.use SaneDefaults
               b1.use Customize, 'post-import'
             end
@@ -330,6 +334,8 @@ module VagrantPlugins
 
 
       autoload :Boot, File.expand_path('../action/boot', __FILE__)
+      autoload :BoxRegister, File.expand_path('../action/box_register', __FILE__)
+      autoload :BoxUnregister, File.expand_path('../action/box_unregister', __FILE__)
       autoload :HandleGuestTools, File.expand_path('../action/handle_guest_tools', __FILE__)
       autoload :HandleForwardedPortCollisions, File.expand_path('../action/handle_forwarded_port_collisions.rb', __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path('../action/clear_network_interfaces', __FILE__)
@@ -344,6 +350,7 @@ module VagrantPlugins
       autoload :Network, File.expand_path('../action/network', __FILE__)
       autoload :Package, File.expand_path('../action/package', __FILE__)
       autoload :PackageConfigFiles, File.expand_path('../action/package_config_files', __FILE__)
+      autoload :PrepareCloneSnapshot, File.expand_path('../action/prepare_clone_snapshot', __FILE__)
       autoload :PrepareForwardedPortCollisionParams, File.expand_path('../action/prepare_forwarded_port_collision_params', __FILE__)
       autoload :PrepareNFSSettings, File.expand_path('../action/prepare_nfs_settings', __FILE__)
       autoload :PrepareNFSValidIds, File.expand_path('../action/prepare_nfs_valid_ids', __FILE__)

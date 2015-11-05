@@ -7,6 +7,14 @@ module VagrantPlugins
         error_namespace('vagrant_parallels.errors')
       end
 
+      class BoxImageNotFound < VagrantParallelsError
+        error_key(:box_image_not_found)
+      end
+
+      class BoxIDNotFound < VagrantParallelsError
+        error_key(:box_id_not_found)
+      end
+
       class DhcpLeasesNotAccessible < VagrantParallelsError
         error_key(:dhcp_leases_file_not_accessible)
       end
@@ -51,10 +59,6 @@ module VagrantPlugins
         error_key(:parallels_tools_iso_not_found)
       end
 
-      class ParallelsTplNameNotFound < VagrantParallelsError
-        error_key(:parallels_tpl_name_not_found)
-      end
-
       class ParallelsVMOptionNotFound < VagrantParallelsError
         error_key(:parallels_vm_option_not_found)
       end
@@ -75,8 +79,12 @@ module VagrantPlugins
         error_key(:snapshot_id_not_detected)
       end
 
-      class VMImportFailure < VagrantParallelsError
-        error_key(:vm_import_failure)
+      class SnapshotNotFound < VagrantParallelsError
+        error_key(:snapshot_not_found)
+      end
+
+      class VMCloneFailure < VagrantParallelsError
+        error_key(:vm_clone_failure)
       end
 
       class VMNameExists < VagrantParallelsError

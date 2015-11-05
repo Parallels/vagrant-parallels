@@ -7,6 +7,7 @@ module VagrantPlugins
       attr_accessor :functional_psf
       attr_accessor :optimize_power_consumption
       attr_accessor :linked_clone
+      attr_accessor :linked_clone_snapshot
       attr_accessor :name
       attr_reader   :network_adapters
       attr_accessor :regen_src_uuid
@@ -25,6 +26,7 @@ module VagrantPlugins
         @destroy_unused_network_interfaces = UNSET_VALUE
         @functional_psf = UNSET_VALUE
         @linked_clone   = UNSET_VALUE
+        @linked_clone_snapshot = UNSET_VALUE
         @network_adapters  = {}
         @name              = UNSET_VALUE
         @optimize_power_consumption = UNSET_VALUE
@@ -79,6 +81,7 @@ module VagrantPlugins
         end
 
         @linked_clone = false if @linked_clone == UNSET_VALUE
+        @linked_clone_snapshot = nil if @linked_clone_snapshot == UNSET_VALUE
 
         @name = nil if @name == UNSET_VALUE
 

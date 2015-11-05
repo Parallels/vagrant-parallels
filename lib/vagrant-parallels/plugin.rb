@@ -6,8 +6,8 @@ end
 
 # This is a sanity check to make sure no one is attempting to install
 # this into an early Vagrant version.
-if Gem::Version.new(Vagrant::VERSION).release < Gem::Version.new('1.5.0')
-  raise 'The installed version of Vagrant Parallels plugin is only compatible with Vagrant 1.5+'
+if Gem::Version.new(Vagrant::VERSION).release < Gem::Version.new('1.8.0')
+  raise 'The installed version of Vagrant Parallels plugin is only compatible with Vagrant 1.8+'
 end
 
 module VagrantPlugins
