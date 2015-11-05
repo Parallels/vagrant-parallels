@@ -3,6 +3,7 @@ module VagrantPlugins
     module Action
       class ForwardPorts
         include VagrantPlugins::Parallels::Util::CompileForwardedPorts
+        @@lock = Mutex.new
 
         def initialize(app, env)
           @app = app
@@ -21,13 +22,30 @@ module VagrantPlugins
 
           # Get the ports we're forwarding
           env[:forwarded_ports] ||= compile_forwarded_ports(env[:machine].config)
-          env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
-          forward_ports
+
+          # Exit if there are no ports to forward
+          return @app.call(env) if env[:forwarded_ports].empty?
+
+          # Acquire both of class- and process-level locks so that we don't
+          # forward ports simultaneousely with someone else.
+          @@lock.synchronize do
+            begin
+              env[:machine].env.lock('forward_ports') do
+                env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
+                forward_ports
+              end
+            rescue Errors::EnvironmentLockedError
+              sleep 1
+              retry
+            end
+          end
 
           @app.call(env)
         end
 
         def forward_ports
+          all_rules = @env[:machine].provider.driver.read_forwarded_ports(true)
+          names_in_use = all_rules.collect { |r| r[:rule_name] }
           ports = []
 
           @env[:forwarded_ports].each do |fp|
@@ -43,11 +61,22 @@ module VagrantPlugins
             @env[:ui].detail(I18n.t('vagrant_parallels.actions.vm.forward_ports.forwarding_entry',
                                     message_attributes))
 
+            # In Parallels Desktop the scope port forwarding rules is global,
+            # so we have to keep their names unique.
+            unique_id = fp.id
+            # Append random suffix to get the unique rule name
+            while names_in_use.include?(unique_id)
+              suffix = (0...4).map { ('a'..'z').to_a[rand(26)] }.join
+              unique_id = "#{fp.id}_#{suffix}"
+            end
+            # Mark this rule name as in use
+            names_in_use << unique_id
+
             # Add the options to the ports array to send to the driver later
             ports << {
               guestport: fp.guest_port,
               hostport:  fp.host_port,
-              name:      get_unique_name(fp.id),
+              name:      unique_id,
               protocol:  fp.protocol
             }
           end
@@ -56,21 +85,6 @@ module VagrantPlugins
             # We only need to forward ports if there are any to forward
             @env[:machine].provider.driver.forward_ports(ports)
           end
-        end
-
-        private
-
-        def get_unique_name(id)
-          all_rules = @env[:machine].provider.driver.read_forwarded_ports(true)
-          names_in_use = all_rules.collect { |r| r[:rule_name] }
-
-          # Append random suffix to get unique rule name
-          while names_in_use.include?(id)
-            suffix = (0...4).map { ('a'..'z').to_a[rand(26)] }.join
-            id = "#{id}_#{suffix}"
-          end
-
-          id
         end
       end
     end
