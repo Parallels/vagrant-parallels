@@ -6,6 +6,8 @@ module VagrantPlugins
   module Parallels
     module Action
       class BoxRegister
+        @@lock = Mutex.new
+
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_parallels::action::box_register')
@@ -19,9 +21,11 @@ module VagrantPlugins
 
           # Do the register while locked so that nobody else register
           # a box at the same time.
-          lock_key = Digest::MD5.hexdigest(env[:machine].box.name)
-          env[:machine].env.lock(lock_key, retry: true) do
-            register_box(env)
+          @@lock.synchronize do
+            lock_key = Digest::MD5.hexdigest(env[:machine].box.name)
+            env[:machine].env.lock(lock_key, retry: true) do
+              register_box(env)
+            end
           end
 
           # If we got interrupted, then the import could have been

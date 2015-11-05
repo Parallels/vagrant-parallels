@@ -6,6 +6,8 @@ module VagrantPlugins
   module Parallels
     module Action
       class PrepareCloneSnapshot
+        @@lock = Mutex.new
+
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_parallels::action::prepare_clone_snapshot')
@@ -24,9 +26,11 @@ module VagrantPlugins
           end
 
           # We lock so that we don't snapshot in parallel
-          lock_key = Digest::MD5.hexdigest("#{env[:clone_id]}-snapshot")
-          env[:machine].env.lock(lock_key, retry: true) do
-            prepare_snapshot(env)
+          @@lock.synchronize do
+            lock_key = Digest::MD5.hexdigest("#{env[:clone_id]}-snapshot")
+            env[:machine].env.lock(lock_key, retry: true) do
+              prepare_snapshot(env)
+            end
           end
 
           # Continue

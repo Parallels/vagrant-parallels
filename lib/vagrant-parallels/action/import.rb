@@ -6,6 +6,8 @@ module VagrantPlugins
   module Parallels
     module Action
       class Import
+        @@lock = Mutex.new
+
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_parallels::action::import')
@@ -24,9 +26,11 @@ module VagrantPlugins
           if env[:machine].provider_config.linked_clone \
             && env[:machine].provider.pd_version_satisfies?('>= 11')
             # Linked clone creation should not be concurrent [GH-206]
-            lock_key = Digest::MD5.hexdigest("#{env[:clone_id]}-linked-clone")
-            env[:machine].env.lock(lock_key, retry: true) do
-              clone_linked(env)
+            @@lock.synchronize do
+              lock_key = Digest::MD5.hexdigest("#{env[:clone_id]}-linked-clone")
+              env[:machine].env.lock(lock_key, retry: true) do
+                clone_linked(env)
+              end
             end
           else
             clone_full(env)
