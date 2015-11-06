@@ -1,7 +1,5 @@
 require 'log4r'
 
-#require 'digest/md5'
-
 module VagrantPlugins
   module Parallels
     module Action
