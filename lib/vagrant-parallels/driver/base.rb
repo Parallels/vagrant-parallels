@@ -154,6 +154,14 @@ module VagrantPlugins
           end
         end
 
+        # Deletes the specified snapshot
+        #
+        # @param [String] uuid Name or UUID of the target VM
+        # @param [String] snapshot_id Snapshot ID
+        def delete_snapshot(uuid, snapshot_id)
+          execute_prlctl('snapshot-delete', uuid, '--id', snapshot_id)
+        end
+
         # Deletes any host only networks that aren't being used for anything.
         def delete_unused_host_only_networks
           raise NotImplementedError
@@ -538,6 +546,14 @@ module VagrantPlugins
           # failure, do a standard execute now. This will raise an
           # exception if it fails again.
           execute(*args)
+        end
+
+        # Switches the VM state to the specified snapshot
+        #
+        # @param [String] uuid Name or UUID of the target VM
+        # @param [String] snapshot_id Snapshot ID
+        def restore_snapshot(uuid, snapshot_id)
+          execute_prlctl('snapshot-switch', uuid, '-i', snapshot_id)
         end
 
         # Resumes the virtual machine.

@@ -78,6 +78,11 @@ module VagrantPlugins
         Cap::NicMacAddresses
       end
 
+      provider_capability(:parallels, :snapshot_list) do
+        require_relative 'cap/snapshot_list'
+        Cap::SnapshotList
+      end
+
       synced_folder(:parallels) do
         require_relative 'synced_folder'
         SyncedFolder
