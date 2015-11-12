@@ -34,18 +34,19 @@ module VagrantPlugins
           # Instantiate the proper version driver for Parallels Desktop
           @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
 
+          major_ver = @version.split('.').first.to_i
           driver_klass =
-            case @version.split('.').first
-              when '8' then PD_8
-              when '9' then PD_9
-              when '10' then PD_10
-              when '11' then PD_11
-              else raise Errors::ParallelsUnsupportedVersion
+            case major_ver
+            when 1..7 then raise Errors::ParallelsUnsupportedVersion
+            when 8 then PD_8
+            when 9 then PD_9
+            when 10 then PD_10
+            else PD_11
             end
 
           # Starting since PD 11 only Pro and Business editions have CLI
           # functionality and can be used with Vagrant.
-          if @version.split('.').first.to_i >= 11
+          if major_ver >= 11
             edition = read_edition
             if !edition || !%w(any pro business).include?(edition)
               raise Errors::ParallelsUnsupportedEdition
