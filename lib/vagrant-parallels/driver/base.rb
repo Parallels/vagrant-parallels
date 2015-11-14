@@ -75,6 +75,15 @@ module VagrantPlugins
               yield $1.to_i if block_given?
             end
           end
+
+          # copy any ISO files from the template to the clone. unfortunately
+          # this is not done by prlctl clone
+          clone_home = read_settings(dst_name).fetch('Home')
+          iso_files = Dir[File.join(read_settings(src_name).fetch('Home'), '*.iso')]
+          iso_files.each do |file|
+              FileUtils.cp(file, clone_home)
+          end
+
           read_vms[dst_name]
         end
 
