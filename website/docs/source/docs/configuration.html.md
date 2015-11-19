@@ -65,7 +65,7 @@ delete your boxes carefully!
 
 Parallels Tools is a set of Parallels utilities that ensures a high level of
 integration between the host and the guest operating systems (read more:
-[Parallels Tools Overview](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Desktop%20User's%20Guide/32789.htm)).
+[Parallels Tools Overview](http://download.parallels.com/desktop/v11/docs/en_US/Parallels%20Desktop%20User's%20Guide/32789.htm)).
 
 By default the Parallels provider checks the status of Parallels Tools after
 booting the machine. If they are outdated or newer, a warning message will be
@@ -128,5 +128,5 @@ end
 ```
 
 
-You can read the [Reference Guide](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Command%20Line%20Reference%20Guide.pdf)
+You can read the [Command-Line Reference](http://download.parallels.com/desktop/v11/docs/en_US/Parallels%20Desktop%20Pro%20Edition%20Command-Line%20Reference.pdf)
 for the complete information about the prlctl command and its options.
