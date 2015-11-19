@@ -167,6 +167,7 @@ module VagrantPlugins
             b1.use HandleForwardedPortCollisions
             b1.use ForwardPorts
             b1.use Resume
+            b1.use Provision
             b1.use WaitForCommunicator, [:resuming, :running]
           end
         end
