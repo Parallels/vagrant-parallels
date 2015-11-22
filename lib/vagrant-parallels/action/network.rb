@@ -171,8 +171,9 @@ module VagrantPlugins
 
             # If one wasn't found, then we notify the user here.
             if !chosen_bridge
-              @env[:ui].info I18n.t('vagrant.actions.vm.bridged_networking.specific_not_found',
-                                    :bridge => config[:bridge])
+              @env[:ui].info I18n.t(
+                'vagrant.actions.vm.bridged_networking.specific_not_found',
+                bridge: config[:bridge])
             end
           end
 
@@ -188,14 +189,14 @@ module VagrantPlugins
             else
               # More than one bridgable interface requires a user decision, so
               # show options to choose from.
-              @env[:ui].info I18n.t('vagrant.actions.vm.bridged_networking.available',
-                                    :prefix => false)
+              @env[:ui].info I18n.t(
+                'vagrant.actions.vm.bridged_networking.available', prefix: false)
               bridgedifs.each_index do |index|
                 interface = bridgedifs[index]
-                @env[:ui].info("#{index + 1}) #{interface[:name]}", :prefix => false)
+                @env[:ui].info("#{index + 1}) #{interface[:name]}", prefix: false)
               end
               @env[:ui].info(I18n.t(
-                               'vagrant.actions.vm.bridged_networking.choice_help')+"\n")
+                'vagrant.actions.vm.bridged_networking.choice_help')+"\n")
 
               # The range of valid choices
               valid = Range.new(1, bridgedifs.length)
@@ -410,8 +411,7 @@ module VagrantPlugins
           if net_nums.empty?
             'vagrant-vnet0'
           else
-            net_nums.sort! if net_nums
-            free_names = Array(0..net_nums.last.next) - net_nums
+            free_names = Array(0..net_nums.max) - net_nums
             "vagrant-vnet#{free_names.first}"
           end
         end
