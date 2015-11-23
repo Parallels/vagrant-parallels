@@ -14,6 +14,11 @@ module VagrantPlugins
         # We use forwardable to do all our driver forwarding
         extend Forwardable
 
+        # We cache the Parallels Desktop version here once we have one,
+        # since during the execution of Vagrant, it likely doesn't change.
+        @@version = nil
+        @@version_lock = Mutex.new
+
         # The UUID of the virtual machine we represent
         attr_reader :uuid
 
@@ -29,12 +34,14 @@ module VagrantPlugins
 
           # Read and assign the version of Parallels Desktop we know which
           # specific driver to instantiate.
-          @version = read_version || ''
-
+          @@version_lock.synchronize do
+            @@version = read_version
+          end
+            
           # Instantiate the proper version driver for Parallels Desktop
-          @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
+          @logger.debug("Finding driver for Parallels Desktop version: #{@@version}")
 
-          major_ver = @version.split('.').first.to_i
+          major_ver = @@version.split('.').first.to_i
           driver_klass =
             case major_ver
             when 1..7 then raise Errors::ParallelsUnsupportedVersion
@@ -55,6 +62,7 @@ module VagrantPlugins
 
           @logger.info("Using Parallels driver: #{driver_klass}")
           @driver = driver_klass.new(@uuid)
+          @version = @@version
 
           if @uuid
             # Verify the VM exists, and if it doesn't, then don't worry
