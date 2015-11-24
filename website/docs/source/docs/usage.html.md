@@ -14,7 +14,7 @@ provider shipped with Vagrant. In most cases you will not have to specify the
 provider name, just "vagrant up" will be enough: 
 
 ```
-$ vagrant init parallels/centos-6.6
+$ vagrant init parallels/ubuntu-14.04
 $ vagrant up
 ```
 

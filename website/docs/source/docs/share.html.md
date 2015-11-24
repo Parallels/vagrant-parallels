@@ -24,5 +24,5 @@ instant SSH access to your Vagrant environment by anyone by running `vagrant
 connect --ssh` on the remote side. This is useful for pair programming,
 debugging ops problems, etc.
 
-Vagrant Share requires an account with [Vagrant Cloud](https://vagrantcloud.com/)
+Vagrant Share requires an account with [HashiCorp's Atlas](https://atlas.hashicorp.com/)
 to be used.

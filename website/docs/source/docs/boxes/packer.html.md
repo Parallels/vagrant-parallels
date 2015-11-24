@@ -20,8 +20,14 @@ Read the installation instruction here: [Install Packer](https://packer.io/docs/
 
 Packer requires the 'prlsdkapi' Python module from the Parallels Virtualization
 SDK to interact with Parallels Desktop and virtual machines. To use Parallels 
-builders for Packer you need to download and install this SDK: 
+builders for Packer you need to download and install this SDK package: 
 [The Parallels Virtualization SDK for Mac](http://www.parallels.com/download/pvsdk/)
+
+You can also install it with [Homebrew](brew.sh) package manager:
+
+```
+$ brew cask install parallels-virtualization-sdk
+```
 
 ## Packer Templates
 Packer is shipped with `parallels-iso` builder, which can be used to create 
