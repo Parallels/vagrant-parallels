@@ -181,10 +181,9 @@ en:
             Installing the proper version of Parallels Tools. This may take a few minutes...
           not_detected: |-
             Parallels Tools were not detected on this VM! They are required
-            for forwarded ports, shared folders, host only networking and more.
-            If SSH fails or shared folders are not working on this machine,
-            please install Parallels Tools within the virtual machine and
-            reload your VM.
+            for shared folders, time sync and more. If shared folders are not
+            working on this machine, please install Parallels Tools within the
+            virtual machine and reload your VM.
           rebooting: |-
             Parallels Tools have been installed. Rebooting the VM...
           outdated: |-
