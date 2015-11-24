@@ -33,6 +33,11 @@ module VagrantPlugins
         Config
       end
 
+      guest_capability(:darwin, :install_parallels_tools) do
+        require_relative 'guest_cap/darwin/install_parallels_tools'
+        GuestDarwinCap::InstallParallelsTools
+      end
+
       guest_capability(:darwin, :mount_parallels_shared_folder) do
         require_relative 'guest_cap/darwin/mount_parallels_shared_folder'
         GuestDarwinCap::MountParallelsSharedFolder

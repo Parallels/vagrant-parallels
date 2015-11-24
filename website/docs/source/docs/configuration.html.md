@@ -57,8 +57,8 @@ delete your boxes carefully!
 ## Parallels Tools Auto-Update
 <div class="alert alert-info">
 	<p>
-        <strong>Note:</strong> This feature makes sense to Linux guests only.
-        In Windows and Mac OS guests Parallels Tools will be always updated
+        <strong>Note:</strong> This feature makes sense to Linux and OS X guests 
+        only. In Windows guests Parallels Tools will be always updated
         automatically by the special installation agent running in GUI mode.
 	</p>
 </div>
