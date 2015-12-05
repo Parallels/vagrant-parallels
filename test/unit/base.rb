@@ -5,6 +5,7 @@ require 'rspec/autorun'
 # classes to test.
 require 'vagrant'
 require 'vagrant-parallels'
+require 'vagrant-spec/unit'
 
 # Add the test directory to the load path
 $:.unshift File.expand_path('../../', __FILE__)

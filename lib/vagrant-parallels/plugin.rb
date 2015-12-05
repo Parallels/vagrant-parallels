@@ -64,28 +64,28 @@ module VagrantPlugins
       end
 
       provider_capability(:parallels, :public_address) do
-        require_relative 'cap/public_address'
-        Cap::PublicAddress
+        require_relative 'cap'
+        Cap
       end
 
       provider_capability(:parallels, :forwarded_ports) do
-        require_relative 'cap/forwarded_ports'
-        Cap::ForwardedPorts
+        require_relative 'cap'
+        Cap
       end
 
       provider_capability(:parallels, :host_address) do
-        require_relative 'cap/host_address'
-        Cap::HostAddress
+        require_relative 'cap'
+        Cap
       end
 
       provider_capability(:parallels, :nic_mac_addresses) do
-        require_relative 'cap/nic_mac_addresses'
-        Cap::NicMacAddresses
+        require_relative 'cap'
+        Cap
       end
 
       provider_capability(:parallels, :snapshot_list) do
-        require_relative 'cap/snapshot_list'
-        Cap::SnapshotList
+        require_relative 'cap'
+        Cap
       end
 
       synced_folder(:parallels) do
