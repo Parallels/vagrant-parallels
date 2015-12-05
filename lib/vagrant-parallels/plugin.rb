@@ -68,6 +68,11 @@ module VagrantPlugins
         Cap::PublicAddress
       end
 
+      provider_capability(:parallels, :forwarded_ports) do
+        require_relative 'cap/forwarded_ports'
+        Cap::ForwardedPorts
+      end
+
       provider_capability(:parallels, :host_address) do
         require_relative 'cap/host_address'
         Cap::HostAddress
