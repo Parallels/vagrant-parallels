@@ -18,7 +18,7 @@ The Vagrant plugin installer will automatically download and install
 `vagrant-parallels` plugin.
 
 ## Requirements
-- Vagrant v1.5 or higher
+- Vagrant v1.8 or higher
 - Parallels Desktop for Mac version 8 or higher
 
 <div class="alert alert-warn">

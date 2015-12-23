@@ -8,7 +8,7 @@ allowing to power [Parallels Desktop for Mac](http://www.parallels.com/products/
 based virtual machines.
 
 ### Requirements 
-- [Vagrant v1.5](http://www.vagrantup.com) or higher
+- [Vagrant v1.8](http://www.vagrantup.com) or higher
 - [Parallels Desktop 8 for Mac](http://www.parallels.com/products/desktop/) or higher
 
 *Note:* In [**Parallels Desktop 11 for Mac**](http://www.parallels.com/products/desktop/), 
