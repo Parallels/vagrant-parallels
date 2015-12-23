@@ -37,7 +37,7 @@ module VagrantPlugins
           else
             env[:ui].info(I18n.t(
                             'vagrant.actions.vm.set_name.setting_name', name: name))
-            env[:machine].provider.driver.set_name(name)
+            env[:machine].provider.driver.set_name(env[:machine].id, name)
           end
 
           # Create the sentinel

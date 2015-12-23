@@ -1,7 +1,10 @@
 language: ruby
-before_install:
-  - rvm @global do gem uninstall bundler -x
-  - gem install bundler -v "< 1.7.0"
+
+sudo: false
+
+cache: bundler
+
 rvm:
   - 2.0.0
-script: rake test:unit
+
+script: bundle exec rake test:unit

@@ -7,6 +7,18 @@ en:
 # Translations for exception classes
 #-------------------------------------------------------------------------------
     errors:
+      box_id_not_found: |-
+        Parallels provider couldn't fetch the box image ID. This is usually because
+        the "config.pvs" file is corrupted or doesn't exist. Please remove the box,
+        re-add it, and try again.
+
+        Box: "%{name}"
+        Box VM config: "%{config}"
+
+      box_image_not_found: |-
+        Parallels VM image (*.pvm) could not be found in the directory of
+        '%{name}' box. This is usually because the image has been removed manually.
+        Please remove the box, re-add it, and try again.
       dhcp_leases_file_not_accessible: |-
         Parallels DHCP leases file is not accessible. The Parallels provider
         uses it to detect an IP address of virtual machine. This file must be
@@ -67,12 +79,6 @@ en:
         reinstall Parallels Desktop.
 
         Expected ISO path: "%{iso_path}"
-      parallels_tpl_name_not_found: |-
-        The VM import failed! Template name not found. Please verify that
-        the box you're using is not corrupted and try again.
-
-        Template config path: "%{config_path}"
-
       parallels_vm_option_not_found: |-
         Could not find a required option of Parallels Desktop virtual machine:
           %{vm_option}
@@ -95,17 +101,22 @@ en:
         Desktop for Mac. Please, be aware while choosing the edition to upgrade to.
       snapshot_id_not_detected: |-
         ID of the newly created shapshod could not be detected. This is an
-        internal error that users should never see. Please report a bug.
+        internal error that users should never see. Please report a bug to
+        Parallels provider.
 
         stdout: %{stdout}
+      snapshot_not_found: |-
+        The 'linked_clone_snapshot' specified could not be found. Please double
+        check and try again.
+
+         Snapshot ID: %{snapshot}
       shared_adapter_not_found: |-
         Shared network adapter was not found in your virtual machine configuration.
         It is required to communicate with VM and forward ports. Please check
         network configuration in your Vagrantfile.
-      vm_import_failure: |-
-        The VM import failed! Please verify that the box you're using is not
+      vm_clone_failure: |-
+        The VM cloning failed! Please ensure that the box you're using is not
         corrupted and try again.
-
       vm_name_exists: |-
         Parallels Desktop virtual machine with the name '%{name}' already exists.
         Please use another name or delete the machine with the existing
@@ -170,6 +181,12 @@ en:
 #-------------------------------------------------------------------------------
     actions:
       vm:
+        box:
+          register: Registering VM image from the base box '%{name}'...
+          unregister: Unregistering the box VM image...
+        clone:
+          full: Cloning new virtual machine...
+          linked: Creating new virtual machine as a linked clone...
         handle_guest_tools:
           cant_install: |-
             Vagrant doesn't support installing Parallels Tools for the guest OS
@@ -190,14 +207,12 @@ en:
             Parallels Tools installed on this VM are outdated! In most cases
             this is fine but in rare cases it can cause things such as shared
             folders to not work properly. If you see shared folder errors,
-            please update Parallels Tools within the virtual machine and 
+            please update Parallels Tools within the virtual machine and
             reload your VM.
         export:
           compacting: Compacting exported HDDs...
         forward_ports:
           forwarding_entry: |-
             %{guest_port} => %{host_port}
-        import:
-          importing_linked: Importing base box '%{name}' as a linked clone...
         sane_defaults:
           setting: Setting the default configuration for VM...
