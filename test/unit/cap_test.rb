@@ -25,8 +25,8 @@ describe VagrantPlugins::Parallels::Cap do
   describe '#forwarded_ports' do
     it 'returns all the forwarded ports' do
       allow(driver).to receive(:read_forwarded_ports).and_return([
-        [nil, nil, 123, 456],
-        [nil, nil, 245, 245],
+        { hostport:  123, guestport: 456 },
+        { hostport:  245, guestport: 245 }
       ])
 
       expect(described_class.forwarded_ports(machine)).to eq({
