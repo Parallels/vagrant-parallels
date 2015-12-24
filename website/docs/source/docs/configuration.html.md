@@ -39,33 +39,33 @@ You can configure it to create a linked clone instead:
 
 ```ruby
 config.vm.provider "parallels" do |prl|
-  prl.use_linked_clone = true
+  prl.linked_clone = true
 end
 ```
 
-Difference between linked and regular clones:
+Difference between linked and full clones:
 
-- Linked clone creation is extremely faster than the regular cloning, because 
+- Linked clone creation is extremely faster than the full cloning, because 
 there is no image copying process.
-- Linked clone require much less disk space, because its hard disk image is less 
-than 1Mb initially (it is bound to the parent's snapshot).
-- Regular clone is a full image copy, which is independent from the box. 
-The linked clone is bound to the specific snapshot of the box image. It means 
+- Linked clone requires much less disk space, because initially its hard disk 
+image is less than 1Mb (it is bound to the parent's snapshot).
+- Full clone is a full image copy, which is independent from the box. 
+Linked clones are bound to the specific snapshot of the box image. It means 
 that box deletion will cause all its linked clones being corrupted. Then please,
 delete your boxes carefully!
 
 ## Parallels Tools Auto-Update
 <div class="alert alert-info">
 	<p>
-        <strong>Note:</strong> This feature makes sense to Linux guests only.
-        In Windows and Mac OS guests Parallels Tools will be always updated
+        <strong>Note:</strong> This feature makes sense to Linux and OS X guests 
+        only. In Windows guests Parallels Tools will be always updated
         automatically by the special installation agent running in GUI mode.
 	</p>
 </div>
 
 Parallels Tools is a set of Parallels utilities that ensures a high level of
 integration between the host and the guest operating systems (read more:
-[Parallels Tools Overview](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Desktop%20User's%20Guide/32789.htm)).
+[Parallels Tools Overview](http://download.parallels.com/desktop/v11/docs/en_US/Parallels%20Desktop%20User's%20Guide/32789.htm)).
 
 By default the Parallels provider checks the status of Parallels Tools after
 booting the machine. If they are outdated or newer, a warning message will be
@@ -128,5 +128,5 @@ end
 ```
 
 
-You can read the [Reference Guide](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Command%20Line%20Reference%20Guide.pdf)
+You can read the [Command-Line Reference](http://download.parallels.com/desktop/v11/docs/en_US/Parallels%20Desktop%20Pro%20Edition%20Command-Line%20Reference.pdf)
 for the complete information about the prlctl command and its options.

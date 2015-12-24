@@ -14,6 +14,11 @@ module VagrantPlugins
         # We use forwardable to do all our driver forwarding
         extend Forwardable
 
+        # We cache the Parallels Desktop version here once we have one,
+        # since during the execution of Vagrant, it likely doesn't change.
+        @@version = nil
+        @@version_lock = Mutex.new
+
         # The UUID of the virtual machine we represent
         attr_reader :uuid
 
@@ -29,23 +34,26 @@ module VagrantPlugins
 
           # Read and assign the version of Parallels Desktop we know which
           # specific driver to instantiate.
-          @version = read_version || ''
-
+          @@version_lock.synchronize do
+            @@version = read_version
+          end
+            
           # Instantiate the proper version driver for Parallels Desktop
-          @logger.debug("Finding driver for Parallels Desktop version: #{@version}")
+          @logger.debug("Finding driver for Parallels Desktop version: #{@@version}")
 
+          major_ver = @@version.split('.').first.to_i
           driver_klass =
-            case @version.split('.').first
-              when '8' then PD_8
-              when '9' then PD_9
-              when '10' then PD_10
-              when '11' then PD_11
-              else raise Errors::ParallelsUnsupportedVersion
+            case major_ver
+            when 1..7 then raise Errors::ParallelsUnsupportedVersion
+            when 8 then PD_8
+            when 9 then PD_9
+            when 10 then PD_10
+            else PD_11
             end
 
           # Starting since PD 11 only Pro and Business editions have CLI
           # functionality and can be used with Vagrant.
-          if @version.split('.').first.to_i >= 11
+          if major_ver >= 11
             edition = read_edition
             if !edition || !%w(any pro business).include?(edition)
               raise Errors::ParallelsUnsupportedEdition
@@ -54,6 +62,7 @@ module VagrantPlugins
 
           @logger.info("Using Parallels driver: #{driver_klass}")
           @driver = driver_klass.new(@uuid)
+          @version = @@version
 
           if @uuid
             # Verify the VM exists, and if it doesn't, then don't worry
@@ -77,6 +86,7 @@ module VagrantPlugins
                        :forward_ports,
                        :halt,
                        :clone_vm,
+                       :list_snapshots,
                        :read_bridged_interfaces,
                        :read_current_snapshot,
                        :read_forwarded_ports,

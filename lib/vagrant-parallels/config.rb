@@ -6,7 +6,8 @@ module VagrantPlugins
       attr_accessor :destroy_unused_network_interfaces
       attr_accessor :functional_psf
       attr_accessor :optimize_power_consumption
-      attr_accessor :use_linked_clone
+      attr_accessor :linked_clone
+      attr_accessor :linked_clone_snapshot
       attr_accessor :name
       attr_reader   :network_adapters
       attr_accessor :regen_src_uuid
@@ -17,13 +18,15 @@ module VagrantPlugins
 
       # Compatibility with old names
       alias :regen_box_uuid= :regen_src_uuid=
+      alias :use_linked_clone= :linked_clone=
 
       def initialize
         @check_guest_tools = UNSET_VALUE
         @customizations    = []
         @destroy_unused_network_interfaces = UNSET_VALUE
         @functional_psf = UNSET_VALUE
-        @use_linked_clone = UNSET_VALUE
+        @linked_clone   = UNSET_VALUE
+        @linked_clone_snapshot = UNSET_VALUE
         @network_adapters  = {}
         @name              = UNSET_VALUE
         @optimize_power_consumption = UNSET_VALUE
@@ -77,7 +80,8 @@ module VagrantPlugins
           @functional_psf = true
         end
 
-        @use_linked_clone = false if @use_linked_clone == UNSET_VALUE
+        @linked_clone = false if @linked_clone == UNSET_VALUE
+        @linked_clone_snapshot = nil if @linked_clone_snapshot == UNSET_VALUE
 
         @name = nil if @name == UNSET_VALUE
 

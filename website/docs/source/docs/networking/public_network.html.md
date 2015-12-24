@@ -39,10 +39,19 @@ definition.
 
 ```ruby
 Vagrant.configure("2") do |config|
-  config.vm.network "public_network", bridge: 'en1'
+  config.vm.network "public_network", bridge: "en1"
 end
 ```
 
-The string identifying the desired interface must exactly match the name of an
-available interface. If it can't be found, Vagrant will ask you to pick
-from a list of available network interfaces.
+The string identifying the desired interface must match either the name or 
+identifier of an available interface. If it can't be found, Vagrant will ask you 
+to pick from a list of available network interfaces.
+
+It is also possible to specify a list of adapters to bridge against:
+
+```ruby
+config.vm.network "public_network", bridge: ["en1", "en6"]
+```
+
+In this example, the first network adapter that exists and can successfully be
+bridge will be used.

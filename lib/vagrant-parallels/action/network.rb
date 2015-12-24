@@ -161,18 +161,23 @@ module VagrantPlugins
             @logger.debug("Bridge was directly specified in config, searching for: #{config[:bridge]}")
 
             # Search for a matching bridged interface
-            bridgedifs.each do |interface|
-              if interface[:name].downcase == config[:bridge].downcase
-                @logger.debug('Specific bridge found as configured in the Vagrantfile. Using it.')
-                chosen_bridge = interface[:name]
-                break
+            Array(config[:bridge]).each do |bridge|
+              bridge = bridge.downcase if bridge.respond_to?(:downcase)
+              bridgedifs.each do |interface|
+                if bridge === interface[:name].downcase
+                  @logger.debug('Specific bridge found as configured in the Vagrantfile. Using it.')
+                  chosen_bridge = interface[:name]
+                  break
+                end
               end
+              break if chosen_bridge
             end
 
             # If one wasn't found, then we notify the user here.
             if !chosen_bridge
-              @env[:ui].info I18n.t('vagrant.actions.vm.bridged_networking.specific_not_found',
-                                    :bridge => config[:bridge])
+              @env[:ui].info I18n.t(
+                'vagrant.actions.vm.bridged_networking.specific_not_found',
+                bridge: config[:bridge])
             end
           end
 
@@ -188,14 +193,14 @@ module VagrantPlugins
             else
               # More than one bridgable interface requires a user decision, so
               # show options to choose from.
-              @env[:ui].info I18n.t('vagrant.actions.vm.bridged_networking.available',
-                                    :prefix => false)
+              @env[:ui].info I18n.t(
+                'vagrant.actions.vm.bridged_networking.available', prefix: false)
               bridgedifs.each_index do |index|
                 interface = bridgedifs[index]
-                @env[:ui].info("#{index + 1}) #{interface[:name]}", :prefix => false)
+                @env[:ui].info("#{index + 1}) #{interface[:name]}", prefix: false)
               end
               @env[:ui].info(I18n.t(
-                               'vagrant.actions.vm.bridged_networking.choice_help')+"\n")
+                'vagrant.actions.vm.bridged_networking.choice_help')+"\n")
 
               # The range of valid choices
               valid = Range.new(1, bridgedifs.length)
@@ -410,8 +415,7 @@ module VagrantPlugins
           if net_nums.empty?
             'vagrant-vnet0'
           else
-            net_nums.sort! if net_nums
-            free_names = Array(0..net_nums.last.next) - net_nums
+            free_names = Array(0..net_nums.max) - net_nums
             "vagrant-vnet#{free_names.first}"
           end
         end

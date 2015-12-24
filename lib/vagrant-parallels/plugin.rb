@@ -6,8 +6,8 @@ end
 
 # This is a sanity check to make sure no one is attempting to install
 # this into an early Vagrant version.
-if Vagrant::VERSION < '1.5.0'
-  raise 'The Vagrant Parallels plugin is only compatible with Vagrant 1.5+'
+if Gem::Version.new(Vagrant::VERSION).release < Gem::Version.new('1.8.0')
+  raise 'The installed version of Vagrant Parallels plugin is only compatible with Vagrant 1.8+'
 end
 
 module VagrantPlugins
@@ -31,6 +31,11 @@ module VagrantPlugins
       config(:parallels, :provider) do
         require_relative 'config'
         Config
+      end
+
+      guest_capability(:darwin, :install_parallels_tools) do
+        require_relative 'guest_cap/darwin/install_parallels_tools'
+        GuestDarwinCap::InstallParallelsTools
       end
 
       guest_capability(:darwin, :mount_parallels_shared_folder) do
@@ -64,18 +69,28 @@ module VagrantPlugins
       end
 
       provider_capability(:parallels, :public_address) do
-        require_relative 'cap/public_address'
-        Cap::PublicAddress
+        require_relative 'cap'
+        Cap
+      end
+
+      provider_capability(:parallels, :forwarded_ports) do
+        require_relative 'cap'
+        Cap
       end
 
       provider_capability(:parallels, :host_address) do
-        require_relative 'cap/host_address'
-        Cap::HostAddress
+        require_relative 'cap'
+        Cap
       end
 
       provider_capability(:parallels, :nic_mac_addresses) do
-        require_relative 'cap/nic_mac_addresses'
-        Cap::NicMacAddresses
+        require_relative 'cap'
+        Cap
+      end
+
+      provider_capability(:parallels, :snapshot_list) do
+        require_relative 'cap'
+        Cap
       end
 
       synced_folder(:parallels) do

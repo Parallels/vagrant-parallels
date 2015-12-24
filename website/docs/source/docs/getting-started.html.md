@@ -25,7 +25,7 @@ Create a new directory and init the new Vagrant project in it:
 ```
 $ mkdir new_vagrant_project
 $ cd new_vagrant_project
-$ vagrant init parallels/centos-6.6
+$ vagrant init parallels/ubuntu-14.04
 $ vagrant up --provider=parallels
 ```
 

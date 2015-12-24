@@ -10,7 +10,6 @@ shared_examples 'provider/linked_clone' do |provider, options|
   before do
     environment.skeleton('linked_clone')
     assert_execute('vagrant', 'box', 'add', 'basic', options[:box])
-    assert_execute('vagrant', 'up', "--provider=#{provider}")
   end
 
   after do
@@ -18,7 +17,12 @@ shared_examples 'provider/linked_clone' do |provider, options|
   end
 
   it 'creates machine as linked clone' do
-    status('Test: machine is running after up')
+    status('Test: machine is created as a linked clone')
+    result = execute('vagrant', 'up', "--provider=#{provider}")
+    expect(result).to exit_with(0)
+    expect(result.stdout).to match(/linked clone/)
+
+    status('Test: machine is available by ssh')
     result = execute('vagrant', 'ssh', '-c', 'echo foo')
     expect(result).to exit_with(0)
     expect(result.stdout).to match(/foo\n$/)
