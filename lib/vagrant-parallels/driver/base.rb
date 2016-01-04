@@ -67,6 +67,9 @@ module VagrantPlugins
           args << '--linked' if options[:linked]
           args.concat(['--id', options[:snapshot_id]]) if options[:snapshot_id]
 
+          # Regenerate SourceVmUuid of the cloned VM
+          args << '--regenerate-src-uuid' if options[:regenerate_src_uuid]
+
           execute_prlctl(*args) do |_, data|
             lines = data.split('\r')
             # The progress of the clone will be in the last line. Do a greedy

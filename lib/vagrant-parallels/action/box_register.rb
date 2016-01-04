@@ -84,11 +84,6 @@ module VagrantPlugins
           # We need the box ID to be the same for all parallel runs
           options = ['--preserve-uuid']
 
-          if env[:machine].provider_config.regen_src_uuid \
-            && env[:machine].provider.pd_version_satisfies?('>= 10.1.2')
-            options << '--regenerate-src-uuid'
-          end
-
           # Register the box VM image
           env[:machine].provider.driver.register(pvm, options)
           env[:clone_id] = box_id(env, pvm)
