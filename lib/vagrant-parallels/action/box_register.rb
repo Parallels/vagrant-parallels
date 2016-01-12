@@ -58,7 +58,7 @@ module VagrantPlugins
               config: tpl_config
           end
 
-          id
+          id.delete('{}')
         end
 
         def register_box(env)
