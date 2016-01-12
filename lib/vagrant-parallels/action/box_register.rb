@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'log4r'
 
 module VagrantPlugins
@@ -61,10 +62,30 @@ module VagrantPlugins
           id.delete('{}')
         end
 
-        def register_box(env)
-          box_id_file = env[:machine].box.directory.join('box_id')
+        def lease_box_lock(env)
+          lease_file = env[:machine].box.directory.join('box_lease_count')
 
-          # Read the master ID if we have it in the file.
+          # If the temporary file, verify it is not too old. If its older than
+          # 1 hour, delete it first because previous run may be failed.
+          if lease_file.file? && lease_file.mtime.to_i < Time.now.to_i - 60 * 60
+            lease_file.delete
+          end
+
+          # Increment a counter in the file. Create the file if it doesn't exist
+          FileUtils.touch(lease_file)
+          File.open(lease_file ,'r+') do |file|
+            num = file.gets.to_i
+            file.rewind
+            file.puts num.next
+          end
+        end
+
+        def register_box(env)
+          # Increment the lock counter in the temporary lease file
+          lease_box_lock(env)
+
+          # Read the box ID if we have it in the file.
+          box_id_file = env[:machine].box.directory.join('box_id')
           env[:clone_id] = box_id_file.read.chomp if box_id_file.file?
 
           # If we have the ID and the VM exists already, then we
