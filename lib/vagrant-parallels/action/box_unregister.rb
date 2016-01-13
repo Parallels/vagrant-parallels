@@ -39,6 +39,8 @@ module VagrantPlugins
             num = file.gets.to_i
             file.rewind
             file.puts(num - 1)
+            file.fsync
+            file.flush
           end
 
           # Delete the lease file if we are the last who need this box.

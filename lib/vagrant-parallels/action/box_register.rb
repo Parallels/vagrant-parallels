@@ -77,6 +77,8 @@ module VagrantPlugins
             num = file.gets.to_i
             file.rewind
             file.puts num.next
+            file.fsync
+            file.flush
           end
         end
 
