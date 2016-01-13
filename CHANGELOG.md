@@ -1,3 +1,13 @@
+## 1.6.1 (January 13, 2016)
+
+BUG FIXES:
+  - action/import: Fix `regenerate_src_uuid` option behavior in parallel run 
+    [[GH-241](https://github.com/Parallels/vagrant-parallels/pull/241)]
+  - action/box_unregister: Use temporary lock file to prevent early unregister 
+    in parallel run [[GH-244](https://github.com/Parallels/vagrant-parallels/pull/244)]
+  - action/network: Fix detection of the next virtual network ID [[GH-245](https://github.com/Parallels/vagrant-parallels/pull/245)]
+
+
 ## 1.6.0 (December 24, 2015)
 
 BREAKING CHANGES:
