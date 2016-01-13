@@ -67,6 +67,9 @@ module VagrantPlugins
           args << '--linked' if options[:linked]
           args.concat(['--id', options[:snapshot_id]]) if options[:snapshot_id]
 
+          # Regenerate SourceVmUuid of the cloned VM
+          args << '--regenerate-src-uuid' if options[:regenerate_src_uuid]
+
           execute_prlctl(*args) do |_, data|
             lines = data.split('\r')
             # The progress of the clone will be in the last line. Do a greedy
@@ -526,25 +529,7 @@ module VagrantPlugins
         # @param [String] pvm_file Path to the machine image (*.pvm)
         # @param [Array<String>] opts List of options for "prlctl register"
         def register(pvm_file, opts=[])
-          args = [@prlctl_path, 'register', pvm_file, *opts]
-
-          3.times do
-            result = raw(*args)
-            # Exit if everything is OK
-            return if result.exit_code == 0
-
-            # It may occur in the race condition with other Vagrant processes.
-            # It is OK, just exit.
-            return if result.stderr.include?('is already registered.')
-
-            # Sleep a bit though to give Parallels Desktop time to fix itself
-            sleep 2
-          end
-
-          # If we reach this point, it means that we consistently got the
-          # failure, do a standard execute now. This will raise an
-          # exception if it fails again.
-          execute(*args)
+          execute_prlctl('register', pvm_file, *opts)
         end
 
         # Switches the VM state to the specified snapshot
@@ -619,25 +604,7 @@ module VagrantPlugins
         # Virtual machine will be removed from the VM list, but its image will
         # not be deleted from the disk. So, it can be registered again.
         def unregister(uuid)
-          args = [@prlctl_path, 'unregister', uuid]
-          3.times do
-            result = raw(*args)
-            # Exit if everything is OK
-            return if result.exit_code == 0
-
-            # It may occur in the race condition with other Vagrant processes.
-            # Both are OK, just exit.
-            return if result.stderr.include?('is not registered')
-            return if result.stderr.include?('is being cloned')
-
-            # Sleep a bit though to give Parallels Desktop time to fix itself
-            sleep 2
-          end
-
-          # If we reach this point, it means that we consistently got the
-          # failure, do a standard execute now. This will raise an
-          # exception if it fails again.
-          execute(*args)
+          execute_prlctl('unregister', uuid)
         end
 
         # Unshare folders.

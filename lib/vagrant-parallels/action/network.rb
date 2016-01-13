@@ -415,7 +415,7 @@ module VagrantPlugins
           if net_nums.empty?
             'vagrant-vnet0'
           else
-            free_names = Array(0..net_nums.max) - net_nums
+            free_names = Array(0..net_nums.max.next) - net_nums
             "vagrant-vnet#{free_names.first}"
           end
         end

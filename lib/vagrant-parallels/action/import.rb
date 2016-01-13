@@ -14,6 +14,8 @@ module VagrantPlugins
         end
 
         def call(env)
+          options = {}
+
           # Disable requiring password for register and clone actions [GH-67].
           # It is available only since PD 10.
           if env[:machine].provider.pd_version_satisfies?('>= 10')
@@ -22,18 +24,27 @@ module VagrantPlugins
             env[:machine].provider.driver.disable_password_restrictions(acts)
           end
 
+          if env[:machine].provider_config.regen_src_uuid \
+            && env[:machine].provider.pd_version_satisfies?('>= 10.1.2')
+            options[:regenerate_src_uuid] = true
+          end
+
           # Linked clones are supported only for PD 11 and higher
           if env[:machine].provider_config.linked_clone \
             && env[:machine].provider.pd_version_satisfies?('>= 11')
             # Linked clone creation should not be concurrent [GH-206]
+            options[:snapshot_id] = env[:clone_snapshot_id]
+            options[:linked] = true
             @@lock.synchronize do
               lock_key = Digest::MD5.hexdigest("#{env[:clone_id]}-linked-clone")
               env[:machine].env.lock(lock_key, retry: true) do
-                clone_linked(env)
+                env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.linked')
+                clone(env, options)
               end
             end
           else
-            clone_full(env)
+            env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.full')
+            clone(env, options)
           end
 
           # If we got interrupted, then the import could have been
@@ -44,7 +55,7 @@ module VagrantPlugins
           raise Errors::VMCloneFailure if !env[:machine].id
 
           if env[:machine].provider_config.regen_src_uuid \
-            && env[:machine].provider.pd_version_satisfies?('< 11')
+            && env[:machine].provider.pd_version_satisfies?('< 10.1.2')
             @logger.info('Regenerate SourceVmUuid by editing config.pvs file')
             env[:machine].provider.driver.regenerate_src_uuid
           end
@@ -88,27 +99,9 @@ module VagrantPlugins
 
         protected
 
-        def clone_full(env)
-          env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.full')
+        def clone(env, options)
           env[:machine].id = env[:machine].provider.driver.clone_vm(
-            env[:clone_id]) do |progress|
-            env[:ui].clear_line
-            env[:ui].report_progress(progress, 100, false)
-          end
-
-          # Clear the line one last time since the progress meter doesn't disappear
-          # immediately.
-          env[:ui].clear_line
-        end
-
-        def clone_linked(env)
-          opts = {
-            snapshot_id: env[:clone_snapshot_id],
-            linked: true
-          }
-          env[:ui].info I18n.t('vagrant_parallels.actions.vm.clone.linked')
-          env[:machine].id = env[:machine].provider.driver.clone_vm(
-            env[:clone_id], opts) do |progress|
+            env[:clone_id], options) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
           end
