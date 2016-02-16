@@ -51,8 +51,14 @@ module VagrantPlugins
                 next
               end
 
-              b2.use EnvSet, :force_halt => true
-              b2.use action_halt
+              # Do not resume && halt the suspended VM, just delete it
+              b2.use Call, IsState, :suspended do |env3, b3|
+                if !env3[:result]
+                  b3.use EnvSet, :force_halt => true
+                  b3.use action_halt
+                end
+              end
+
               b2.use Destroy
               b2.use DestroyUnusedNetworkInterfaces
               b2.use ProvisionerCleanup
