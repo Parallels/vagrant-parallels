@@ -11,6 +11,7 @@ namespace :acceptance do
       linked_clone
       network/forwarded_port
       network/private_network
+      snapshot
       synced_folder
       synced_folder/nfs
       synced_folder/rsync

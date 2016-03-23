@@ -49,7 +49,7 @@ Having problems while using the provider? Ask your question on the official foru
 ["Parallels Provider for Vagrant" forum branch](http://forum.parallels.com/forumdisplay.php?737-Parallels-Provider-for-Vagrant)
 
 If you get an error while using the Parallels provider or discover a bug,
-please report it on the [IssueTracker](https://github.com/Parallels/vagrant-parallels).
+please report it on the [Issue Tracker](https://github.com/Parallels/vagrant-parallels/issues).
 
 ## License and Authors
 

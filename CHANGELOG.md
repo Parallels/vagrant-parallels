@@ -1,3 +1,10 @@
+## 1.6.2 (March 23, 2016)
+BUG FIXES:
+  - Fix unsupported action error for `vagrant snapshot` commands [[GH-254](https://github.com/Parallels/vagrant-parallels/pull/254)]
+
+IMPROVEMENTS:
+  - action/destroy: Destroy suspended VMs without resuming
+  
 ## 1.6.1 (January 13, 2016)
 
 BUG FIXES:

@@ -51,8 +51,14 @@ module VagrantPlugins
                 next
               end
 
-              b2.use EnvSet, :force_halt => true
-              b2.use action_halt
+              # Do not resume && halt the suspended VM, just delete it
+              b2.use Call, IsState, :suspended do |env3, b3|
+                if !env3[:result]
+                  b3.use EnvSet, :force_halt => true
+                  b3.use action_halt
+                end
+              end
+
               b2.use Destroy
               b2.use DestroyUnusedNetworkInterfaces
               b2.use ProvisionerCleanup
@@ -169,6 +175,50 @@ module VagrantPlugins
             b1.use Resume
             b1.use Provision
             b1.use WaitForCommunicator, [:resuming, :running]
+          end
+        end
+      end
+
+      def self.action_snapshot_delete
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
+            else
+              b1.use SnapshotDelete
+            end
+          end
+        end
+      end
+
+      # This is the action that is primarily responsible for saving a snapshot
+      def self.action_snapshot_restore
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
+              next
+            end
+
+            b1.use SnapshotRestore
+            b1.use Call, IsEnvSet, :snapshot_delete do |env2, b2|
+              if env2[:result]
+                b2.use action_snapshot_delete
+              end
+            end
+          end
+        end
+      end
+
+      # This is the action that is primarily responsible for saving a snapshot
+      def self.action_snapshot_save
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, IsState, :not_created do |env1, b1|
+            if env1[:result]
+              b1.use Message, I18n.t('vagrant.commands.common.vm_not_created')
+            else
+              b1.use SnapshotSave
+            end
           end
         end
       end
@@ -359,6 +409,9 @@ module VagrantPlugins
       autoload :SaneDefaults, File.expand_path('../action/sane_defaults',__FILE__)
       autoload :SetupPackageFiles, File.expand_path('../action/setup_package_files', __FILE__)
       autoload :SetName, File.expand_path('../action/set_name', __FILE__)
+      autoload :SnapshotDelete, File.expand_path('../action/snapshot_delete', __FILE__)
+      autoload :SnapshotRestore, File.expand_path('../action/snapshot_restore', __FILE__)
+      autoload :SnapshotSave, File.expand_path('../action/snapshot_save', __FILE__)
       autoload :Suspend, File.expand_path('../action/suspend', __FILE__)
     end
   end
