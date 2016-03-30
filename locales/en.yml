@@ -69,12 +69,12 @@ en:
         appears that every slot is in use. Please lower the number of used
         network adapters.
       parallels_not_detected: |-
-        Vagrant could not detect Parallels Desktop! Make sure it is properly installed.
-        Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
-        this to be available on the PATH. If Parallels Desktop is installed, please find
-        the `prlctl` binary and add it to the PATH environmental variable.
+        Vagrant could not detect Parallels Desktop Pro! Make sure it is properly installed.
+        Vagrant uses the `prlctl` binary that only ships with Pro and Business
+        editions of Parallels Desktop. If the one is installed, please make sure
+        that the `prlctl` binary is available on the PATH environment variable.
       parallels_tools_iso_not_found: |-
-        Parallels Tools ISO file does not exists. The Parallels provider uses it
+        Parallels Tools ISO file does not exist. The Parallels provider uses it
         to install or update Parallels Tools in the guest machine. Try to
         reinstall Parallels Desktop.
 
