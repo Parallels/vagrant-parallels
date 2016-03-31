@@ -61,7 +61,8 @@ module VagrantPlugins
           settings.merge!(
             startup_view: 'headless',
             time_sync: 'on',
-            disable_timezone_sync: 'on'
+            disable_timezone_sync: 'on',
+            shf_host_defined: 'off'
           )
 
           settings
