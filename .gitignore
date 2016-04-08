@@ -13,7 +13,7 @@ vagrant-spec.config.rb
 .bundle
 pkg/*
 tags
-Gemfile.lock
+/Gemfile.lock
 test/tmp/
 /vendor
 
