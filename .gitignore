@@ -6,6 +6,7 @@ acceptance_config.yml
 boxes/*
 /Vagrantfile
 .vagrant
+/website/docs/build
 vagrant-spec.config.rb
 
 # Bundler/Rubygems
@@ -13,7 +14,7 @@ vagrant-spec.config.rb
 .bundle
 pkg/*
 tags
-Gemfile.lock
+/Gemfile.lock
 test/tmp/
 /vendor
 
