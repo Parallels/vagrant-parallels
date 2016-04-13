@@ -3,6 +3,7 @@ require 'log4r'
 require 'vagrant/util/busy'
 require 'vagrant/util/network_ip'
 require 'vagrant/util/platform'
+require 'vagrant/util/retryable'
 require 'vagrant/util/subprocess'
 require 'vagrant/util/which'
 
@@ -161,7 +162,11 @@ module VagrantPlugins
         # @param [String] uuid Name or UUID of the target VM
         # @param [String] snapshot_id Snapshot ID
         def delete_snapshot(uuid, snapshot_id)
-          execute_prlctl('snapshot-delete', uuid, '--id', snapshot_id)
+          # Sometimes this command fails with 'Data synchronization is currently
+          # in progress'. Just wait and retry.
+          retryable(on: VagrantPlugins::Parallels::Errors::ExecutionError, tries: 2, sleep: 2) do
+            execute_prlctl('snapshot-delete', uuid, '--id', snapshot_id)
+          end
         end
 
         # Deletes any host only networks that aren't being used for anything.
@@ -537,7 +542,11 @@ module VagrantPlugins
         # @param [String] uuid Name or UUID of the target VM
         # @param [String] snapshot_id Snapshot ID
         def restore_snapshot(uuid, snapshot_id)
-          execute_prlctl('snapshot-switch', uuid, '-i', snapshot_id)
+          # Sometimes this command fails with 'Data synchronization is currently
+          # in progress'. Just wait and retry.
+          retryable(on: VagrantPlugins::Parallels::Errors::ExecutionError, tries: 2, sleep: 2) do
+            execute_prlctl('snapshot-switch', uuid, '-i', snapshot_id)
+          end
         end
 
         # Resumes the virtual machine.
