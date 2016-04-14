@@ -19,10 +19,6 @@ describe VagrantPlugins::Parallels::Config do
     end
   end
 
-  def valid_defaults
-    subject.image = 'foo'
-  end
-
   before do
     vm_config = double('vm_config')
     vm_config.stub(networks: [])
@@ -39,10 +35,11 @@ describe VagrantPlugins::Parallels::Config do
   context 'defaults' do
     before { subject.finalize! }
 
-    it { expect(subject.check_guest_additions).to be_true }
+    it { expect(subject.check_guest_tools).to eq(true) }
     it { expect(subject.name).to be_nil }
-    it { expect(subject.functional_psf).to be_true }
-    it { expect(subject.optimize_power_consumption).to be_true }
+    it { expect(subject.functional_psf).to eq(true) }
+    it { expect(subject.linked_clone).to eq(false) }
+    it { expect(subject.regen_src_uuid).to eq(true) }
 
     it 'should have one Shared adapter' do
       expect(subject.network_adapters).to eql({
@@ -86,6 +83,36 @@ describe VagrantPlugins::Parallels::Config do
       subject.network_adapter(2, :bridged, auto_config: true)
       expect(subject.network_adapters[2]).to eql(
         [:bridged, auto_config: true])
+    end
+  end
+
+  describe '#linked_clone' do
+    it 'is compatible with deprecated use_linked_lone' do
+      subject.use_linked_clone = true
+      subject.finalize!
+      expect(subject.linked_clone).to eql(true)
+    end
+
+    it 'is not overridden by use_linked_lone' do
+      subject.linked_clone = false
+      subject.use_linked_clone = true
+      subject.finalize!
+      expect(subject.linked_clone).to eql(false)
+    end
+  end
+
+  describe '#regen_src_uuid' do
+    it 'is compatible with deprecated regen_box_uuid' do
+      subject.regen_box_uuid = false
+      subject.finalize!
+      expect(subject.regen_src_uuid).to eql(false)
+    end
+
+    it 'is not overridden by regen_box_uuid' do
+      subject.regen_src_uuid = true
+      subject.regen_box_uuid = false
+      subject.finalize!
+      expect(subject.regen_src_uuid).to eql(true)
     end
   end
 end
