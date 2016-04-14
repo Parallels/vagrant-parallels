@@ -19,10 +19,6 @@ describe VagrantPlugins::Parallels::Config do
     end
   end
 
-  def valid_defaults
-    subject.image = 'foo'
-  end
-
   before do
     vm_config = double('vm_config')
     vm_config.stub(networks: [])
@@ -39,10 +35,11 @@ describe VagrantPlugins::Parallels::Config do
   context 'defaults' do
     before { subject.finalize! }
 
-    it { expect(subject.check_guest_additions).to be_true }
+    it { expect(subject.check_guest_tools).to eq(true) }
     it { expect(subject.name).to be_nil }
-    it { expect(subject.functional_psf).to be_true }
-    it { expect(subject.optimize_power_consumption).to be_true }
+    it { expect(subject.functional_psf).to eq(true) }
+    it { expect(subject.linked_clone).to eq(false) }
+    it { expect(subject.regen_src_uuid).to eq(true) }
 
     it 'should have one Shared adapter' do
       expect(subject.network_adapters).to eql({
