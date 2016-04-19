@@ -33,6 +33,9 @@ module VagrantPlugins
         end
 
         def recover(env)
+          # If we don't have a box, nothing to do
+          return if !env[:machine].box
+
           unregister_box(env)
         end
 
