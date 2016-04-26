@@ -74,7 +74,7 @@ module VagrantPlugins
         def_delegators :@driver,
                        :clear_forwarded_ports,
                        :clear_shared_folders,
-                       :compact,
+                       :compact_hdd,
                        :create_host_only_network,
                        :create_snapshot,
                        :delete,

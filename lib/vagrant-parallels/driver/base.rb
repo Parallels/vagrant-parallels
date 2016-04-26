@@ -82,20 +82,16 @@ module VagrantPlugins
           read_vms[dst_name]
         end
 
-        # Compacts all disk drives of virtual machine
-        def compact(uuid)
-          hw_info = read_settings(uuid).fetch('Hardware', {})
-          used_drives = hw_info.select do |name, _|
-            name.start_with? 'hdd'
-          end
-          used_drives.each_value do |drive_params|
-            execute(@prldisktool_path, 'compact', '--hdd', drive_params['image']) do |_, data|
-              lines = data.split('\r')
-              # The progress of the compact will be in the last line. Do a greedy
-              # regular expression to find what we're looking for.
-              if lines.last =~ /.+?(\d{,3}) ?%/
-                yield $1.to_i if block_given?
-              end
+        # Compacts the specified virtual disk image
+        #
+        # @param [<String>] hdd_path Path to the target '*.hdd'
+        def compact_hdd(hdd_path)
+          execute(@prldisktool_path, 'compact', '--hdd', hdd_path) do |_, data|
+            lines = data.split('\r')
+            # The progress of the compact will be in the last line. Do a greedy
+            # regular expression to find what we're looking for.
+            if lines.last =~ /.+?(\d{,3}) ?%/
+              yield $1.to_i if block_given?
             end
           end
         end
