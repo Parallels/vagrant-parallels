@@ -38,6 +38,13 @@ en:
         JSON string is shown below:
 
         %{data}
+
+      external_disk_not_found: |-
+        External disk image could not be found. In case of linked clone it is
+        usually because the parent VM image was removed. It means that the virtual
+        disk is inconsistent, please remove it from the VM configuration.
+
+        Disk image path: %{path}
       linux_mount_failed: |-
         Failed to mount folders in Linux guest. This is usually because
         the "prl_fs" file system is not available. Please verify that
@@ -211,6 +218,7 @@ en:
             reload your VM.
         export:
           compacting: Compacting exported HDDs...
+          copying_linked_disks: Copying linked disks...
         forward_ports:
           forwarding_entry: |-
             %{guest_port} => %{host_port}

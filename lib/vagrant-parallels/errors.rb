@@ -19,6 +19,10 @@ module VagrantPlugins
         error_key(:dhcp_leases_file_not_accessible)
       end
 
+      class ExternalDiskNotFound < VagrantParallelsError
+        error_key(:external_disk_not_found)
+      end
+
       class JSONParseError < VagrantParallelsError
         error_key(:json_parse_error)
       end
