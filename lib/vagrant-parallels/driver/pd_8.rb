@@ -98,27 +98,35 @@ module VagrantPlugins
 
           hostonly_ifaces = []
           net_list.each do |iface|
-            info = {}
-            net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
-            info[:name]     = net_info['Network ID']
-            info[:bound_to] = net_info['Bound To']
-            info[:ip]       = net_info['Parallels adapter']['IP address']
-            info[:netmask]  = net_info['Parallels adapter']['Subnet mask']
-            # Such interfaces are always in 'Up'
-            info[:status]   = 'Up'
+            net_info = json do
+              execute_prlsrvctl('net', 'info', iface['Network ID'], '--json')
+            end
+
+            iface = {
+              name:   net_info['Network ID'],
+              status: 'Down'
+            }
+
+            adapter = net_info['Parallels adapter']
+            if adapter && net_info['Bound To']
+              iface[:ip]       = adapter['IP address']
+              iface[:netmask]  = adapter['Subnet mask']
+              iface[:bound_to] = net_info['Bound To']
+              iface[:status]   = 'Up'
+            end
 
             # There may be a fake DHCPv4 parameters
             # We can trust them only if adapter IP and DHCP IP are in the same subnet
             dhcp_info = net_info['DHCPv4 server']
-            if dhcp_info && (network_address(info[:ip], info[:netmask]) ==
-              network_address(dhcp_info['Server address'], info[:netmask]))
-              info[:dhcp] = {
+            if dhcp_info && (network_address(iface[:ip], iface[:netmask]) ==
+              network_address(dhcp_info['Server address'], iface[:netmask]))
+              iface[:dhcp] = {
                 ip:    dhcp_info['Server address'],
                 lower: dhcp_info['IP scope start address'],
                 upper: dhcp_info['IP scope end address']
               }
             end
-            hostonly_ifaces << info
+            hostonly_ifaces << iface
           end
           hostonly_ifaces
         end
@@ -156,22 +164,29 @@ module VagrantPlugins
           net_info = json do
             execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
           end
-          info = {
-            name:    net_info['Bound To'],
-            ip:      net_info['Parallels adapter']['IP address'],
-            netmask: net_info['Parallels adapter']['Subnet mask'],
-            status: 'Up'
+
+          iface = {
+            nat:    [],
+            status: 'Down'
           }
 
+          adapter = net_info['Parallels adapter']
+          if adapter && net_info['Bound To']
+            iface[:ip]       = adapter['IP address']
+            iface[:netmask]  = adapter['Subnet mask']
+            iface[:bound_to] = net_info['Bound To']
+            iface[:status]   = 'Up'
+          end
+
           if net_info.key?('DHCPv4 server')
-            info[:dhcp] = {
+            iface[:dhcp] = {
               ip:    net_info['DHCPv4 server']['Server address'],
               lower: net_info['DHCPv4 server']['IP scope start address'],
               upper: net_info['DHCPv4 server']['IP scope end address']
             }
           end
 
-          info
+          iface
         end
       end
     end
