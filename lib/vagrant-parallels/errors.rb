@@ -75,8 +75,12 @@ module VagrantPlugins
         error_key(:parallels_unsupported_version)
       end
 
-      class SharedAdapterNotFound < VagrantParallelsError
-        error_key(:shared_adapter_not_found)
+      class SharedInterfaceDisconnected < VagrantParallelsError
+        error_key(:shared_interface_disconnected)
+      end
+
+      class SharedInterfaceNotFound < VagrantParallelsError
+        error_key(:shared_interface_not_found)
       end
 
       class SnapshotIdNotDetected < VagrantParallelsError

@@ -14,6 +14,10 @@ module VagrantPlugins
 
           @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_11')
         end
+
+        def connect_network_interface(name)
+          execute_prlsrvctl('net', 'set', name, '--connect-host-to-net', 'on')
+        end
       end
     end
   end

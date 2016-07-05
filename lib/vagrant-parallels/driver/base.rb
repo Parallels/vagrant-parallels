@@ -108,6 +108,14 @@ module VagrantPlugins
           end
         end
 
+        # Connects the host machine to the  specified virtual network interface
+        # Could be used for Parallels' Shared and Host-Only interfaces only.
+        #
+        # @param [<String>] name Network interface name. Example: 'Shared'
+        def connect_network_interface(name)
+          raise NotImplementedError
+        end
+
         # Creates a host only network with the given options.
         #
         # @param [<Symbol => String>] options Hostonly network options.
@@ -414,7 +422,7 @@ module VagrantPlugins
           end
 
           if shared_ifaces.empty?
-            raise Errors::SharedAdapterNotFound
+            raise Errors::SharedInterfaceNotFound
           end
 
           shared_ifaces.values.first.fetch('mac', nil)
