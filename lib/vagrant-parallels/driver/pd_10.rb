@@ -15,10 +15,10 @@ module VagrantPlugins
           @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_10')
         end
 
-        def clear_forwarded_ports
+        def clear_forwarded_ports(ports)
           args = []
-          read_forwarded_ports.each do |r|
-            args.concat(["--nat-#{r[:protocol]}-del", r[:rule_name]])
+          ports.each do |r|
+            args.concat(["--nat-#{r[:protocol]}-del", r[:name]])
           end
 
           if !args.empty?
@@ -211,7 +211,7 @@ module VagrantPlugins
           net_info['NAT server'].each do |group, rules|
             rules.each do |name, params|
               info[:nat] << {
-                rule_name: name,
+                name:      name,
                 protocol:  group == 'TCP rules' ? 'tcp' : 'udp',
                 guest:     params['destination IP/VM id'],
                 hostport:  params['source port'],
