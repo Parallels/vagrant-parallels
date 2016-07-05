@@ -422,11 +422,7 @@ module VagrantPlugins
         #
         # @return [String] Shared network ID
         def read_shared_network_id
-          # There should be only one Shared interface
-          shared_net = read_virtual_networks.detect do |net|
-            net['Type'] == 'shared'
-          end
-          shared_net.fetch('Network ID')
+          'Shared'
         end
 
         # Returns info about shared network interface.
