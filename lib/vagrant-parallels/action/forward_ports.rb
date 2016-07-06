@@ -45,7 +45,7 @@ module VagrantPlugins
 
         def forward_ports
           all_rules = @env[:machine].provider.driver.read_forwarded_ports(true)
-          names_in_use = all_rules.collect { |r| r[:rule_name] }
+          names_in_use = all_rules.collect { |r| r[:name] }
           ports = []
 
           @env[:forwarded_ports].each do |fp|

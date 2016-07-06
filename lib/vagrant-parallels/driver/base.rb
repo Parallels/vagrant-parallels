@@ -40,8 +40,20 @@ module VagrantPlugins
           @logger.info("prlsrvctl path: #{@prlsrvctl_path}")
         end
 
-        # Removes all port forwarding rules for the virtual machine.
-        def clear_forwarded_ports
+        # Removes the specified port forwarding rules for the virtual machine.
+        #
+        # @param [Array<Symbol => String>] ports - List of ports.
+        # Each port should be described as a hash with the following keys:
+        #
+        #     {
+        #       name:      'example',
+        #       protocol:  'tcp',
+        #       guest:     'target-vm-uuid',
+        #       hostport:  '8080',
+        #       guestport: '80'
+        #     }
+        #
+        def clear_forwarded_ports(ports)
           raise NotImplementedError
         end
 
@@ -94,6 +106,14 @@ module VagrantPlugins
               yield $1.to_i if block_given?
             end
           end
+        end
+
+        # Connects the host machine to the  specified virtual network interface
+        # Could be used for Parallels' Shared and Host-Only interfaces only.
+        #
+        # @param [<String>] name Network interface name. Example: 'Shared'
+        def connect_network_interface(name)
+          raise NotImplementedError
         end
 
         # Creates a host only network with the given options.
@@ -293,6 +313,20 @@ module VagrantPlugins
           bridged_ifaces
         end
 
+        # Returns the list of port forwarding rules.
+        # Each rule will be represented as a hash with the following keys:
+        #
+        #     {
+        #       name:      'example',
+        #       protocol:  'tcp',
+        #       guest:     'target-vm-uuid',
+        #       hostport:  '8080',
+        #       guestport: '80'
+        #     }
+        #
+        # @param [Boolean] global If true, returns all the rules on the host.
+        # Otherwise only rules related to the context VM will be returned.
+        # @return [Array<Symbol => String>]
         def read_forwarded_ports(global=false)
           raise NotImplementedError
         end
@@ -388,7 +422,7 @@ module VagrantPlugins
           end
 
           if shared_ifaces.empty?
-            raise Errors::SharedAdapterNotFound
+            raise Errors::SharedInterfaceNotFound
           end
 
           shared_ifaces.values.first.fetch('mac', nil)
@@ -422,11 +456,7 @@ module VagrantPlugins
         #
         # @return [String] Shared network ID
         def read_shared_network_id
-          # There should be only one Shared interface
-          shared_net = read_virtual_networks.detect do |net|
-            net['Type'] == 'shared'
-          end
-          shared_net.fetch('Network ID')
+          'Shared'
         end
 
         # Returns info about shared network interface.

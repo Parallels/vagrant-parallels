@@ -117,10 +117,16 @@ en:
         check and try again.
 
          Snapshot ID: %{snapshot}
-      shared_adapter_not_found: |-
-        Shared network adapter was not found in your virtual machine configuration.
-        It is required to communicate with VM and forward ports. Please check
-        network configuration in your Vagrantfile.
+      shared_interface_not_found: |-
+        Shared network interface was not found in your virtual machine configuration.
+        It is required for communications with VM and port forwarding. Please
+        check network configuration in your Vagrantfile.
+      shared_interface_disconnected: |-
+        Your Mac host is not connected to Shared network. It is required for
+        communications with VM and port forwarding. Please enable this option in GUI:
+
+        Parallels Desktop -> Preferences -> Network -> Shared -> Connect Mac to this network
+
       vm_clone_failure: |-
         The VM cloning failed! Please ensure that the box you're using is not
         corrupted and try again.
@@ -191,6 +197,8 @@ en:
         box:
           register: Registering VM image from the base box '%{name}'...
           unregister: Unregistering the box VM image...
+        check_shared_interface:
+          connecting: Connecting host to Shared network...
         clone:
           full: Cloning new virtual machine...
           linked: Creating new virtual machine as a linked clone...
