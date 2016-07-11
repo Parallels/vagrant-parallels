@@ -1,3 +1,32 @@
+## 1.6.3 (July 11, 2016)
+DEPRECATIONS:
+  - The following provider options was renamed:
+    - `regen_box_uuid` was renamed to `regen_src_uuid`
+    - `use_linked_clone` was renamed to `linked clone`
+
+  Old names are still supported, but will be removed in `vagrant-parallels` v1.7.0.
+  [[GH-260](https://github.com/Parallels/vagrant-parallels/pull/260)]
+
+IMPROVEMENTS:
+  - Allow to package linked clones with `vagrant package`. External disk images 
+  will be automatically copied, so the resulted box become a full-sized 
+  standalone VM. [[GH-262](https://github.com/Parallels/vagrant-parallels/pull/262)]
+  - Handle the situation when host machine is not connected to Shared network.
+  With Parallels Desktop 11.2.1+ Vagrant will connect it automatically. With earlier
+  versions, the human-readable error message will be displayed. 
+  [[GH-266](https://github.com/Parallels/vagrant-parallels/pull/266)]
+  - Disable home folder sharing by default (Parallels Desktop 11+). 
+  [[GH-257](https://github.com/Parallels/vagrant-parallels/pull/257)]
+
+BUG FIXES:
+  - action/box_unregister: Fix `#recover` method  for layered environments.
+  [[GH-261](https://github.com/Parallels/vagrant-parallels/pull/261)]
+  - action/network: Fix an exception when option "Connect Mac to 
+  this network" is disabled. [[GH-268](https://github.com/Parallels/vagrant-parallels/pull/268)]
+  - commands/snapshot: Add retries for snapshot commands to avoid `prlctl` 
+  failures. [[GH-259](https://github.com/Parallels/vagrant-parallels/pull/259)]  
+
+
 ## 1.6.2 (March 23, 2016)
 BUG FIXES:
   - Fix unsupported action error for `vagrant snapshot` commands [[GH-254](https://github.com/Parallels/vagrant-parallels/pull/254)]
