@@ -444,20 +444,18 @@ module VagrantPlugins
 
         # This finds a matching host only network for the given configuration.
         def hostonly_find_matching_network(config)
-          existing = @env[:machine].provider.driver.read_host_only_interfaces
+          this_netaddr = network_address(config[:ip], config[:netmask])
 
-          if config[:name]
-            # Search networks strongly by specified name
-            matched_iface = existing.detect { |i| config[:name] == i[:name] }
-          else
-            # Name is not specified - search by network address
-            this_netaddr = network_address(config[:ip], config[:netmask])
-            matched_iface = existing.detect do |i|
-              this_netaddr == network_address(i[:ip], i[:netmask])
+          @env[:machine].provider.driver.read_host_only_interfaces.each do |interface|
+            return interface if config[:name] && config[:name] == interface[:name]
+
+            if interface[:ip]
+              return interface if this_netaddr == \
+                network_address(interface[:ip], interface[:netmask])
             end
           end
 
-          matched_iface || nil
+          nil
         end
       end
     end

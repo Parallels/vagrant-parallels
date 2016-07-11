@@ -406,6 +406,15 @@ module VagrantPlugins
         end
 
         # Returns a list of available host only interfaces.
+        # Each interface is represented as a Hash with the following details:
+        #
+        # {
+        #   name:     'Host-Only',     # Parallels Network ID
+        #   bound_to: 'vnic1',         # interface name
+        #   ip:       '10.37.129.2',   # IP address of the interface
+        #   netmask:  '255.255.255.0', # netmask associated with the interface
+        #   status:   'Up'             # status of the interface
+        # }
         #
         # @return [Array<Symbol => String>]
         def read_host_only_interfaces

@@ -149,17 +149,6 @@ module VagrantPlugins
               iface[:status]   = 'Up'
             end
 
-            # There may be a fake DHCPv4 parameters
-            # We can trust them only if adapter IP and DHCP IP are in the same subnet
-            dhcp_info = net_info['DHCPv4 server']
-            if dhcp_info && (network_address(iface[:ip], iface[:netmask]) ==
-              network_address(dhcp_info['Server address'], iface[:netmask]))
-              iface[:dhcp] = {
-                ip:    dhcp_info['Server address'],
-                lower: dhcp_info['IP scope start address'],
-                upper: dhcp_info['IP scope end address']
-              }
-            end
             hostonly_ifaces << iface
           end
           hostonly_ifaces
