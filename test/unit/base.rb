@@ -20,5 +20,5 @@ $stderr.sync = true
 
 # Configure RSpec
 RSpec.configure do |c|
-  c.expect_with :rspec, :stdlib
+  c.expect_with :rspec
 end

@@ -12,9 +12,10 @@ module VagrantPlugins
             return @app.call(env)
           end
 
-          if !env[:machine].provider.driver.read_forwarded_ports.empty?
+          ports = env[:machine].provider.driver.read_forwarded_ports
+          if !ports.empty?
             env[:ui].info I18n.t('vagrant.actions.vm.clear_forward_ports.deleting')
-            env[:machine].provider.driver.clear_forwarded_ports
+            env[:machine].provider.driver.clear_forwarded_ports(ports)
           end
 
           @app.call(env)

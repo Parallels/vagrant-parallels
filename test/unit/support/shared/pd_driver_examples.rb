@@ -3,17 +3,13 @@ shared_examples 'parallels desktop driver' do |options|
     raise ArgumentError, 'Need parallels context to use these shared examples.' unless defined? parallels_context
   end
 
-  describe 'compact' do
-    settings = {'Hardware' => {'hdd0' => {'image' => '/path/to/disk0.hdd'},
-                               'hdd1' => {'image' => '/path/to/disk1.hdd'}}}
-    it 'compacts the VM disk drives' do
-      driver.should_receive(:read_settings).and_return(settings)
-
-      subprocess.should_receive(:execute).exactly(2).times.
-        with('prl_disk_tool', 'compact', '--hdd', /^\/path\/to\/disk(0|1).hdd$/,
+  describe 'compact_hdd' do
+    it 'compacts the virtual disk' do
+      subprocess.should_receive(:execute).
+        with('prl_disk_tool', 'compact', '--hdd', '/foo.hdd',
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
-      subject.compact(uuid)
+      subject.compact_hdd('/foo.hdd')
     end
   end
 

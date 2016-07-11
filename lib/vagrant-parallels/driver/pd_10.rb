@@ -15,10 +15,10 @@ module VagrantPlugins
           @logger = Log4r::Logger.new('vagrant_parallels::driver::pd_10')
         end
 
-        def clear_forwarded_ports
+        def clear_forwarded_ports(ports)
           args = []
-          read_forwarded_ports.each do |r|
-            args.concat(["--nat-#{r[:protocol]}-del", r[:rule_name]])
+          ports.each do |r|
+            args.concat(["--nat-#{r[:protocol]}-del", r[:name]])
           end
 
           if !args.empty?
@@ -32,7 +32,7 @@ module VagrantPlugins
           # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
           # They should not be deleted anyway.
           networks.keep_if do |net|
-            net['Type'] == 'host-only' &&
+            net['Type'] == 'host-only' && net['Bound To'] &&
               net['Bound To'].match(/^(?>vnic|Parallels Host-Only #)(\d+)$/)[1].to_i >= 2
           end
 
@@ -131,31 +131,25 @@ module VagrantPlugins
 
           hostonly_ifaces = []
           net_list.each do |iface|
-            info = {}
-            net_info = json { execute_prlsrvctl('net', 'info', iface['Network ID'], '--json') }
-            adapter = net_info['Parallels adapter']
-
-            info[:name]     = net_info['Network ID']
-            info[:bound_to] = net_info['Bound To']
-            # In PD >= 10.1.2 there are new field names for an IP/Subnet
-            info[:ip]       = adapter['IP address'] || adapter['IPv4 address']
-            info[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
-
-            # Such interfaces are always in 'Up'
-            info[:status]   = 'Up'
-
-            # There may be a fake DHCPv4 parameters
-            # We can trust them only if adapter IP and DHCP IP are in the same subnet
-            dhcp_info = net_info['DHCPv4 server']
-            if dhcp_info && (network_address(info[:ip], info[:netmask]) ==
-              network_address(dhcp_info['Server address'], info[:netmask]))
-              info[:dhcp] = {
-                ip:    dhcp_info['Server address'],
-                lower: dhcp_info['IP scope start address'],
-                upper: dhcp_info['IP scope end address']
-              }
+            net_info = json do
+              execute_prlsrvctl('net', 'info', iface['Network ID'], '--json')
             end
-            hostonly_ifaces << info
+
+            iface = {
+              name:   net_info['Network ID'],
+              status: 'Down'
+            }
+
+            adapter = net_info['Parallels adapter']
+            if adapter && net_info['Bound To']
+              # In PD >= 10.1.2 there are new field names for an IP/Subnet
+              iface[:ip]       = adapter['IP address'] || adapter['IPv4 address']
+              iface[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
+              iface[:bound_to] = net_info['Bound To']
+              iface[:status]   = 'Up'
+            end
+
+            hostonly_ifaces << iface
           end
           hostonly_ifaces
         end
@@ -189,19 +183,22 @@ module VagrantPlugins
             execute_prlsrvctl('net', 'info', read_shared_network_id, '--json')
           end
 
+          iface = {
+            nat:    [],
+            status: 'Down'
+          }
           adapter = net_info['Parallels adapter']
 
-          # In PD >= 10.1.2 there are new field names for an IP/Subnet
-          info = {
-            name:    net_info['Bound To'],
-            ip:      adapter['IP address'] || adapter['IPv4 address'],
-            netmask: adapter['Subnet mask'] || adapter['IPv4 subnet mask'],
-            status:  'Up',
-            nat:     []
-          }
+          if adapter && net_info['Bound To']
+            # In PD >= 10.1.2 there are new field names for an IP/Subnet
+            iface[:ip]       = adapter['IP address'] || adapter['IPv4 address']
+            iface[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
+            iface[:bound_to] = net_info['Bound To']
+            iface[:status]   = 'Up'
+          end
 
           if net_info.key?('DHCPv4 server')
-            info[:dhcp] = {
+            iface[:dhcp] = {
               ip:    net_info['DHCPv4 server']['Server address'],
               lower: net_info['DHCPv4 server']['IP scope start address'],
               upper: net_info['DHCPv4 server']['IP scope end address']
@@ -210,8 +207,8 @@ module VagrantPlugins
 
           net_info['NAT server'].each do |group, rules|
             rules.each do |name, params|
-              info[:nat] << {
-                rule_name: name,
+              iface[:nat] << {
+                name:      name,
                 protocol:  group == 'TCP rules' ? 'tcp' : 'udp',
                 guest:     params['destination IP/VM id'],
                 hostport:  params['source port'],
@@ -220,7 +217,7 @@ module VagrantPlugins
             end
           end
 
-          info
+          iface
         end
 
         def read_used_ports

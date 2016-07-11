@@ -38,6 +38,13 @@ en:
         JSON string is shown below:
 
         %{data}
+
+      external_disk_not_found: |-
+        External disk image could not be found. In case of linked clone it is
+        usually because the parent VM image was removed. It means that the virtual
+        disk is inconsistent, please remove it from the VM configuration.
+
+        Disk image path: %{path}
       linux_mount_failed: |-
         Failed to mount folders in Linux guest. This is usually because
         the "prl_fs" file system is not available. Please verify that
@@ -69,12 +76,12 @@ en:
         appears that every slot is in use. Please lower the number of used
         network adapters.
       parallels_not_detected: |-
-        Vagrant could not detect Parallels Desktop! Make sure it is properly installed.
-        Vagrant uses the `prlctl` binary that ships with Parallels Desktop, and requires
-        this to be available on the PATH. If Parallels Desktop is installed, please find
-        the `prlctl` binary and add it to the PATH environmental variable.
+        Vagrant could not detect Parallels Desktop Pro! Make sure it is properly installed.
+        Vagrant uses the `prlctl` binary that only ships with Pro and Business
+        editions of Parallels Desktop. If the one is installed, please make sure
+        that the `prlctl` binary is available on the PATH environment variable.
       parallels_tools_iso_not_found: |-
-        Parallels Tools ISO file does not exists. The Parallels provider uses it
+        Parallels Tools ISO file does not exist. The Parallels provider uses it
         to install or update Parallels Tools in the guest machine. Try to
         reinstall Parallels Desktop.
 
@@ -110,10 +117,16 @@ en:
         check and try again.
 
          Snapshot ID: %{snapshot}
-      shared_adapter_not_found: |-
-        Shared network adapter was not found in your virtual machine configuration.
-        It is required to communicate with VM and forward ports. Please check
-        network configuration in your Vagrantfile.
+      shared_interface_not_found: |-
+        Shared network interface was not found in your virtual machine configuration.
+        It is required for communications with VM and port forwarding. Please
+        check network configuration in your Vagrantfile.
+      shared_interface_disconnected: |-
+        Your Mac host is not connected to Shared network. It is required for
+        communications with VM and port forwarding. Please enable this option in GUI:
+
+        Parallels Desktop -> Preferences -> Network -> Shared -> Connect Mac to this network
+
       vm_clone_failure: |-
         The VM cloning failed! Please ensure that the box you're using is not
         corrupted and try again.
@@ -184,6 +197,8 @@ en:
         box:
           register: Registering VM image from the base box '%{name}'...
           unregister: Unregistering the box VM image...
+        check_shared_interface:
+          connecting: Connecting host to Shared network...
         clone:
           full: Cloning new virtual machine...
           linked: Creating new virtual machine as a linked clone...
@@ -211,6 +226,7 @@ en:
             reload your VM.
         export:
           compacting: Compacting exported HDDs...
+          copying_linked_disks: Copying linked disks...
         forward_ports:
           forwarding_entry: |-
             %{guest_port} => %{host_port}
