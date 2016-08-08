@@ -13,11 +13,6 @@ module VagrantPlugins
         # Execution
         #--------------------------------------------------------------
         def call(env)
-          # Port Forwarding feature is available only with PD >= 10
-          if !env[:machine].provider.pd_version_satisfies?('>= 10')
-            return @app.call(env)
-          end
-
           @env = env
 
           # Get the ports we're forwarding

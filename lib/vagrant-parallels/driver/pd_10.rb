@@ -2,13 +2,13 @@ require 'log4r'
 
 require 'vagrant/util/platform'
 
-require_relative 'pd_9'
+require_relative 'base'
 
 module VagrantPlugins
   module Parallels
     module Driver
       # Driver for Parallels Desktop 10.
-      class PD_10 < PD_9
+      class PD_10 < Base
         def initialize(uuid)
           super(uuid)
 
@@ -223,6 +223,11 @@ module VagrantPlugins
         def read_used_ports
           # Ignore our own used ports
           read_forwarded_ports(true).reject { |r| r[:guest].include?(@uuid) }
+        end
+
+        def set_power_consumption_mode(optimized)
+          state = optimized ? 'on' : 'off'
+          execute_prlctl('set', @uuid, '--longer-battery-life', state)
         end
       end
     end

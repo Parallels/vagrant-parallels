@@ -7,11 +7,6 @@ module VagrantPlugins
         end
 
         def call(env)
-          # Port Forwarding feature is available only with PD >= 10
-          if !env[:machine].provider.pd_version_satisfies?('>= 10')
-            return @app.call(env)
-          end
-
           ports = env[:machine].provider.driver.read_forwarded_ports
           if !ports.empty?
             env[:ui].info I18n.t('vagrant.actions.vm.clear_forward_ports.deleting')

@@ -100,7 +100,7 @@ en:
       parallels_unsupported_version: |-
         Vagrant has detected that you have a version of Parallels Desktop for Mac
         installed that is not supported. Vagrant Parallels provider is compatible
-        only with Parallels Desktop 8 or later.
+        only with Parallels Desktop 10 or later.
         Please upgrade your installation: http://parallels.com/desktop
 
         Note: Starting since Parallels Desktop 11 for Mac, Vagrant Parallels

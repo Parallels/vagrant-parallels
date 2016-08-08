@@ -9,10 +9,10 @@ virtual machines on OS X hosts.
 
 ### Requirements 
 - [Vagrant v1.8](http://www.vagrantup.com) or higher
-- [Parallels Desktop 8 for Mac](http://www.parallels.com/products/desktop/) or higher
+- [Parallels Desktop 10 for Mac](http://www.parallels.com/products/desktop/) or higher
 
-*Note:* In [**Parallels Desktop 11 for Mac**](http://www.parallels.com/products/desktop/), 
-only **Pro** and **Business** editions are compatible with this Vagrant provider. 
+*Note:* Only **Pro** and **Business** editions of **Parallels Desktop for Mac** 
+are compatible with this Vagrant provider. 
 Standard edition doesn't have a command line functionality and can not be used 
 with Vagrant.
 

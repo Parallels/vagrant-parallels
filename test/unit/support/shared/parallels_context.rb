@@ -1,7 +1,7 @@
 shared_context 'parallels' do
   let(:parallels_context) { true                                     }
   let(:uuid)              { '1234-here-is-uuid-5678' }
-  let(:parallels_version) { '9' }
+  let(:parallels_version) { '12' }
   let(:subprocess)        { double('Vagrant::Util::Subprocess')      }
   let(:driver)            { subject.instance_variable_get('@driver') }
 
@@ -9,7 +9,7 @@ shared_context 'parallels' do
   let(:tpl_uuid) {'1234-some-template-uuid-5678'}
   let(:tpl_name) {'Some_Template_Name'}
   let(:tools_state) {'installed'}
-  let(:tools_version) {'8.0.18615.123456'}
+  let(:tools_version) {'12.0.18615.123456'}
   let(:hostonly_iface) {'vnic10'}
 
   let(:vnic_options) do {
@@ -47,7 +47,12 @@ shared_context 'parallels' do
     # Parallels Desktop version, so wire this stub in automatically
     subprocess.stub(:execute).
       with('prlctl', '--version', an_instance_of(Hash)).
-      and_return(subprocess_result(stdout: "prlctl version #{parallels_version}.0.98765"))
+      and_return(subprocess_result(stdout: "prlctl version #{parallels_version}.0.0 (12345)"))
+
+    # drivers will sould chek the Parallels Desktop edition, so wire this stub in automatically
+    subprocess.stub(:execute).
+      with('prlsrvctl', 'info', '--license', '--json', an_instance_of(Hash)).
+      and_return(subprocess_result(stdout: '{"edition": "pro"}'))
 
     # drivers also call vm_exists? during init;
     subprocess.stub(:execute).

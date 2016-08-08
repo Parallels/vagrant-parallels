@@ -7,11 +7,6 @@ module VagrantPlugins
         end
 
         def call(env)
-          # Port Forwarding feature is available only with PD >= 10
-          if !env[:machine].provider.pd_version_satisfies?('>= 10')
-            return @app.call(env)
-          end
-
           # Get the forwarded ports used by other virtual machines and
           # consider those in use as well.
           env[:port_collision_extra_in_use] =
