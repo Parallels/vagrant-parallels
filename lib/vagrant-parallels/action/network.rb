@@ -1,5 +1,5 @@
+require 'ipaddr'
 require 'set'
-
 require 'log4r'
 
 require 'vagrant/util/network_ip'
@@ -253,7 +253,6 @@ module VagrantPlugins
             mac:         nil,
             name:        nil,
             nic_type:    nil,
-            netmask:     '255.255.255.0',
             type:        :static
           }.merge(options)
 
@@ -263,30 +262,46 @@ module VagrantPlugins
           # Default IP is in the 20-bit private network block for DHCP based networks
           options[:ip] = '10.37.129.1' if options[:type] == :dhcp && !options[:ip]
 
-          # Calculate our network address for the given IP/netmask
-          netaddr  = network_address(options[:ip], options[:netmask])
+          # TODO: catch wrong type exception
+          ip = IPAddr.new(options[:ip])
+          if ip.ipv4?
+            options[:netmask] ||= '255.255.255.0'
 
-          # Verify that a host-only network subnet would not collide
-          # with a bridged networking interface.
-          #
-          # If the subnets overlap in any way then the host only network
-          # will not work because the routing tables will force the
-          # traffic onto the real interface rather than the virtual
-          # network interface.
-          @env[:machine].provider.driver.read_bridged_interfaces.each do |interface|
-            that_netaddr = network_address(interface[:ip], interface[:netmask])
-            raise Vagrant::Errors::NetworkCollision if \
-              netaddr == that_netaddr && interface[:status] != 'Down'
+            # Calculate our network address for the given IP/netmask
+            netaddr  = network_address(options[:ip], options[:netmask])
+
+            # Verify that a host-only network subnet would not collide
+            # with a bridged networking interface.
+            #
+            # If the subnets overlap in any way then the host only network
+            # will not work because the routing tables will force the
+            # traffic onto the real interface rather than the virtual
+            # network interface.
+            @env[:machine].provider.driver.read_bridged_interfaces.each do |interface|
+              that_netaddr = network_address(interface[:ip], interface[:netmask])
+              raise Vagrant::Errors::NetworkCollision if \
+                netaddr == that_netaddr && interface[:status] != 'Down'
+            end
+
+            # Split the IP address into its components
+            ip_parts = netaddr.split('.').map { |i| i.to_i }
+
+            # Calculate the adapter IP, which we assume is the IP ".1" at
+            # the end usually.
+            adapter_ip    = ip_parts.dup
+            adapter_ip[3] += 1
+            options[:adapter_ip] ||= adapter_ip.join('.')
+          elsif ip.ipv6?
+            options[:netmask] ||= 64
+
+            # Set adapter IP to <prefix>::1
+            options[:adapter_ip] ||= (ip.mask(options[:netmask].to_i) | 1).to_s
+
+            # Append a 6 to the end of the type
+            options[:type] = "#{options[:type]}6".to_sym
+          else
+            raise "BUG: Unknown IP type: #{ip.inspect}"
           end
-
-          # Split the IP address into its components
-          ip_parts = netaddr.split('.').map { |i| i.to_i }
-
-          # Calculate the adapter IP, which we assume is the IP ".1" at
-          # the end usually.
-          adapter_ip    = ip_parts.dup
-          adapter_ip[3] += 1
-          options[:adapter_ip] ||= adapter_ip.join('.')
 
           dhcp_options = {}
           if options[:type] == :dhcp
@@ -452,6 +467,11 @@ module VagrantPlugins
             if interface[:ip]
               return interface if this_netaddr == \
                 network_address(interface[:ip], interface[:netmask])
+            end
+
+            if interface[:ipv6]
+              return interface if this_netaddr == \
+                network_address(interface[:ipv6], interface[:ipv6_prefix])
             end
           end
 

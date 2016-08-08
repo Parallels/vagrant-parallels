@@ -139,6 +139,36 @@ describe VagrantPlugins::Parallels::Action::Network do
         )
       end
     end
+
+    context 'with static ipv6' do
+      let(:network_args) {{ ip: 'dead:beef::100' }}
+
+      it 'creates a host-only interface with an IPv6 address <prefix>:1' do
+        allow(driver).to receive(:create_host_only_network) {{ name: 'vagrant-vnet0' }}
+        interface_ip = 'dead:beef::1'
+
+        subject.call(env)
+
+        expect(driver).to have_received(:create_host_only_network).with(
+          {
+            network_id: 'vagrant-vnet0',
+            adapter_ip: interface_ip,
+            netmask: 64,
+          }
+        )
+
+        expect(guest).to have_received(:capability).with(
+          :configure_networks, [{
+                                  type: :static6,
+                                  adapter_ip: interface_ip,
+                                  ip: 'dead:beef::100',
+                                  netmask: 64,
+                                  auto_config: true,
+                                  interface: nil
+                                }]
+        )
+      end
+    end
   end
 
   context 'with public network' do

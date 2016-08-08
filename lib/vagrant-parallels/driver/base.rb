@@ -524,6 +524,11 @@ module VagrantPlugins
               iface[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
               iface[:bound_to] = net_info['Bound To']
               iface[:status]   = 'Up'
+
+              if adapter['IPv6 address'] && adapter['IPv6 subnet mask']
+                iface[:ipv6]        = adapter['IPv6 address']
+                iface[:ipv6_prefix] = adapter['IPv6 subnet mask']
+              end
             end
 
             hostonly_ifaces << iface
