@@ -36,6 +36,9 @@ shared_context 'parallels' do
     allow(Vagrant::Util::Which).to receive(:which).with('prlsrvctl').and_return('prlsrvctl')
     allow(Vagrant::Util::Which).to receive(:which).with('prl_disk_tool').and_return('prl_disk_tool')
 
+    # Stub the platform, because we need unit test passed on any platform (Travis)
+    allow(Vagrant::Util::Platform).to receive(:darwin?).and_return true
+
     # we don't want unit tests to ever run commands on the system; so we wire
     # in a double to ensure any unexpected messages raise exceptions
     stub_const('Vagrant::Util::Subprocess', subprocess)
