@@ -2,7 +2,6 @@ require 'ipaddr'
 require 'set'
 require 'log4r'
 
-require 'vagrant/util/network_ip'
 require 'vagrant/util/scoped_hash_override'
 
 module VagrantPlugins
@@ -14,7 +13,6 @@ module VagrantPlugins
       #
       # This handles all the `config.vm.network` configurations.
       class Network
-        include Vagrant::Util::NetworkIP
         include Vagrant::Util::ScopedHashOverride
         @@lock = Mutex.new
 
@@ -282,20 +280,8 @@ module VagrantPlugins
               raise Vagrant::Errors::NetworkCollision if \
                 netaddr == that_netaddr && interface[:status] != 'Down'
             end
-
-            # Split the IP address into its components
-            ip_parts = netaddr.split('.').map { |i| i.to_i }
-
-            # Calculate the adapter IP, which we assume is the IP ".1" at
-            # the end usually.
-            adapter_ip    = ip_parts.dup
-            adapter_ip[3] += 1
-            options[:adapter_ip] ||= adapter_ip.join('.')
           elsif ip.ipv6?
             options[:netmask] ||= 64
-
-            # Set adapter IP to <prefix>::1
-            options[:adapter_ip] ||= (ip.mask(options[:netmask].to_i) | 1).to_s
 
             # Append a 6 to the end of the type
             options[:type] = "#{options[:type]}6".to_sym
@@ -303,22 +289,22 @@ module VagrantPlugins
             raise "BUG: Unknown IP type: #{ip.inspect}"
           end
 
+          # Calculate the adapter IP which is the network address with the final
+          # bit group appended by 1. Usually it is "x.x.x.1" for IPv4 and
+          # "<prefix>::1" for IPv6
+          options[:adapter_ip] ||= (ip.mask(options[:netmask]) | 1).to_s
+
           dhcp_options = {}
           if options[:type] == :dhcp
-            # Calculate the DHCP server IP, which is the network address
-            # with the final octet + 1. So "172.28.0.0" turns into "172.28.0.1"
-            dhcp_ip    = ip_parts.dup
-            dhcp_ip[3] += 1
-            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || dhcp_ip.join('.')
-
-            # Calculate the lower and upper bound for the DHCP server
-            dhcp_lower    = ip_parts.dup
-            dhcp_lower[3] += 2
-            dhcp_options[:dhcp_lower] = options[:dhcp_lower] || dhcp_lower.join('.')
-
-            dhcp_upper    = ip_parts.dup
-            dhcp_upper[3] = 254
-            dhcp_options[:dhcp_upper] = options[:dhcp_upper] || dhcp_upper.join('.')
+            # Calculate the IP and lower & upper bound for the DHCP server
+            # Example: for "192.168.22.64/26" network range it wil be:
+            # dhcp_ip: "192.168.22.65",
+            # dhcp_lower: "192.168.22.66"
+            # dhcp_upper: "192.168.22.126"
+            ip_range = ip.mask(options[:netmask]).to_range
+            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || (ip_range.first | 1).to_s
+            dhcp_options[:dhcp_lower] = options[:dhcp_lower] || (ip_range.first | 2).to_s
+            dhcp_options[:dhcp_upper] = options[:dhcp_upper] || (ip_range.last(2).first).to_s
           end
 
           {
@@ -459,19 +445,19 @@ module VagrantPlugins
 
         # This finds a matching host only network for the given configuration.
         def hostonly_find_matching_network(config)
-          this_netaddr = network_address(config[:ip], config[:netmask])
+          this_netaddr = IPAddr.new("#{config[:ip]}/#{config[:netmask]}")
 
           @env[:machine].provider.driver.read_host_only_interfaces.each do |interface|
             return interface if config[:name] && config[:name] == interface[:name]
 
-            if interface[:ip]
-              return interface if this_netaddr == \
-                network_address(interface[:ip], interface[:netmask])
+            if interface[:ip] && this_netaddr.ipv4?
+              netaddr = IPAddr.new("#{interface[:ip]}/#{interface[:netmask]}")
+              return interface if netaddr.include? this_netaddr
             end
 
-            if interface[:ipv6]
-              return interface if this_netaddr == \
-                network_address(interface[:ipv6], interface[:ipv6_prefix])
+            if interface[:ipv6] && this_netaddr.ipv6?
+              netaddr = IPAddr.new("#{interface[:ipv6]}/#{interface[:ipv6_prefix]}")
+              return interface if netaddr.include? this_netaddr
             end
           end
 
