@@ -87,12 +87,6 @@ describe VagrantPlugins::Parallels::Config do
   end
 
   describe '#linked_clone' do
-    it 'is compatible with deprecated use_linked_lone' do
-      subject.use_linked_clone = true
-      subject.finalize!
-      expect(subject.linked_clone).to eql(true)
-    end
-
     it 'is not overridden by use_linked_lone' do
       subject.linked_clone = false
       subject.use_linked_clone = true
@@ -102,12 +96,6 @@ describe VagrantPlugins::Parallels::Config do
   end
 
   describe '#regen_src_uuid' do
-    it 'is compatible with deprecated regen_box_uuid' do
-      subject.regen_box_uuid = false
-      subject.finalize!
-      expect(subject.regen_src_uuid).to eql(false)
-    end
-
     it 'is not overridden by regen_box_uuid' do
       subject.regen_src_uuid = true
       subject.regen_box_uuid = false
