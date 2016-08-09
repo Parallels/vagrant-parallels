@@ -260,14 +260,27 @@ module VagrantPlugins
           # Default IP is in the 20-bit private network block for DHCP based networks
           options[:ip] = '10.37.129.1' if options[:type] == :dhcp && !options[:ip]
 
-          # TODO: catch wrong type exception
-          ip = IPAddr.new(options[:ip])
-          if ip.ipv4?
-            options[:netmask] ||= '255.255.255.0'
+          begin
+            ip = IPAddr.new(options[:ip])
+            if ip.ipv4?
+              options[:netmask] ||= '255.255.255.0'
+            elsif ip.ipv6?
+              options[:netmask] ||= 64
+
+              # Append a 6 to the end of the type
+              options[:type] = "#{options[:type]}6".to_sym
+            else
+              raise IPAddr::AddressFamilyError, 'unknown address family'
+            end
 
             # Calculate our network address for the given IP/netmask
-            netaddr  = network_address(options[:ip], options[:netmask])
+            netaddr = IPAddr.new("#{options[:ip]}/#{options[:netmask]}")
+          rescue IPAddr::Error => e
+            raise VagrantPlugins::Parallels::Errors::NetworkInvalidAddress,
+                  options: options, error: e.message
+          end
 
+          if ip.ipv4?
             # Verify that a host-only network subnet would not collide
             # with a bridged networking interface.
             #
@@ -276,23 +289,16 @@ module VagrantPlugins
             # traffic onto the real interface rather than the virtual
             # network interface.
             @env[:machine].provider.driver.read_bridged_interfaces.each do |interface|
-              that_netaddr = network_address(interface[:ip], interface[:netmask])
-              raise Vagrant::Errors::NetworkCollision if \
-                netaddr == that_netaddr && interface[:status] != 'Down'
+              next if interface[:status] == 'Down'
+              that_netaddr = IPAddr.new("#{interface[:ip]}/#{interface[:netmask]}")
+              raise Vagrant::Errors::NetworkCollision if netaddr.include? that_netaddr
             end
-          elsif ip.ipv6?
-            options[:netmask] ||= 64
-
-            # Append a 6 to the end of the type
-            options[:type] = "#{options[:type]}6".to_sym
-          else
-            raise "BUG: Unknown IP type: #{ip.inspect}"
           end
 
           # Calculate the adapter IP which is the network address with the final
           # bit group appended by 1. Usually it is "x.x.x.1" for IPv4 and
           # "<prefix>::1" for IPv6
-          options[:adapter_ip] ||= (ip.mask(options[:netmask]) | 1).to_s
+          options[:adapter_ip] ||= (netaddr | 1).to_s
 
           dhcp_options = {}
           if options[:type] == :dhcp
@@ -301,8 +307,8 @@ module VagrantPlugins
             # dhcp_ip: "192.168.22.65",
             # dhcp_lower: "192.168.22.66"
             # dhcp_upper: "192.168.22.126"
-            ip_range = ip.mask(options[:netmask]).to_range
-            dhcp_options[:dhcp_ip] = options[:dhcp_ip] || (ip_range.first | 1).to_s
+            ip_range = netaddr.to_range
+            dhcp_options[:dhcp_ip]    = options[:dhcp_ip]    || (ip_range.first | 1).to_s
             dhcp_options[:dhcp_lower] = options[:dhcp_lower] || (ip_range.first | 2).to_s
             dhcp_options[:dhcp_upper] = options[:dhcp_upper] || (ip_range.last(2).first).to_s
           end

@@ -255,4 +255,22 @@ describe VagrantPlugins::Parallels::Action::Network do
 
   end
 
+  context 'with invalid settings' do
+    [
+      { ip: 'foo'},
+      { ip: '1.2.3'},
+      { ip: 'dead::beef::'},
+      { ip: '172.28.128.3', netmask: 64},
+      { ip: '172.28.128.3', netmask: 'ffff:ffff::'},
+      { ip: 'dead:beef::', netmask: 'foo:bar::'},
+      { ip: 'dead:beef::', netmask: '255.255.255.0'}
+    ].each do |args|
+      it 'raises an exception' do
+        machine.config.vm.network 'private_network', **args
+        expect { subject.call(env) }.
+          to raise_error(VagrantPlugins::Parallels::Errors::NetworkInvalidAddress)
+      end
+    end
+  end
+
 end
