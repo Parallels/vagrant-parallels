@@ -394,7 +394,6 @@ module VagrantPlugins
       autoload :BoxRegister, File.expand_path('../action/box_register', __FILE__)
       autoload :BoxUnregister, File.expand_path('../action/box_unregister', __FILE__)
       autoload :HandleGuestTools, File.expand_path('../action/handle_guest_tools', __FILE__)
-      autoload :HandleForwardedPortCollisions, File.expand_path('../action/handle_forwarded_port_collisions.rb', __FILE__)
       autoload :CheckSharedInterface, File.expand_path('../action/check_shared_interface', __FILE__)
       autoload :ClearNetworkInterfaces, File.expand_path('../action/clear_network_interfaces', __FILE__)
       autoload :ClearForwardedPorts, File.expand_path('../action/clear_forwarded_ports', __FILE__)

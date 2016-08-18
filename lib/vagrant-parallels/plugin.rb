@@ -138,10 +138,9 @@ module VagrantPlugins
     # our drivers only when they are needed.
     module Driver
       autoload :Meta, File.expand_path('../driver/meta', __FILE__)
-      autoload :PD_8, File.expand_path('../driver/pd_8', __FILE__)
-      autoload :PD_9, File.expand_path('../driver/pd_9', __FILE__)
       autoload :PD_10, File.expand_path('../driver/pd_10', __FILE__)
       autoload :PD_11, File.expand_path('../driver/pd_11', __FILE__)
+      autoload :PD_12, File.expand_path('../driver/pd_12', __FILE__)
     end
 
     module Model

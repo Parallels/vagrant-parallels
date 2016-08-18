@@ -119,11 +119,9 @@ module VagrantPlugins
             f.write(env[:clone_id])
           end
 
-          if env[:machine].provider.pd_version_satisfies?('>= 10')
-            # Convert template to VM (compatibility with old-styled boxes)
-            env[:machine].provider.driver.execute_prlctl(
-              'set', env[:clone_id], '--template', 'off')
-          end
+          # Convert template to VM (compatibility with old-styled boxes)
+          env[:machine].provider.driver.execute_prlctl(
+            'set', env[:clone_id], '--template', 'off')
         end
       end
     end

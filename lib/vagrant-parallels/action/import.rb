@@ -17,12 +17,9 @@ module VagrantPlugins
           options = {}
 
           # Disable requiring password for register and clone actions [GH-67].
-          # It is available only since PD 10.
-          if env[:machine].provider.pd_version_satisfies?('>= 10')
-            acts = ['clone-vm']
-            @logger.info("Disabling password restrictions: #{acts.join(', ')}")
-            env[:machine].provider.driver.disable_password_restrictions(acts)
-          end
+          acts = ['clone-vm']
+          @logger.info("Disabling password restrictions: #{acts.join(', ')}")
+          env[:machine].provider.driver.disable_password_restrictions(acts)
 
           if env[:machine].provider_config.regen_src_uuid \
             && env[:machine].provider.pd_version_satisfies?('>= 10.1.2')
