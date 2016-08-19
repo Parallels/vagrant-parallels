@@ -59,7 +59,7 @@ describe VagrantPlugins::Parallels::Action::Network do
     context 'with type dhcp' do
       let(:network_args) {{ type: 'dhcp' }}
 
-      it 'creates a host only interface and configures network in the guest' do
+      it 'creates a host-only interface with default IP and configures network in the guest' do
         allow(driver).to receive(:create_host_only_network) {{ name: 'vagrant-vnet0' }}
 
         subject.call(env)
@@ -83,6 +83,40 @@ describe VagrantPlugins::Parallels::Action::Network do
                                   adapter_ip:  '10.37.129.1',
                                   ip:          '10.37.129.1',
                                   netmask:     '255.255.255.0',
+                                  auto_config: true,
+                                  interface:   nil
+                                }]
+        )
+      end
+    end
+
+    context 'with type dhcp and defined network' do
+      let(:network_args) {{ type: 'dhcp', ip: '172.28.128.100', netmask: '26' }}
+
+      it 'creates a host-only interface with dhcp and configures network in the guest' do
+        allow(driver).to receive(:create_host_only_network) {{ name: 'vagrant-vnet0' }}
+
+        subject.call(env)
+
+        expect(driver).to have_received(:create_host_only_network).with(
+          {
+            network_id: 'vagrant-vnet0',
+            adapter_ip: '172.28.128.65',
+            netmask:    '26',
+            dhcp:       {
+              ip:    '172.28.128.65',
+              lower: '172.28.128.66',
+              upper: '172.28.128.126'
+            }
+          }
+        )
+
+        expect(guest).to have_received(:capability).with(
+          :configure_networks, [{
+                                  type:        :dhcp,
+                                  adapter_ip:  '172.28.128.65',
+                                  ip:          '172.28.128.100',
+                                  netmask:     '26',
                                   auto_config: true,
                                   interface:   nil
                                 }]
@@ -139,6 +173,36 @@ describe VagrantPlugins::Parallels::Action::Network do
         )
       end
     end
+
+    context 'with static ipv6' do
+      let(:network_args) {{ ip: 'dead:beef::100' }}
+
+      it 'creates a host-only interface with an IPv6 address <prefix>:1' do
+        allow(driver).to receive(:create_host_only_network) {{ name: 'vagrant-vnet0' }}
+        interface_ip = 'dead:beef::1'
+
+        subject.call(env)
+
+        expect(driver).to have_received(:create_host_only_network).with(
+          {
+            network_id: 'vagrant-vnet0',
+            adapter_ip: interface_ip,
+            netmask: 64,
+          }
+        )
+
+        expect(guest).to have_received(:capability).with(
+          :configure_networks, [{
+                                  type: :static6,
+                                  adapter_ip: interface_ip,
+                                  ip: 'dead:beef::100',
+                                  netmask: 64,
+                                  auto_config: true,
+                                  interface: nil
+                                }]
+        )
+      end
+    end
   end
 
   context 'with public network' do
@@ -189,6 +253,24 @@ describe VagrantPlugins::Parallels::Action::Network do
       end
     end
 
+  end
+
+  context 'with invalid settings' do
+    [
+      { ip: 'foo'},
+      { ip: '1.2.3'},
+      { ip: 'dead::beef::'},
+      { ip: '172.28.128.3', netmask: 64},
+      { ip: '172.28.128.3', netmask: 'ffff:ffff::'},
+      { ip: 'dead:beef::', netmask: 'foo:bar::'},
+      { ip: 'dead:beef::', netmask: '255.255.255.0'}
+    ].each do |args|
+      it 'raises an exception' do
+        machine.config.vm.network 'private_network', **args
+        expect { subject.call(env) }.
+          to raise_error(VagrantPlugins::Parallels::Errors::NetworkInvalidAddress)
+      end
+    end
   end
 
 end

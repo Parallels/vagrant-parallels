@@ -39,6 +39,10 @@ module VagrantPlugins
         error_key(:mac_os_x_required)
       end
 
+      class NetworkInvalidAddress < VagrantParallelsError
+        error_key(:network_invalid_address)
+      end
+
       class ExecutionError < VagrantParallelsError
         error_key(:execution_error)
       end
