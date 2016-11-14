@@ -13,10 +13,6 @@ module VagrantPlugins
       attr_accessor :regen_src_uuid
       attr_accessor :update_guest_tools
 
-      # Deprecated options
-      attr_accessor :regen_box_uuid
-      attr_accessor :use_linked_clone
-
       # Compatibility with virtualbox provider's syntax
       alias :check_guest_additions= :check_guest_tools=
 
