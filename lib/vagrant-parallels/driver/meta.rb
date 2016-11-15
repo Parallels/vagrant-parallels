@@ -44,11 +44,10 @@ module VagrantPlugins
           major_ver = @@version.split('.').first.to_i
           driver_klass =
             case major_ver
-            when 1..7 then raise Errors::ParallelsUnsupportedVersion
-            when 8 then PD_8
-            when 9 then PD_9
+            when 1..9 then raise Errors::ParallelsUnsupportedVersion
             when 10 then PD_10
-            else PD_11
+            when 11 then PD_11
+            else PD_12
             end
 
           # Starting since PD 11 only Pro and Business editions have CLI

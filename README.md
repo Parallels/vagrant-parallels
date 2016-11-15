@@ -4,15 +4,15 @@
 [![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.png)](https://codeclimate.com/github/Parallels/vagrant-parallels)
 
 This is a plugin for [Vagrant](http://www.vagrantup.com),
-allowing to power [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
-based virtual machines.
+allowing to manage [Parallels Desktop](http://www.parallels.com/products/desktop/) 
+virtual machines on OS X hosts.
 
 ### Requirements 
 - [Vagrant v1.8](http://www.vagrantup.com) or higher
-- [Parallels Desktop 8 for Mac](http://www.parallels.com/products/desktop/) or higher
+- [Parallels Desktop 10 for Mac](http://www.parallels.com/products/desktop/) or higher
 
-*Note:* In [**Parallels Desktop 11 for Mac**](http://www.parallels.com/products/desktop/), 
-only **Pro** and **Business** editions are compatible with this Vagrant provider. 
+*Note:* Only **Pro** and **Business** editions of **Parallels Desktop for Mac** 
+are compatible with this Vagrant provider. 
 Standard edition doesn't have a command line functionality and can not be used 
 with Vagrant.
 
@@ -55,17 +55,6 @@ please report it on the [Issue Tracker](https://github.com/Parallels/vagrant-par
 
 * Author: Youssef Shahin <yshahin@gmail.com>
 * Author: Mikhail Zholobov <legal90@gmail.com>
-* Copyright 2013-2015, Parallels IP Holdings GmbH.
+* Copyright 2013-2016, Parallels IP Holdings GmbH.
 
-```text
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-```
+Vagrant Parallels Provider is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).

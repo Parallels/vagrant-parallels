@@ -30,22 +30,14 @@ module VagrantPlugins
         private
 
         def default_settings
-          settings = {}
-
-          return settings if @env[:machine].provider.pd_version_satisfies?('< 9')
-          settings.merge!(
+          settings = {
             startup_view: 'same',
             on_shutdown: 'close',
             on_window_close: 'keep-running',
             auto_share_camera: 'off',
             smart_guard: 'off',
             longer_battery_life: 'on'
-          )
-
-          # Check the legacy option
-          if !@env[:machine].provider_config.optimize_power_consumption
-            settings[:longer_battery_life] = 'off'
-          end
+          }
 
           return settings  if @env[:machine].provider.pd_version_satisfies?('< 10.1.2')
           settings.merge!(

@@ -32,5 +32,6 @@ most trusted solution for running virtual machines in Mac OS X.
 The Parallels provider is free and open for contributions on the [GitHub](https://github.com/Parallels/vagrant-parallels).
 It is compatible with the following versions of Parallels Desktop:
 
-* Parallels Desktop 8, 9, 10 for Mac
+* Parallels Desktop 10 for Mac
 * Parallels Desktop 11 for Mac - only "Pro" and "Business" editions
+* Parallels Desktop 12 for Mac - only "Pro" and "Business" editions

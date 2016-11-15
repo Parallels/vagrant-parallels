@@ -19,11 +19,11 @@ The Vagrant plugin installer will automatically download and install
 
 ## Requirements
 - Vagrant v1.8 or higher
-- Parallels Desktop for Mac version 8 or higher
+- Parallels Desktop for Mac version 10 or higher
 
 <div class="alert alert-warn">
     <p>
-		In <strong>Parallels Desktop 11 for Mac</strong> only <strong>Pro</strong> and 
-		<strong>Business</strong> editions can be used with this Vagrant provider.
+		Only <strong>Pro</strong> and <strong>Business</strong> editions of
+		<strong>Parallels Desktop for Mac</strong> can be used with this Vagrant provider.
 	</p>
 </div>

@@ -13,10 +13,6 @@ module VagrantPlugins
       attr_accessor :regen_src_uuid
       attr_accessor :update_guest_tools
 
-      # Deprecated options
-      attr_accessor :regen_box_uuid
-      attr_accessor :use_linked_clone
-
       # Compatibility with virtualbox provider's syntax
       alias :check_guest_additions= :check_guest_tools=
 
@@ -29,15 +25,10 @@ module VagrantPlugins
         @linked_clone_snapshot = UNSET_VALUE
         @network_adapters  = {}
         @name              = UNSET_VALUE
-        @optimize_power_consumption = UNSET_VALUE
         @regen_src_uuid     = UNSET_VALUE
         @update_guest_tools = UNSET_VALUE
 
         network_adapter(0, :shared)
-
-        # Deprecated options
-        @regen_box_uuid = UNSET_VALUE
-        @use_linked_clone = UNSET_VALUE
       end
 
       def customize(*command)
@@ -68,16 +59,6 @@ module VagrantPlugins
       end
 
       def finalize!
-        if @regen_box_uuid != UNSET_VALUE
-          puts "Parallels provider: Vagrantfile option 'regen_box_uuid' is deprecated and will be removed. Please, use 'regen_src_uuid' instead"
-          @regen_src_uuid = @regen_box_uuid if @regen_src_uuid == UNSET_VALUE
-        end
-
-        if @use_linked_clone != UNSET_VALUE
-          puts "Parallels provider: Vagrantfile option 'use_linked_clone' is deprecated and will be removed. Please, use 'linked_clone' instead"
-          @linked_clone = @use_linked_clone if @linked_clone == UNSET_VALUE
-        end
-
         if @check_guest_tools == UNSET_VALUE
           @check_guest_tools = true
         end
@@ -116,10 +97,6 @@ module VagrantPlugins
           if event == 'pre-import' && command.index(:id)
             errors << I18n.t('vagrant_parallels.config.id_in_pre_import')
           end
-        end
-
-        if @optimize_power_consumption != UNSET_VALUE
-          machine.env.ui.warn I18n.t('vagrant_parallels.config.deprecate_power_consumption')
         end
 
         { 'Parallels Provider' => errors }
