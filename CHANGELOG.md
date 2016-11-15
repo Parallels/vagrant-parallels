@@ -2,11 +2,10 @@
 BREAKING CHANGES:
   - **Dropped support of Parallels Desktop 8 and 9**. These versions have 
   reached their [End-of-Life and End-of-Support](http://kb.parallels.com/eu/122533).
-  - **Removed customization options, which were previously deprecated:**
-  [[GH-271](https://github.com/Parallels/vagrant-parallels/pull/271)]
+  - **Removed customization options, which were previously deprecated:** [[GH-271](https://github.com/Parallels/vagrant-parallels/pull/271)]
     - "use_linked_clone" - use `linked_clone` instead.
     - "regen_box_uuid" - use `regen_src_uuid` instead.
-    - "optimize_power_consumption".  
+    - "optimize_power_consumption". 
   
 FEATURES:
   - **IPv6 Private Networks:** Private networking now supports IPv6. 
