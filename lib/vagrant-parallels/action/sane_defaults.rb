@@ -31,6 +31,7 @@ module VagrantPlugins
 
         def default_settings
           settings = {
+            tools_autoupdate: 'no',
             startup_view: 'same',
             on_shutdown: 'close',
             on_window_close: 'keep-running',
