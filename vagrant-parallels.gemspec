@@ -16,8 +16,9 @@ Gem::Specification.new do |spec|
   spec.required_rubygems_version = '>= 1.3.6'
   spec.rubyforge_project         = 'vagrant-parallels'
 
-  spec.add_development_dependency 'bundler', '>= 1.5.2'
-  spec.add_development_dependency 'rake'
+  # Constraint rake to properly handle deprecated method usage
+  # from within rspec
+  spec.add_development_dependency 'rake', '~> 11.3.0'
   spec.add_development_dependency 'nokogiri'
   spec.add_development_dependency 'rspec', '~> 2.14.0'
 
