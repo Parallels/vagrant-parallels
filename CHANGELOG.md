@@ -1,3 +1,16 @@
+## 1.7.1 (December 7, 2016)
+FEATURES:
+  - **Guest capability for installing Parallels Tools in Windows.** Now it is 
+  possible to install/upgrade Parallels Tools in Windows guests using
+  the provider option `update_guest_tools`. [[GH-284](https://github.com/Parallels/vagrant-parallels/pull/284)]
+   
+BUG FIXES:
+  - Fix issues of auto-updating Parallels Tools in Linux guests with Parallels Desktop 12+.
+  [[GH-283](https://github.com/Parallels/vagrant-parallels/pull/283)],
+  [[GH-282](https://github.com/Parallels/vagrant-parallels/pull/282)],
+  [[GH-281](https://github.com/Parallels/vagrant-parallels/pull/281)]
+  
+
 ## 1.7.0 (November 15, 2016)
 BREAKING CHANGES:
   - **Dropped support of Parallels Desktop 8 and 9**. These versions have 
