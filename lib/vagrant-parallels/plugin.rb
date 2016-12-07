@@ -68,6 +68,11 @@ module VagrantPlugins
         GuestLinuxCap::InstallParallelsTools
       end
 
+      guest_capability(:windows, :install_parallels_tools) do
+        require_relative 'guest_cap/windows/install_parallels_tools'
+        GuestWindowsCap::InstallParallelsTools
+      end
+
       provider_capability(:parallels, :public_address) do
         require_relative 'cap'
         Cap

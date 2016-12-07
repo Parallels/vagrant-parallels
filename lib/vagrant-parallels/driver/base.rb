@@ -452,7 +452,7 @@ module VagrantPlugins
           iso_name ={
             linux: 'prl-tools-lin.iso',
             darwin: 'prl-tools-mac.iso',
-            windows: 'prl-tools-win.iso'
+            windows: 'PTIAgent.exe'
           }
           return nil if !iso_name[guest_os]
 

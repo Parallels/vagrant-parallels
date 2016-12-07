@@ -55,13 +55,6 @@ that box deletion will cause all its linked clones being corrupted. Then please,
 delete your boxes carefully!
 
 ## Parallels Tools Auto-Update
-<div class="alert alert-info">
-	<p>
-        <strong>Note:</strong> This feature makes sense to Linux and OS X guests 
-        only. In Windows guests Parallels Tools will be always updated
-        automatically by the special installation agent running in GUI mode.
-	</p>
-</div>
 
 Parallels Tools is a set of Parallels utilities that ensures a high level of
 integration between the host and the guest operating systems (read more:
