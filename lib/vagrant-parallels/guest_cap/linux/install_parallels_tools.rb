@@ -5,9 +5,7 @@ module VagrantPlugins
 
         def self.install_parallels_tools(machine)
           if ptiagent_usable?(machine)
-            # Argument '--info' means that Parallels Tools version will be
-            # checked before the installing.
-            machine.communicate.sudo('ptiagent-cmd --info')
+            machine.communicate.sudo('ptiagent-cmd --install')
           else
             machine.communicate.tap do |comm|
               tools_iso_path = File.expand_path(
