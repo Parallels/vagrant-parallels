@@ -1,3 +1,8 @@
+## 1.7.2 (December 16, 2016)
+BUG FIXES:
+  - Fix Parallels Tools update in Linux guests. Call `ptiagent-cmd` with `--install`,
+  not `--info`. [[GH-286](https://github.com/Parallels/vagrant-parallels/pull/286)]
+
 ## 1.7.1 (December 7, 2016)
 FEATURES:
   - **Guest capability for installing Parallels Tools in Windows.** Now it is 
