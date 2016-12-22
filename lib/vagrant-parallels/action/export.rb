@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 module VagrantPlugins
   module Parallels
     module Action
