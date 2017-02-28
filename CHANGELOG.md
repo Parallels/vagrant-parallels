@@ -1,3 +1,9 @@
+## 1.7.3 (February 28, 2017)
+BUG FIXES:
+  - Fix exceptions related to `nokogiri` gem. 
+  [[GH-291](https://github.com/Parallels/vagrant-parallels/issues/291)],
+  [[GH-292](https://github.com/Parallels/vagrant-parallels/issues/292)]
+
 ## 1.7.2 (December 16, 2016)
 BUG FIXES:
   - Fix Parallels Tools update in Linux guests. Call `ptiagent-cmd` with `--install`,
