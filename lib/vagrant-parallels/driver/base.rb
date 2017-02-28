@@ -1,4 +1,5 @@
 require 'log4r'
+require 'nokogiri'
 
 require 'vagrant/util/busy'
 require 'vagrant/util/network_ip'

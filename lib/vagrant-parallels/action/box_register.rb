@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'log4r'
+require 'nokogiri'
 
 module VagrantPlugins
   module Parallels
