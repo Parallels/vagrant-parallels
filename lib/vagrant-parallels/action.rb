@@ -82,11 +82,8 @@ module VagrantPlugins
               next
             end
 
-            b1.use Call, IsState, :suspended do |env2, b2|
-              if env2[:result]
-                b2.use Resume
-              end
-            end
+            # Resume/Unpause the VM if needed.
+            b1.use Resume
 
             b1.use Call, GracefulHalt, :stopped, :running do |env2, b2|
               if !env2[:result]
@@ -285,14 +282,22 @@ module VagrantPlugins
 
             b1.use Call, IsState, :suspended do |env2, b2|
               if env2[:result]
-                # The VM is suspended, so just resume it
+                # The VM is suspended, go to resume
                 b2.use action_resume
                 next
               end
 
-              # The VM is not saved, so we must have to boot it up
-              # like normal. Boot!
-              b2.use action_boot
+              b2.use Call, IsState, :paused do |env3, b3|
+                if env3[:result]
+                  # The VM is paused, just run the Resume action to unpause it
+                  b3.use Resume
+                  next
+                end
+
+                # The VM is not suspended or paused, so we must have to
+                # boot it up like normal. Boot!
+                b3.use action_boot
+              end
             end
           end
         end
