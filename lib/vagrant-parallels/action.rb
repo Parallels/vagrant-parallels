@@ -274,9 +274,10 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use BoxCheckOutdated
           b.use Call, IsState, :running do |env1, b1|
-            # If the VM is running, then our work here is done, exit
+            # If the VM is running, run the necessary provisioners
             if env1[:result]
               b1.use Message, I18n.t('vagrant_parallels.commands.common.vm_already_running')
+              action_provision
               next
             end
 
