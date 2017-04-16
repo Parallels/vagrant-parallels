@@ -10,6 +10,8 @@ if Gem::Version.new(Vagrant::VERSION).release < Gem::Version.new('1.8.0')
   raise 'The installed version of Vagrant Parallels plugin is only compatible with Vagrant 1.8+'
 end
 
+require_relative "version"
+
 module VagrantPlugins
   module Parallels
     class Plugin < Vagrant.plugin('2')
