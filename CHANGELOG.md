@@ -1,13 +1,27 @@
+## 1.7.4 (April 20, 2017)
+IMPROVEMENTS:
+  - Make start action (`"vagrant up"`) run provisioners if VM is running. 
+  [[GH-294](https://github.com/Parallels/vagrant-parallels/pull/294)]
+
+BUG FIXES:
+  - Properly handle `"paused"` VM state for up and halt actions. 
+  [[GH-295](https://github.com/Parallels/vagrant-parallels/pull/295)]
+  - synced_folder: Escape special characters in Windows-specific guest paths.
+  [[GH-296](https://github.com/Parallels/vagrant-parallels/pull/296)]   
+  
+
 ## 1.7.3 (February 28, 2017)
 BUG FIXES:
   - Fix exceptions related to `nokogiri` gem. 
   [[GH-291](https://github.com/Parallels/vagrant-parallels/issues/291)],
   [[GH-292](https://github.com/Parallels/vagrant-parallels/issues/292)]
 
+
 ## 1.7.2 (December 16, 2016)
 BUG FIXES:
   - Fix Parallels Tools update in Linux guests. Call `ptiagent-cmd` with `--install`,
   not `--info`. [[GH-286](https://github.com/Parallels/vagrant-parallels/pull/286)]
+
 
 ## 1.7.1 (December 7, 2016)
 FEATURES:
@@ -84,7 +98,6 @@ BUG FIXES:
 
 
 ## 1.6.0 (December 24, 2015)
-
 BREAKING CHANGES:
   
   - The required Vagrant version is **1.8** or higher. It is caused by changes 
