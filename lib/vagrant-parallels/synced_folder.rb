@@ -105,7 +105,8 @@ module VagrantPlugins
       end
 
       def os_friendly_id(id)
-        id.gsub(/[\/:]/,'_').sub(/^_/, '')
+        # Replace chars *, ", :, <, >, ?, |, /, \
+        id.gsub(/[*":<>?|\/\\]/,'_').sub(/^_/, '')
       end
     end
   end
