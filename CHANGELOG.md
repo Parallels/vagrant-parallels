@@ -1,3 +1,18 @@
+## 1.7.5 (May 27, 2017)
+BUG FIXES:
+ - Fixed compatibility with Vagrant v1.9.5+. `nokogiri` gem is defined as
+ a plugin runtime dependency. 
+ [[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297)],
+ [[GH-298](https://github.com/Parallels/vagrant-parallels/pull/298)]
+ 
+ **NB!** To use the plugin with Vagrant v1.9.5 you should (re)install it with 
+ `NOKOGIRI_USE_SYSTEM_LIBRARIES` enabled:
+ ```bash
+ $ vagrant plugin uninstall vagrant-parallels
+ $ NOKOGIRI_USE_SYSTEM_LIBRARIES=true vagrant plugin install vagrant-parallels
+ ```
+ 
+
 ## 1.7.4 (April 20, 2017)
 IMPROVEMENTS:
   - Make start action (`"vagrant up"`) run provisioners if VM is running. 
