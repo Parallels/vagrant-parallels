@@ -48,9 +48,9 @@ module VagrantPlugins
           pvm
         end
 
-        def box_id(env, box_path)
+        def box_id(env)
           # Get the box image UUID from XML-based configuration file
-          tpl_config = File.join(box_path, 'config.pvs')
+          tpl_config = File.join(box_path(env), 'config.pvs')
           xml = Nokogiri::XML(File.open(tpl_config))
           id = xml.xpath('//ParallelsVirtualMachine/Identification/VmUuid').text
 
@@ -110,7 +110,7 @@ module VagrantPlugins
 
           # Register the box VM image
           env[:machine].provider.driver.register(pvm, options)
-          env[:clone_id] = box_id(env, pvm)
+          env[:clone_id] = box_id(env)
 
           @logger.info(
             "Registered box #{env[:machine].box.name} with id #{env[:clone_id]}")
