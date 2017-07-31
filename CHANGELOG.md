@@ -1,16 +1,22 @@
+## 1.7.6 (July 31, 2017)
+BUG FIXES:
+  - Fixed `vagrant up` failure if the box image was automatically renamed due
+  to the name conflict.  
+  [[GH-303](https://github.com/Parallels/vagrant-parallels/issues/303)]
+
 ## 1.7.5 (May 27, 2017)
 BUG FIXES:
- - Fixed compatibility with Vagrant v1.9.5+. `nokogiri` gem is defined as
- a plugin runtime dependency. 
- [[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297)],
- [[GH-298](https://github.com/Parallels/vagrant-parallels/pull/298)]
- 
- **NB!** To use the plugin with Vagrant v1.9.5 you should (re)install it with 
- `NOKOGIRI_USE_SYSTEM_LIBRARIES` enabled:
- ```bash
- $ vagrant plugin uninstall vagrant-parallels
- $ NOKOGIRI_USE_SYSTEM_LIBRARIES=true vagrant plugin install vagrant-parallels
- ```
+  - Fixed compatibility with Vagrant v1.9.5+. `nokogiri` gem is defined as
+  a plugin runtime dependency. 
+  [[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297)],
+  [[GH-298](https://github.com/Parallels/vagrant-parallels/pull/298)]
+    
+  **NB!** To use the plugin with Vagrant v1.9.5 you should (re)install it with 
+  `NOKOGIRI_USE_SYSTEM_LIBRARIES` enabled:
+  ```bash
+  $ vagrant plugin uninstall vagrant-parallels
+  $ NOKOGIRI_USE_SYSTEM_LIBRARIES=true vagrant plugin install vagrant-parallels
+  ```
  
 
 ## 1.7.4 (April 20, 2017)
