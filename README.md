@@ -8,7 +8,10 @@ allowing to manage [Parallels Desktop](http://www.parallels.com/products/desktop
 virtual machines on OS X hosts.
 
 ### Requirements 
-- [Vagrant v1.8](http://www.vagrantup.com) or higher
+- [Vagrant v1.8](http://www.vagrantup.com) or higher 
+(_there are known issues with Vagrant v1.9.5 
+[[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297#issuecomment-304458691)] 
+and v1.9.6 [[GH-301]](https://github.com/Parallels/vagrant-parallels/issues/301)_)
 - [Parallels Desktop 10 for Mac](http://www.parallels.com/products/desktop/) or higher
 
 *Note:* Only **Pro** and **Business** editions of **Parallels Desktop for Mac** 
