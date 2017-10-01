@@ -15,7 +15,7 @@ describe VagrantPlugins::Parallels::Action::Network do
 
   let(:machine) do
     iso_env.machine(iso_env.machine_names[0], :parallels).tap do |m|
-      m.provider.stub(driver: driver)
+      allow(m.provider).to receive_messages(driver: driver)
     end
   end
 
