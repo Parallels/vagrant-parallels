@@ -225,7 +225,7 @@ shared_examples 'parallels desktop driver' do |options|
   describe 'read_vms' do
     it 'returns the list of all registered VMs and templates' do
       subject.read_vms.should be_kind_of(Hash)
-      subject.read_vms.should have_at_least(2).items
+      expect(subject.read_vms.keys.length).to be >= 2
       subject.read_vms.should include(vm_name => uuid)
     end
   end
@@ -233,7 +233,7 @@ shared_examples 'parallels desktop driver' do |options|
   describe 'read_vms_info' do
     it 'returns detailed info about all registered VMs and templates' do
       subject.read_vms_info.should be_kind_of(Array)
-      subject.read_vms_info.should have_at_least(2).items
+      expect(subject.read_vms.keys.length).to be >= 2
 
       # It should include info about current VM
       vm_settings = driver.send(:read_settings)

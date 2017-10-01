@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'rspec/autorun'
+require 'rspec/its'
 
 # Require Vagrant itself so we can reference the proper
 # classes to test.
