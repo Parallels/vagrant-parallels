@@ -45,24 +45,24 @@ shared_context 'parallels' do
 
     # drivers will blow up on instantiation if they cannot determine the
     # Parallels Desktop version, so wire this stub in automatically
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', '--version', an_instance_of(Hash)).
       and_return(subprocess_result(stdout: "prlctl version #{parallels_version}.0.0 (12345)"))
 
     # drivers will sould chek the Parallels Desktop edition, so wire this stub in automatically
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlsrvctl', 'info', '--license', '--json', an_instance_of(Hash)).
       and_return(subprocess_result(stdout: '{"edition": "pro"}'))
 
     # drivers also call vm_exists? during init;
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', 'list', uuid, kind_of(Hash)).
       and_return(subprocess_result(exit_code: 0))
 
     # Returns detailed info about specified VM or all registered VMs
     # `prlctl list <vm_uuid> --info --no-header --json`
     # `prlctl list --all --info --no-header --json`
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', 'list', kind_of(String), '--info', '--no-header', '--json',
            kind_of(Hash)) do
       out = <<-eos
@@ -123,7 +123,7 @@ shared_context 'parallels' do
     # Returns detailed info about specified template or all registered templates
     # `prlctl list <tpl_uuid> --info --json --no-header --template`
     # `prlctl list --all --info --no-header --json --template`
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', 'list', kind_of(String), '--info', '--no-header', '--json',
            '--template', kind_of(Hash)) do
       out = <<-eos
@@ -172,7 +172,7 @@ shared_context 'parallels' do
 
     # Returns detailed info about virtual network interface
     # `prlsrvctl net info <net_name>, '--json'`
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlsrvctl', 'net', 'info', kind_of(String), '--json',
            kind_of(Hash)) do
       out = <<-eos
@@ -196,7 +196,7 @@ shared_context 'parallels' do
 
     # Returns values of 'name' and 'uuid' options for all registered VMs
     # `prlctl list --all --no-header --json -o name,uuid`
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', 'list', '--all', '--no-header', '--json', '-o', 'name,uuid',
            kind_of(Hash)) do
       out = <<-eos
@@ -212,7 +212,7 @@ shared_context 'parallels' do
 
     # Returns values of 'name' and 'uuid' options for all registered templates
     # `prlctl list --all --no-header --json -o name,uuid --template`
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', 'list', '--all', '--no-header', '--json', '-o', 'name,uuid',
            '--template', kind_of(Hash)) do
       out = <<-eos
@@ -228,7 +228,7 @@ shared_context 'parallels' do
 
     # Returns value of 'mac' options for the specified VM
     # `prlctl list --all --no-header -o mac`
-    subprocess.stub(:execute).
+    allow(subprocess).to receive(:execute).
       with('prlctl', 'list', kind_of(String), '--no-header', '-o', 'mac',
            kind_of(Hash)) do
       subprocess_result(stdout: "00:1C:42:B4:B0:74 00:1C:42:B4:B0:90\n")

@@ -21,10 +21,10 @@ describe VagrantPlugins::Parallels::Config do
 
   before do
     vm_config = double('vm_config')
-    vm_config.stub(networks: [])
+    allow(vm_config).to receive_messages(networks: [])
     config = double('config')
-    config.stub(vm: vm_config)
-    machine.stub(config: config)
+    allow(config).to receive_messages(vm: vm_config)
+    allow(machine).to receive_messages(config: config)
   end
 
   its 'valid by default' do
