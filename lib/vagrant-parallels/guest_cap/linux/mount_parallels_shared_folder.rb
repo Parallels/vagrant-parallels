@@ -80,10 +80,11 @@ module VagrantPlugins
           end
 
           # Emit an upstart event if we can
-          if machine.communicate.test('test -x /sbin/initctl')
-            machine.communicate.sudo(
-              "/sbin/initctl emit --no-wait vagrant-mounted MOUNTPOINT=#{expanded_guest_path}")
-          end
+          machine.communicate.sudo <<-EOH.gsub(/^ {10}/, "")
+            if command -v /sbin/init && /sbin/init 2>/dev/null --version | grep upstart; then
+              /sbin/initctl emit --no-wait vagrant-mounted MOUNTPOINT=#{expanded_guest_path}
+            fi
+          EOH
         end
 
         def self.unmount_parallels_shared_folder(machine, guestpath, options)
