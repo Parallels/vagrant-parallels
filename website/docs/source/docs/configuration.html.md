@@ -88,6 +88,8 @@ end
 In this case the both of Parallels Tools status check and an automatic update
 procedure will be skipped as well.
 
+<div id="prlctl"></div>
+
 ## Customization with prlctl
 
 Parallels Desktop includes the `prlctl` command-line utility that can be used to
