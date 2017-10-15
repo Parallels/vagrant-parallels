@@ -1,8 +1,15 @@
+## 1.7.7 (October 15, 2017)
+BUG FIXES:
+  - Fixed synced folder mounting on guests with Upstart (Ubuntu 14.*)
+  [[GH-307](https://github.com/Parallels/vagrant-parallels/issues/307)]
+
+
 ## 1.7.6 (July 31, 2017)
 BUG FIXES:
   - Fixed `vagrant up` failure if the box image was automatically renamed due
   to the name conflict.  
   [[GH-303](https://github.com/Parallels/vagrant-parallels/issues/303)]
+
 
 ## 1.7.5 (May 27, 2017)
 BUG FIXES:
