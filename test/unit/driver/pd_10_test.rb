@@ -10,7 +10,7 @@ describe VagrantPlugins::Parallels::Driver::PD_10 do
 
   describe 'set_power_consumption_mode' do
     it "turns 'longer-battery-life' on" do
-      subprocess.should_receive(:execute).
+      expect(subprocess).to receive(:execute).
         with('prlctl', 'set', uuid, '--longer-battery-life', 'on',
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))
@@ -19,7 +19,7 @@ describe VagrantPlugins::Parallels::Driver::PD_10 do
     end
 
     it "turns 'longer-battery-life' off" do
-      subprocess.should_receive(:execute).
+      expect(subprocess).to receive(:execute).
         with('prlctl', 'set', uuid, '--longer-battery-life', 'off',
              an_instance_of(Hash)).
         and_return(subprocess_result(exit_code: 0))

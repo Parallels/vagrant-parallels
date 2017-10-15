@@ -14,8 +14,8 @@ describe VagrantPlugins::Parallels::Cap do
 
   let(:machine) do
     iso_env.machine(iso_env.machine_names[0], :dummy).tap do |m|
-      m.provider.stub(driver: driver)
-      m.stub(state: state)
+      allow(m.provider).to receive_messages(driver: driver)
+      allow(m).to receive_messages(state: state)
     end
   end
 
