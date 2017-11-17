@@ -50,7 +50,7 @@ shared_examples 'provider/package' do |provider, options|
         new_env2 = new_environment
         assert_execute('vagrant', 'box', 'add', 'temp', path.to_s, env: new_env2)
         assert_execute('vagrant', 'init', 'temp', env: new_env2)
-        assert_execute('vagrant', 'up', "--provider=#{provider}", env: new_env)
+        assert_execute('vagrant', 'up', "--provider=#{provider}", env: new_env2)
         assert_execute('vagrant', 'destroy', '--force', env: new_env2)
       ensure
         if new_env
