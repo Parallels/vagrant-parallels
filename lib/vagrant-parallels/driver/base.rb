@@ -858,14 +858,14 @@ module VagrantPlugins
           true
         end
 
-        private
-
         # Wraps 'execute' and returns the output of given 'prlctl' subcommand.
         def execute_prlctl(*command, &block)
           execute(@prlctl_path, *command, &block)
         end
 
-        #Wraps 'execute' and returns the output of given 'prlsrvctl' subcommand.
+        private
+
+        # Wraps 'execute' and returns the output of given 'prlsrvctl' subcommand.
         def execute_prlsrvctl(*command, &block)
           execute(@prlsrvctl_path, *command, &block)
         end
