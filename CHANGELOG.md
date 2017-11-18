@@ -1,3 +1,8 @@
+## 1.7.8 (November 18, 2017)
+BUG FIXES:
+  - Fixed warning messages with Vagrant v2.0.1
+  [[GH-311](https://github.com/Parallels/vagrant-parallels/issues/311)]
+
 ## 1.7.7 (October 15, 2017)
 BUG FIXES:
   - Fixed synced folder mounting on guests with Upstart (Ubuntu 14.*)
