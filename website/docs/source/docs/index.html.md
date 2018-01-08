@@ -35,3 +35,4 @@ It is compatible with the following versions of Parallels Desktop:
 * Parallels Desktop 10 for Mac
 * Parallels Desktop 11 for Mac - only "Pro" and "Business" editions
 * Parallels Desktop 12 for Mac - only "Pro" and "Business" editions
+* Parallels Desktop 13 for Mac - only "Pro" and "Business" editions
