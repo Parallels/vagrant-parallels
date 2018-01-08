@@ -6,7 +6,7 @@ sidebar_current: "networking"
 # Networking
 
 The Parallels provider supports all networking features described in the Vagrant
-[Networking](http://docs.vagrantup.com/v2/networking/basic_usage.html) documentation.
+[Networking](https://www.vagrantup.com/docs/networking/basic_usage.html) documentation.
 
 ## Basic Usage
 

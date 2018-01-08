@@ -6,7 +6,7 @@ sidebar_current: "networking-public"
 # Public Networks
 
 **General Vagrant doc page**: [Public Networks]
-(http://docs.vagrantup.com/v2/networking/public_network.html).
+(https://www.vagrantup.com/docs/networking/public_network.html).
 
 Public networking by the Parallels provider is fully compatible with the basic
 Vagrant approach.

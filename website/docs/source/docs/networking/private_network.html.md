@@ -6,7 +6,7 @@ sidebar_current: "networking-private"
 # Private Networks
 
 **General Vagrant doc page**: [Private Networks]
-(http://docs.vagrantup.com/v2/networking/private_network.html).
+(https://www.vagrantup.com/docs/networking/private_network.html).
 
 Private networking by the Parallels provider is fully compatible with the basic
 Vagrant approach.

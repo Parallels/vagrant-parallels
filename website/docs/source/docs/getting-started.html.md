@@ -38,7 +38,7 @@ When the virtual machine is up and running, you can log in to it via SSH:
 $ vagrant ssh
 ```
 
-You can use any of the available [vagrant commands](http://docs.vagrantup.com/v2/cli/index.html)
+You can use other [vagrant commands](https://www.vagrantup.com/docs/cli/index.html)
 to control your virtual machine.
 
 For example, you can run `vagrant halt` to gracefully shut it down, or

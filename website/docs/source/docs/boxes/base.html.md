@@ -19,7 +19,7 @@ This page documents the box format so that you can create your own base boxes
 manually.
 
 Prior to reading this page, please check out the [basics of the Vagrant
-box file format](http://docs.vagrantup.com/v2/boxes/format.html).
+box file format](https://www.vagrantup.com/docs/boxes/format.html).
 
 ## Contents
 A Parallels base box is a compressed archive of the necessary contents of
@@ -43,7 +43,7 @@ machine.
 
 There is also the "metadata.json" file used by Vagrant itself. This file
 contains nothing but the defaults which are documented on the [box format]
-(http://docs.vagrantup.com/v2/boxes/format.html) page.
+(https://www.vagrantup.com/docs/boxes/format.html) page.
 
 ## Installed Software
 

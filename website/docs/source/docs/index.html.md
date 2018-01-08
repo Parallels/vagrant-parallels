@@ -10,7 +10,7 @@ the Parallels provider, which allows Vagrant to power
 virtual machines.
 
 If you're just getting started with Vagrant, it is highly recommended you start
-with the official [Vagrant documentation](http://docs.vagrantup.com/v2/).
+with the official [Vagrant documentation](https://www.vagrantup.com/docs/).
 
 
 ## What is Vagrant?

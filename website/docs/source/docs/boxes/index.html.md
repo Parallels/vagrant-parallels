@@ -5,11 +5,11 @@ sidebar_current: "boxes"
 
 # Boxes
 
-As with [every provider](http://docs.vagrantup.com/v2/providers/basic_usage.html), 
+As with [every provider](https://www.vagrantup.com/docs/providers/basic_usage.html),
 the Parallels provider has a custom box format.
 
-The actual list of official boxes provided by Parallels is available 
-[on wiki page](https://github.com/Parallels/vagrant-parallels/wiki/Available-Vagrant-Boxes). 
+The actual list of official boxes provided by Parallels is available
+[on wiki page](https://github.com/Parallels/vagrant-parallels/wiki/Available-Vagrant-Boxes).
 
 All boxes from Parallels could be found on the ["parallels" page on Atlas](https://atlas.hashicorp.com/parallels). 
 You can also add and share your own customized boxes there. Read more on the 

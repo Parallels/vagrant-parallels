@@ -13,4 +13,4 @@ $ vagrant plugin uninstall vagrant-parallels
 ```
 
 
-*To uninstall the entire Vagrant, please refer to the [official doc page](http://docs.vagrantup.com/v2/installation/uninstallation.html)*
+*To uninstall the entire Vagrant, please refer to the [official doc page](https://www.vagrantup.com/docs/installation/uninstallation.html)*
