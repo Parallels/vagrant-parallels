@@ -55,12 +55,12 @@ with default Vagrant settings, the SSH user must be set to accept the [insecure
 keypair](https://github.com/mitchellh/vagrant/blob/master/keys/vagrant.pub)
 that ships with Vagrant.
 
-- [Parallels Tools](http://download.parallels.com/desktop/v9/ga/docs/en_US/
+- [Parallels Tools](http://download.parallels.com/desktop/v13/docs/en_US/
 Parallels%20Desktop%20User's%20Guide/32791.htm) so that things such as shared
 folders can function. There are many other benefits to installing the tools,
 such as networking configuration and device mapping.
 
-## Optimizing the Box Size
+## Box Size Optimization
 
 Prior to packaging up a box, you should shrink the hard drives as much as
 possible. This can be done with `prl_disk_tool`:

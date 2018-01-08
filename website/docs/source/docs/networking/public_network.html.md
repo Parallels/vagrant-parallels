@@ -12,7 +12,7 @@ Public networking by the Parallels provider is fully compatible with the basic
 Vagrant approach.
 
 In order to implement a public network, the Parallels provider configures a
-[Bridged](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Desktop%20User's%20Guide/33015.htm)
+[Bridged](http://download.parallels.com/desktop/v13/docs/en_US/Parallels%20Desktop%20User's%20Guide/33015.htm)
 network.
 
 ## DHCP

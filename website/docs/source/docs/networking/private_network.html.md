@@ -12,7 +12,7 @@ Private networking by the Parallels provider is fully compatible with the basic
 Vagrant approach.
 
 In order to implement a private network, the Parallels provider configures the
-internal [Host-Only](http://download.parallels.com/desktop/v9/ga/docs/en_US/Parallels%20Desktop%20User's%20Guide/33018.htm)
+internal [Host-Only](http://download.parallels.com/desktop/v13/docs/en_US/Parallels%20Desktop%20User's%20Guide/33018.htm)
 network.
 
 ## DHCP
