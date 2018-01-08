@@ -38,7 +38,7 @@ There are two popular projects containing Packer templates for `parallels-iso` b
 - [Bento](https://github.com/chef/bento)
 - [Boxcutter](https://github.com/boxcutter/)
 
-In Parallels we build our [official boxes](https://atlas.hashicorp.com/boxes/search?provider=parallels) 
+At Parallels we build our [official boxes](https://app.vagrantup.com/boxes/search?provider=parallels)
 using templates based on Bento project.
 
 ## Building a Box

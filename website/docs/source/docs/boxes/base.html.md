@@ -10,7 +10,7 @@ sidebar_current: "boxes-base"
 		<strong>Warning: Advanced Topic!</strong> Creating a base box can be a
 		time consuming and tedious process, and is not recommended for new
 		Vagrant users. If you're just getting started with Vagrant, we
-		recommend trying to find <a href="https://atlas.hashicorp.com/parallels">
+		recommend trying to find <a href="https://app.vagrantup.com/parallels">
 		existing base boxes</a> to use first.
 	</p>
 </div>
