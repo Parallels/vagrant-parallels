@@ -8,13 +8,13 @@ sidebar_current: "boxes-packer"
 <div class="alert alert-warn">
 	<p>
 		<strong>Warning: Advanced Topic!</strong> If you're not familiar with
-		Packer, you should read the <a href="https://packer.io/docs">
+		Packer, you should read the <a href="https://www.packer.io/docs">
 		Packer documentation</a> first.
 	</p>
 </div>
 
-Packer must be properly installed in order to build a new base box using templates. 
-Read the installation instruction here: [Install Packer](https://packer.io/docs/installation.html)
+Packer must be properly installed in order to build a new base box using templates.
+Read the installation instruction here: [Install Packer](https://www.packer.io/docs/installation.html)
 
 ## Parallels Virtualization SDK
 
@@ -53,5 +53,5 @@ Packer will done everything you need: it will download an ISO image, setup a VM,
 install Parallels Tools, make basic provisioning, and it will export the VM image
 to a `*.box` file
 
-You can read more about options which all supported template options here: 
-["parallels-iso" builder documentation](https://packer.io/docs/builders/parallels-iso.html)
+You can read more about options which all supported template options here:
+["parallels-iso" builder documentation](https://www.packer.io/docs/builders/parallels-iso.html)
