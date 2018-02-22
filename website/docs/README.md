@@ -14,7 +14,7 @@ requests like any normal GitHub project, and we'll merge it in.
 
 ## Running the Site Locally
 
-Running the site locally is simple. Clone this repo, switch to `website/docs/` 
+Running the site locally is simple. Clone this repo, switch to `website/docs/`
 and run the following commands:
 
 ```
@@ -27,12 +27,12 @@ Your local copy of the site should be available by this URL: http://localhost:45
 
 ## Deploy the Site to GitHub Pages
 
-This example describes the deployment process of our official documentation 
+This example describes the deployment process of our official documentation
 site,
-http://parallels.github.io/vagrant-parallels/docs/. You will need 
-write permissions for the GitHub repo which you want to deploy to. 
+http://parallels.github.io/vagrant-parallels/docs/. You will need
+write permissions for the GitHub repo which you want to deploy to.
 
-Make sure your current working directory is `website/docs/`. Then clone 
+Make sure your current working directory is `website/docs/`. Then clone
 "gh-pages" branch from the target repo to `./build` directory.
 ```
 $ git clone -b gh-pages https://github.com/Parallels/vagrant-parallels ./build
@@ -48,7 +48,7 @@ the repo you've cloned before:
 
 ```
 $ bundle
-$ bundle exec middleman deploy --build
+$ bundle exec middleman deploy --build-before
 ```
 
 The site should be available on GitHub: http://parallels.github.io/vagrant-parallels/docs/
@@ -58,4 +58,4 @@ The site should be available on GitHub: http://parallels.github.io/vagrant-paral
 ## Additional Links
 
 - Middleman Deploy: https://github.com/middleman-contrib/middleman-deploy
-- GitHub Pages: https://pages.github.com/ 
+- GitHub Pages: https://pages.github.com/
