@@ -6,7 +6,7 @@ sidebar_current: "networking-fp"
 # Forwarded Ports
 
 **General Vagrant doc page**: [Forwarded Ports]
-(http://docs.vagrantup.com/v2/networking/forwarded_ports.html).
+(https://www.vagrantup.com/docs/networking/forwarded_ports.html).
 
 <div class="alert alert-info">
 	<p>

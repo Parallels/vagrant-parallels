@@ -6,7 +6,7 @@ sidebar_current: "usage"
 # Usage
 
 The Parallels provider is used just like any other provider. Please read the
-general [basic usage](http://docs.vagrantup.com/v2/providers/basic_usage.html)
+general [basic usage](https://www.vagrantup.com/docs/providers/basic_usage.html)
 page for providers.
 
 When Parallels provider is installed it has a higher priority than any other 
