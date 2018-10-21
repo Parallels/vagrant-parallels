@@ -4,10 +4,7 @@ sudo: false
 
 cache: bundler
 
-before_install:
-  - gem install bundler -v '1.12.5'
-
 rvm:
-  - 2.2.3
+  - 2.4.5
 
 script: bundle exec rake test:unit
