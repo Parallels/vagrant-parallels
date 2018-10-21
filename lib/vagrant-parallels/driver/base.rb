@@ -724,22 +724,6 @@ module VagrantPlugins
           vms_arr | templates_arr
         end
 
-        # Regenerates 'SourceVmUuid' to avoid SMBIOS UUID collision [GH-113]
-        #
-        def regenerate_src_uuid
-          settings = read_settings
-          vm_config = File.join(settings.fetch('Home'), 'config.pvs')
-
-          # Generate and put new SourceVmUuid
-          xml = Nokogiri::XML(File.open(vm_config))
-          p = '//ParallelsVirtualMachine/Identification/SourceVmUuid'
-          xml.xpath(p).first.content = "{#{SecureRandom.uuid}}"
-
-          File.open(vm_config, 'w') do |f|
-            f.write xml.to_xml
-          end
-        end
-
         # Registers the virtual machine
         #
         # @param [String] pvm_file Path to the machine image (*.pvm)
