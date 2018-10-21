@@ -1,7 +1,7 @@
 # Vagrant Parallels Provider
-[![Gem Version](https://badge.fury.io/rb/vagrant-parallels.png)](http://badge.fury.io/rb/vagrant-parallels)
-[![Build Status](https://travis-ci.org/Parallels/vagrant-parallels.png?branch=master)](https://travis-ci.org/Parallels/vagrant-parallels)
-[![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.png)](https://codeclimate.com/github/Parallels/vagrant-parallels)
+[![Gem Version](https://badge.fury.io/rb/vagrant-parallels.svg)](https://badge.fury.io/rb/vagrant-parallels)
+[![Build Status](https://travis-ci.org/Parallels/vagrant-parallels.svg?branch=master)](https://travis-ci.org/Parallels/vagrant-parallels)
+[![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.svg)](https://codeclimate.com/github/Parallels/vagrant-parallels)
 
 This is a plugin for [Vagrant](http://www.vagrantup.com),
 allowing to manage [Parallels Desktop](http://www.parallels.com/products/desktop/) 
