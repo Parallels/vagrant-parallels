@@ -7,7 +7,7 @@ require_relative 'pd_11'
 module VagrantPlugins
   module Parallels
     module Driver
-      # Driver for Parallels Desktop 12.
+      # Driver for Parallels Desktop 12 and later.
       class PD_12 < PD_11
         def initialize(uuid)
           super(uuid)

@@ -1,5 +1,3 @@
-require 'nokogiri'
-
 require 'digest/md5'
 
 module VagrantPlugins

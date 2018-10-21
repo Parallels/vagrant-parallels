@@ -143,6 +143,7 @@ module VagrantPlugins
           # * prlctl version 8.0.12345.123456
           # * prlctl version 9.0.12345.123456
           # * prlctl version 10.0.0 (12345) rev 123456
+          # * prlctl version 14.0.1 (45154)
           #
           # But we need exactly the first 3 numbers: "x.x.x"
           output = execute(@prlctl_path, '--version')

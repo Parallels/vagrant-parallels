@@ -4,24 +4,24 @@
 [![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.svg)](https://codeclimate.com/github/Parallels/vagrant-parallels)
 
 This is a plugin for [Vagrant](http://www.vagrantup.com),
-allowing to manage [Parallels Desktop](http://www.parallels.com/products/desktop/) 
+allowing to manage [Parallels Desktop](http://www.parallels.com/products/desktop/)
 virtual machines on OS X hosts.
 
-### Requirements 
-- [Vagrant v1.8](http://www.vagrantup.com) or higher 
-(_there are known issues with Vagrant v1.9.5 
-[[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297#issuecomment-304458691)] 
+### Requirements
+- [Vagrant v1.8](http://www.vagrantup.com) or higher
+(_there are known issues with Vagrant v1.9.5
+[[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297#issuecomment-304458691)]
 and v1.9.6 [[GH-301]](https://github.com/Parallels/vagrant-parallels/issues/301)_)
 - [Parallels Desktop 10 for Mac](http://www.parallels.com/products/desktop/) or higher
 
-*Note:* Only **Pro** and **Business** editions of **Parallels Desktop for Mac** 
-are compatible with this Vagrant provider. 
-Standard edition doesn't have a command line functionality and can not be used 
+*Note:* Only **Pro** and **Business** editions of **Parallels Desktop for Mac**
+are compatible with this Vagrant provider.
+Standard edition doesn't have a command line functionality and can not be used
 with Vagrant.
 
 ## Features
 The Parallels provider supports all basic Vagrant features, including shared folders,
-private and public networks, forwarded ports and so on. 
+private and public networks, forwarded ports and so on.
 
 If you're just getting started with Vagrant, it is highly recommended that you
 read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.

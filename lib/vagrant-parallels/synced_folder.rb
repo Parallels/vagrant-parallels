@@ -19,8 +19,8 @@ module VagrantPlugins
           end
 
           defs << {
-              name: os_friendly_id(id),
-              hostpath: hostpath.to_s,
+            name: os_friendly_id(id),
+            hostpath: hostpath.to_s,
           }
         end
 
