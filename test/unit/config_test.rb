@@ -38,7 +38,7 @@ describe VagrantPlugins::Parallels::Config do
     it { expect(subject.check_guest_tools).to eq(true) }
     it { expect(subject.name).to be_nil }
     it { expect(subject.functional_psf).to eq(true) }
-    it { expect(subject.linked_clone).to eq(false) }
+    it { expect(subject.linked_clone).to eq(true) }
     it { expect(subject.regen_src_uuid).to eq(true) }
 
     it 'should have one Shared adapter' do
