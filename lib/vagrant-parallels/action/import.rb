@@ -19,14 +19,12 @@ module VagrantPlugins
           @logger.info("Disabling password restrictions: #{acts.join(', ')}")
           env[:machine].provider.driver.disable_password_restrictions(acts)
 
-          if env[:machine].provider_config.regen_src_uuid \
-            && env[:machine].provider.pd_version_satisfies?('>= 10.1.2')
+          if env[:machine].provider_config.regen_src_uuid
             options[:regenerate_src_uuid] = true
           end
 
           # Linked clones are supported only for PD 11 and higher
-          if env[:machine].provider_config.linked_clone \
-            && env[:machine].provider.pd_version_satisfies?('>= 11')
+          if env[:machine].provider_config.linked_clone
             # Linked clone creation should not be concurrent [GH-206]
             options[:snapshot_id] = env[:clone_snapshot_id]
             options[:linked] = true
@@ -48,12 +46,6 @@ module VagrantPlugins
 
           # Flag as erroneous and return if import failed
           raise Errors::VMCloneFailure if !env[:machine].id
-
-          if env[:machine].provider_config.regen_src_uuid \
-            && env[:machine].provider.pd_version_satisfies?('< 10.1.2')
-            @logger.info('Regenerate SourceVmUuid by editing config.pvs file')
-            env[:machine].provider.driver.regenerate_src_uuid
-          end
 
           # Remove 'Icon\r' file from VM home (bug in PD 11.0.0)
           if env[:machine].provider.pd_version_satisfies?('= 11.0.0')

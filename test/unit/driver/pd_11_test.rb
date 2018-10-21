@@ -1,8 +1,8 @@
 require_relative '../base'
 
-describe VagrantPlugins::Parallels::Driver::PD_10 do
+describe VagrantPlugins::Parallels::Driver::PD_11 do
   include_context 'parallels'
-  let(:parallels_version) { '10' }
+  let(:parallels_version) { '11' }
 
   subject { VagrantPlugins::Parallels::Driver::Meta.new(uuid) }
 

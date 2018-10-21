@@ -30,35 +30,23 @@ module VagrantPlugins
         private
 
         def default_settings
-          settings = {
+          {
             tools_autoupdate: 'no',
-            startup_view: 'same',
             on_shutdown: 'close',
             on_window_close: 'keep-running',
             auto_share_camera: 'off',
             smart_guard: 'off',
-            longer_battery_life: 'on'
-          }
-
-          return settings  if @env[:machine].provider.pd_version_satisfies?('< 10.1.2')
-          settings.merge!(
+            longer_battery_life: 'on',
             shared_cloud: 'off',
             shared_profile: 'off',
             smart_mount: 'off',
             sh_app_guest_to_host: 'off',
             sh_app_host_to_guest: 'off',
-            time_sync: 'off'
-          )
-
-          return settings if @env[:machine].provider.pd_version_satisfies?('< 11')
-          settings.merge!(
             startup_view: 'headless',
             time_sync: 'on',
             disable_timezone_sync: 'on',
             shf_host_defined: 'off'
-          )
-
-          settings
+          }
         end
       end
     end

@@ -2,13 +2,13 @@ require 'log4r'
 
 require 'vagrant/util/platform'
 
-require_relative 'pd_10'
+require_relative 'base'
 
 module VagrantPlugins
   module Parallels
     module Driver
       # Driver for Parallels Desktop 11.
-      class PD_11 < PD_10
+      class PD_11 < Base
         def initialize(uuid)
           super(uuid)
 
