@@ -22,6 +22,5 @@ If desired, the Parallels provider allows to add some other high-level
 networking options, such as connecting to a [public network](/docs/networking/public_network.html),
 or creating a [private network](/docs/networking/private_network.html).
 
-Starting with Parallels Desktop 10 for Mac it is also possible to configure
-[port forwarding](/docs/networking/forwarded_ports.html) between the guest
-virtual machine and your Mac host.
+It is also possible to configure [port forwarding](/docs/networking/forwarded_ports.html)
+between the guest virtual machine and your Mac host.

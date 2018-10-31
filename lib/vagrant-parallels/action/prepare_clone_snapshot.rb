@@ -20,8 +20,7 @@ module VagrantPlugins
           end
 
           # If we're not doing a linked clone, snapshots don't matter
-          if !env[:machine].provider_config.linked_clone \
-            || env[:machine].provider.pd_version_satisfies?('< 11')
+          if !env[:machine].provider_config.linked_clone
             return @app.call(env)
           end
 

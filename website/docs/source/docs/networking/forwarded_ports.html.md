@@ -8,12 +8,6 @@ sidebar_current: "networking-fp"
 **General Vagrant doc page**: [Forwarded Ports]
 (https://www.vagrantup.com/docs/networking/forwarded_ports.html).
 
-<div class="alert alert-info">
-	<p>
-		"Forwarded ports" feature is available only with Parallels Desktop 10 and higher.
-	</p>
-</div>
-
 ## Defining a Forwarded Port
 
 The forwarded port configuration expects two parameters, the port on the
