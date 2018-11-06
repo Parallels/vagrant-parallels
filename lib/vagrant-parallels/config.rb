@@ -71,7 +71,7 @@ module VagrantPlugins
           @functional_psf = true
         end
 
-        @linked_clone = false if @linked_clone == UNSET_VALUE
+        @linked_clone = true if @linked_clone == UNSET_VALUE
         @linked_clone_snapshot = nil if @linked_clone_snapshot == UNSET_VALUE
 
         @name = nil if @name == UNSET_VALUE

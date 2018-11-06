@@ -6,7 +6,7 @@ sidebar_current: "configuration"
 # Configuration
 
 While the Parallels provider is a drop-in replacement for VirtualBox, there are
-additional features that allow you to more finely configure Parallels-specific 
+additional features that allow you to more finely configure Parallels-specific
 aspects of your machines.
 
 ## Virtual Machine Name
@@ -23,36 +23,33 @@ config.vm.provider "parallels" do |prl|
 end
 ```
 
-## Create VM as a Linked Clone
-<div class="alert alert-info">
-	<p>
-        <strong>Note:</strong> This feature is available only with Parallels
-        Desktop 11 or higher.
-	</p>
-</div>
+## Virtual Machine type: Full Clone vs Linked Clone
 
-When you run `vagrant up` for the first time, the new virtual machine
-will be created by cloning the box image. By default the Parallels provider 
-creates a regular clone, e.q. the full copy of the box image.
+Starting since vagrant-parallels v2.0.0, when you create a new virtual machine with
+`vagrant up` it is created as a linked clone of the box image.
+Previously the provider created a full clone of the box image.
 
-You can configure it to create a linked clone instead:
+Differences between linked and full clones:
+
+- Linked clone creation is extremely faster than the full cloning, because
+there is no image copying process.
+- Linked clone requires much less disk space, because initially its hard disk
+image is less than 1Mb (it is bound to the parent's snapshot).
+- Full clone is a full image copy, which is totally independent from the box.
+Linked clones are always bound to the specific snapshot of the box image. That means
+that the box deletion will cause all its linked clones being corrupted. Vagrant will
+warn you about such cases but you still need be careful when you delete boxes!
+
+If you want the provider to create a full clone instead, you should disable the linked
+clone feature explicitly in Vagrantfile:
 
 ```ruby
 config.vm.provider "parallels" do |prl|
-  prl.linked_clone = true
+  prl.linked_clone = false
 end
 ```
 
-Difference between linked and full clones:
-
-- Linked clone creation is extremely faster than the full cloning, because 
-there is no image copying process.
-- Linked clone requires much less disk space, because initially its hard disk 
-image is less than 1Mb (it is bound to the parent's snapshot).
-- Full clone is a full image copy, which is independent from the box. 
-Linked clones are bound to the specific snapshot of the box image. It means 
-that box deletion will cause all its linked clones being corrupted. Then please,
-delete your boxes carefully!
+_Note:_ Changes of this setting will take an effect only for newly created machines.
 
 ## Parallels Tools Auto-Update
 
