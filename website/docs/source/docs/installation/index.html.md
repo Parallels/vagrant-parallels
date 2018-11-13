@@ -1,5 +1,5 @@
 ---
-page_title: "Installing Vagrant"
+page_title: "Installing Provider"
 sidebar_current: "installation"
 ---
 

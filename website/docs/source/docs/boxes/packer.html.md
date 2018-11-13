@@ -1,16 +1,16 @@
 ---
-page_title: "Using Packer"
+page_title: "Build Base Boxes with Packer"
 sidebar_current: "boxes-packer"
 ---
 
-# Using Packer
+# Build Base Boxes with Packer
 
 <div class="alert alert-warn">
-	<p>
-		<strong>Warning: Advanced Topic!</strong> If you're not familiar with
-		Packer, you should read the <a href="https://www.packer.io/docs">
-		Packer documentation</a> first.
-	</p>
+  <p>
+    <strong>Warning: Advanced Topic!</strong> If you're not familiar with
+    Packer, you should read the <a href="https://www.packer.io/docs">
+    Packer documentation</a> first.
+  </p>
 </div>
 
 Packer must be properly installed in order to build a new base box using templates.
@@ -19,8 +19,8 @@ Read the installation instruction here: [Install Packer](https://www.packer.io/d
 ## Parallels Virtualization SDK
 
 Packer requires the 'prlsdkapi' Python module from the Parallels Virtualization
-SDK to interact with Parallels Desktop and virtual machines. To use Parallels 
-builders for Packer you need to download and install this SDK package: 
+SDK to interact with Parallels Desktop and virtual machines. To use Parallels
+builders for Packer you need to download and install this SDK package:
 [The Parallels Virtualization SDK for Mac](http://www.parallels.com/download/pvsdk/)
 
 You can also install it with [Homebrew](brew.sh) package manager:
@@ -30,16 +30,13 @@ $ brew cask install parallels-virtualization-sdk
 ```
 
 ## Packer Templates
-Packer is shipped with `parallels-iso` builder, which can be used to create 
+Packer is shipped with `parallels-iso` builder, which can be used to create
 base Vagrant boxes for the Parallels provider.
 
 There are two popular projects containing Packer templates for `parallels-iso` builder:
 
 - [Bento](https://github.com/chef/bento)
 - [Boxcutter](https://github.com/boxcutter/)
-
-At Parallels we build our [official boxes](https://app.vagrantup.com/boxes/search?provider=parallels)
-using templates based on Bento project.
 
 ## Building a Box
 
@@ -49,7 +46,7 @@ This is an example how to build Vagrant box for Parallels provider:
 $ packer build -only=parallels-iso template.json
 ```
 
-Packer will done everything you need: it will download an ISO image, setup a VM, 
+Packer will done everything you need: it will download an ISO image, setup a VM,
 install Parallels Tools, make basic provisioning, and it will export the VM image
 to a `*.box` file
 

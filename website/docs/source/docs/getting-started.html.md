@@ -23,9 +23,7 @@ it using Vagrant. The following describes how to create a virtual machine.
 Create a new directory and init the new Vagrant project in it:
 
 ```
-$ mkdir new_vagrant_project
-$ cd new_vagrant_project
-$ vagrant init parallels/ubuntu-14.04
+$ vagrant init bento/ubuntu-18.04
 $ vagrant up --provider=parallels
 ```
 

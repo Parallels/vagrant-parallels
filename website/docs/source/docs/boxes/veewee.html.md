@@ -1,9 +1,9 @@
 ---
-page_title: "Using Veewee"
+page_title: "Build Base Boxes with Veewee"
 sidebar_current: "boxes-veewee"
 ---
 
-# Using Veewee
+# Build Base Boxes with Veewee
 
 <div class="alert alert-warn">
 	<p>
@@ -22,7 +22,7 @@ instructions.
 
 Veewee requires the 'prlsdkapi' Python module from the Parallels Virtualization
 SDK to interact with Parallels Desktop and virtual machines. To use Veewee with
-the Parallels provider you need to download and install this SDK package: 
+the Parallels provider you need to download and install this SDK package:
 [The Parallels Virtualization SDK for Mac](http://www.parallels.com/download/pvsdk/)
 
 You can also install it with [Homebrew](brew.sh) package manager:
@@ -48,7 +48,7 @@ Navigate to the definition folder and create a `parallels.sh` script with the
 following content:
 
 ```
-# vi ./definition/my_centos/parallels.sh
+$ vi ./definition/my_centos/parallels.sh
 
 # Install the Parallels Tools
 PARALLELS_TOOLS_ISO=prl-tools-lin.iso
@@ -62,7 +62,7 @@ Open the `definition.rb` file for editing, find the ':postinstall_files' array
 and add the "parallels.sh" string to it. It should now look like this:
 
 ```
- # vi ./definition/my_centos/definition.rb
+$ vi ./definition/my_centos/definition.rb
 
 ...
   :postinstall_files => [

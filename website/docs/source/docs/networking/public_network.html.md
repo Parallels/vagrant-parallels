@@ -12,7 +12,7 @@ Public networking by the Parallels provider is fully compatible with the basic
 Vagrant approach.
 
 In order to implement a public network, the Parallels provider configures a
-[Bridged](http://download.parallels.com/desktop/v13/docs/en_US/Parallels%20Desktop%20User's%20Guide/33015.htm)
+[Bridged](http://download.parallels.com/desktop/v14/docs/en_US/Parallels%20Desktop%20User's%20Guide/33015.htm)
 network.
 
 ## DHCP
@@ -43,9 +43,9 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-The string identifying the desired interface must match either the name or 
-identifier of an available interface. If it can't be found, Vagrant will ask you 
-to pick from a list of available network interfaces.
+The string identifying the desired interface must match either the name or
+identifier of an available interface. If it can't be found, Vagrant will ask you
+to pick the one from a list of available network interfaces.
 
 It is also possible to specify a list of adapters to bridge against:
 
@@ -53,5 +53,5 @@ It is also possible to specify a list of adapters to bridge against:
 config.vm.network "public_network", bridge: ["en1", "en6"]
 ```
 
-In this example, the first network adapter that exists and can successfully be
-bridge will be used.
+In this case, Vagrant will use the first network adapter which exists and can be
+used as a bridge.

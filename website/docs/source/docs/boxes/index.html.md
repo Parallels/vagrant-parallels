@@ -16,21 +16,21 @@ You can also create and share your own customized boxes there. Read more on the
 [Vagrant Cloud](https://www.vagrantup.com/docs/vagrant-cloud/boxes/create.html)
 documentation page.
 
-## Discovering boxes
+## Discovering Boxes
 
-You can also look up all community Vagrant boxes for "parallels" provider
-and find the box matching your use case: [https://app.vagrantup.com/boxes/search?provider=parallels](https://app.vagrantup.com/boxes/search?provider=parallels)
+All boxes for "parallels" provider could be found on Vagrant Cloud:
+[https://app.vagrantup.com/boxes/search?provider=parallels](https://app.vagrantup.com/boxes/search?provider=parallels)
 
 Adding a box from the catalog is very easy:
 
 ```
-$ vagrant box add parallels/ubuntu-14.04
+$ vagrant box add bento/ubuntu-18.04
 ...
 ```
 
 You can also quickly initialize a Vagrant environment with the command:
 
 ```
-$ vagrant init parallels/ubuntu-14.04
+$ vagrant init bento/ubuntu-18.04
 ...
 ```

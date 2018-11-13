@@ -1,22 +1,25 @@
 ---
-page_title: "Creating a Base Box"
+page_title: "Creating a Base Box Manually"
 sidebar_current: "boxes-base"
 ---
 
-# Creating a Base Box
+# Creating a Base Box Manually
 
 <div class="alert alert-warn">
 	<p>
 		<strong>Warning: Advanced Topic!</strong> Creating a base box can be a
 		time consuming and tedious process, and is not recommended for new
 		Vagrant users. If you're just getting started with Vagrant, we
-		recommend trying to find <a href="https://app.vagrantup.com/parallels">
+		recommend trying to find <a href="https://app.vagrantup.com/boxes/search?provider=parallels">
 		existing base boxes</a> to use first.
 	</p>
 </div>
 
-This page documents the box format so that you can create your own base boxes
-manually.
+We strongly recommend [using Packer](/docs/boxes/packer.html) to create reproducible
+builds for your base boxes, as well as automating the builds.
+
+This page documents the box format in case if you want to create your own base boxes
+manually, from the existing virtual machine.
 
 Prior to reading this page, please check out the [basics of the Vagrant
 box file format](https://www.vagrantup.com/docs/boxes/format.html).
@@ -38,7 +41,7 @@ $ tree
 └── metadata.json
 ```
 
-`config.pvs` and `.hdd` files are strictly required for a Parallels virtual
+`config.pvs` and `<diskname>.hdd` are strictly required for a Parallels virtual
 machine.
 
 There is also the "metadata.json" file used by Vagrant itself. This file
@@ -55,7 +58,7 @@ with default Vagrant settings, the SSH user must be set to accept the [insecure
 keypair](https://github.com/mitchellh/vagrant/blob/master/keys/vagrant.pub)
 that ships with Vagrant.
 
-- [Parallels Tools](http://download.parallels.com/desktop/v13/docs/en_US/
+- [Parallels Tools](http://download.parallels.com/desktop/v14/docs/en_US/
 Parallels%20Desktop%20User's%20Guide/32791.htm) so that things such as shared
 folders can function. There are many other benefits to installing the tools,
 such as networking configuration and device mapping.
