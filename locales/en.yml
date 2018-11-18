@@ -64,7 +64,7 @@ en:
         Network settings: %{options}
         Error: %{error}
       mac_os_x_required: |-
-        Parallels provider works only on OS X (Mac OS X) systems.
+        Parallels provider works only on macOS (Mac OS X) systems.
       parallels_install_incomplete: |-
         Parallels Desktop is complaining that the installation is incomplete.
         Try to reinstall Parallels Desktop or contact Parallels support.
