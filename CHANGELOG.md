@@ -1,3 +1,13 @@
+## 2.0.0 (November 19, 2018)
+BREAKING CHANGES:
+  - **Linked Clone feature is enabled by default.**
+  Now each time when you create a new virtual machine with `vagrant up` it is
+  created as a linked clone of the box image (instead of the full clone, as it
+  was before). Read more about it:
+  [Full Clone vs Linked Clone](http://parallels.github.io/vagrant-parallels/docs/configuration.html#linked_clone).
+  - **Dropped support of Parallels Desktop 10**. It reached
+  [End-of-Life and End-of-Support](http://kb.parallels.com/eu/122533).
+
 ## 1.7.8 (November 18, 2017)
 BUG FIXES:
   - Fixed warning messages with Vagrant v2.0.1
