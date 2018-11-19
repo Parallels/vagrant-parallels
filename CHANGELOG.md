@@ -22,40 +22,40 @@ BUG FIXES:
 ## 1.7.6 (July 31, 2017)
 BUG FIXES:
   - Fixed `vagrant up` failure if the box image was automatically renamed due
-  to the name conflict.  
+  to the name conflict.
   [[GH-303](https://github.com/Parallels/vagrant-parallels/issues/303)]
 
 
 ## 1.7.5 (May 27, 2017)
 BUG FIXES:
   - Fixed compatibility with Vagrant v1.9.5+. `nokogiri` gem is defined as
-  a plugin runtime dependency. 
+  a plugin runtime dependency.
   [[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297)],
   [[GH-298](https://github.com/Parallels/vagrant-parallels/pull/298)]
-    
-  **NB!** To use the plugin with Vagrant v1.9.5 you should (re)install it with 
+
+  **NB!** To use the plugin with Vagrant v1.9.5 you should (re)install it with
   `NOKOGIRI_USE_SYSTEM_LIBRARIES` enabled:
   ```bash
   $ vagrant plugin uninstall vagrant-parallels
   $ NOKOGIRI_USE_SYSTEM_LIBRARIES=true vagrant plugin install vagrant-parallels
   ```
- 
+
 
 ## 1.7.4 (April 20, 2017)
 IMPROVEMENTS:
-  - Make start action (`"vagrant up"`) run provisioners if VM is running. 
+  - Make start action (`"vagrant up"`) run provisioners if VM is running.
   [[GH-294](https://github.com/Parallels/vagrant-parallels/pull/294)]
 
 BUG FIXES:
-  - Properly handle `"paused"` VM state for up and halt actions. 
+  - Properly handle `"paused"` VM state for up and halt actions.
   [[GH-295](https://github.com/Parallels/vagrant-parallels/pull/295)]
   - synced_folder: Escape special characters in Windows-specific guest paths.
-  [[GH-296](https://github.com/Parallels/vagrant-parallels/pull/296)]   
-  
+  [[GH-296](https://github.com/Parallels/vagrant-parallels/pull/296)]
+
 
 ## 1.7.3 (February 28, 2017)
 BUG FIXES:
-  - Fix exceptions related to `nokogiri` gem. 
+  - Fix exceptions related to `nokogiri` gem.
   [[GH-291](https://github.com/Parallels/vagrant-parallels/issues/291)],
   [[GH-292](https://github.com/Parallels/vagrant-parallels/issues/292)]
 
@@ -68,28 +68,28 @@ BUG FIXES:
 
 ## 1.7.1 (December 7, 2016)
 FEATURES:
-  - **Guest capability for installing Parallels Tools in Windows.** Now it is 
+  - **Guest capability for installing Parallels Tools in Windows.** Now it is
   possible to install/upgrade Parallels Tools in Windows guests using
   the provider option `update_guest_tools`. [[GH-284](https://github.com/Parallels/vagrant-parallels/pull/284)]
-   
+
 BUG FIXES:
   - Fix issues of auto-updating Parallels Tools in Linux guests with Parallels Desktop 12+.
   [[GH-283](https://github.com/Parallels/vagrant-parallels/pull/283)],
   [[GH-282](https://github.com/Parallels/vagrant-parallels/pull/282)],
   [[GH-281](https://github.com/Parallels/vagrant-parallels/pull/281)]
-  
+
 
 ## 1.7.0 (November 15, 2016)
 BREAKING CHANGES:
-  - **Dropped support of Parallels Desktop 8 and 9**. These versions have 
+  - **Dropped support of Parallels Desktop 8 and 9**. These versions have
   reached their [End-of-Life and End-of-Support](http://kb.parallels.com/eu/122533).
   - **Removed customization options, which were previously deprecated:** [[GH-271](https://github.com/Parallels/vagrant-parallels/pull/271)]
     - "use_linked_clone" - use `linked_clone` instead.
     - "regen_box_uuid" - use `regen_src_uuid` instead.
-    - "optimize_power_consumption". 
-  
+    - "optimize_power_consumption".
+
 FEATURES:
-  - **IPv6 Private Networks:** Private networking now supports IPv6. 
+  - **IPv6 Private Networks:** Private networking now supports IPv6.
   This only works with Parallels Desktop 12 and higher.
   [[GH-273](https://github.com/Parallels/vagrant-parallels/pull/273)]
 
@@ -104,23 +104,23 @@ DEPRECATIONS:
   [[GH-260](https://github.com/Parallels/vagrant-parallels/pull/260)]
 
 IMPROVEMENTS:
-  - Allow to package linked clones with `vagrant package`. External disk images 
-  will be automatically copied, so the resulted box become a full-sized 
+  - Allow to package linked clones with `vagrant package`. External disk images
+  will be automatically copied, so the resulted box become a full-sized
   standalone VM. [[GH-262](https://github.com/Parallels/vagrant-parallels/pull/262)]
   - Handle the situation when host machine is not connected to Shared network.
   With Parallels Desktop 11.2.1+ Vagrant will connect it automatically. With earlier
-  versions, the human-readable error message will be displayed. 
+  versions, the human-readable error message will be displayed.
   [[GH-266](https://github.com/Parallels/vagrant-parallels/pull/266)]
-  - Disable home folder sharing by default (Parallels Desktop 11+). 
+  - Disable home folder sharing by default (Parallels Desktop 11+).
   [[GH-257](https://github.com/Parallels/vagrant-parallels/pull/257)]
 
 BUG FIXES:
   - action/box_unregister: Fix `#recover` method  for layered environments.
   [[GH-261](https://github.com/Parallels/vagrant-parallels/pull/261)]
-  - action/network: Fix an exception when option "Connect Mac to 
+  - action/network: Fix an exception when option "Connect Mac to
   this network" is disabled. [[GH-268](https://github.com/Parallels/vagrant-parallels/pull/268)]
-  - commands/snapshot: Add retries for snapshot commands to avoid `prlctl` 
-  failures. [[GH-259](https://github.com/Parallels/vagrant-parallels/pull/259)]  
+  - commands/snapshot: Add retries for snapshot commands to avoid `prlctl`
+  failures. [[GH-259](https://github.com/Parallels/vagrant-parallels/pull/259)]
 
 
 ## 1.6.2 (March 23, 2016)
@@ -129,28 +129,28 @@ BUG FIXES:
 
 IMPROVEMENTS:
   - action/destroy: Destroy suspended VMs without resuming
-  
+
 ## 1.6.1 (January 13, 2016)
 
 BUG FIXES:
-  - action/import: Fix `regenerate_src_uuid` option behavior in parallel run 
+  - action/import: Fix `regenerate_src_uuid` option behavior in parallel run
     [[GH-241](https://github.com/Parallels/vagrant-parallels/pull/241)]
-  - action/box_unregister: Use temporary lock file to prevent early unregister 
+  - action/box_unregister: Use temporary lock file to prevent early unregister
     in parallel run [[GH-244](https://github.com/Parallels/vagrant-parallels/pull/244)]
   - action/network: Fix detection of the next virtual network ID [[GH-245](https://github.com/Parallels/vagrant-parallels/pull/245)]
 
 
 ## 1.6.0 (December 24, 2015)
 BREAKING CHANGES:
-  
-  - The required Vagrant version is **1.8** or higher. It is caused by changes 
+
+  - The required Vagrant version is **1.8** or higher. It is caused by changes
     in Vagrant plugin model.
-  
+
 SUPPORT FOR VAGRANT FEATURES:
 
-  - `vagrant port`: This command displays the list of forwarded ports from the 
+  - `vagrant port`: This command displays the list of forwarded ports from the
     guest to the host
-  - `vagrant snapshot`: This command can be used to checkpoint and restore 
+  - `vagrant snapshot`: This command can be used to checkpoint and restore
   point-in-time snapshots [[GH-228](https://github.com/Parallels/vagrant-parallels/pull/228)]
 
 IMPROVEMENTS:
@@ -165,7 +165,7 @@ IMPROVEMENTS:
 
 BUG FIXES:
 
-  - action/forward_ports: Add parallel-safe lock to avoid collisions of 
+  - action/forward_ports: Add parallel-safe lock to avoid collisions of
     forwarded ports in multi-machine env [[GH-226](https://github.com/Parallels/vagrant-parallels/pull/226)]
 
 ## Previous Versions
