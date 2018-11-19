@@ -14,9 +14,6 @@ module VagrantPlugins
           # helpers.
           @env = env
 
-          settings = default_settings
-
-          @app.call(env) if settings.empty?
           @env[:ui].info I18n.t('vagrant_parallels.actions.vm.sane_defaults.setting')
 
           default_settings.each do |setting, value|
