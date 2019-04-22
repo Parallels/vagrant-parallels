@@ -291,7 +291,12 @@ module VagrantPlugins
             @env[:machine].provider.driver.read_bridged_interfaces.each do |interface|
               next if interface[:status] == 'Down'
               that_netaddr = IPAddr.new("#{interface[:ip]}/#{interface[:netmask]}")
-              raise Vagrant::Errors::NetworkCollision if netaddr.include? that_netaddr
+              if netaddr.include? that_netaddr
+                raise VagrantPlugins::Parallels::Errors::NetworkCollision,
+                  hostonly_netaddr: netaddr,
+                  bridge_netaddr:   that_netaddr,
+                  bridge_interface: interface[:name]
+              end
             end
           end
 

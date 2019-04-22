@@ -58,6 +58,14 @@ en:
         which are not supported by "prl_fs" file system.
 
         Invalid mount options: %{options}
+      network_collision: |-
+        The specified host network collides with a non-hostonly network!
+        This will cause your specified IP to be inaccessible. Please change
+        the IP or name of your host only network so that it no longer matches that of
+        a bridged or non-hostonly network.
+
+        Host-only Network Address: '%{hostonly_netaddr}'
+        Bridged Network '%{bridge_interface}': '%{bridge_netaddr}'
       network_invalid_address: |-
         Network settings specified in your Vagrantfile are invalid:
 
