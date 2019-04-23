@@ -1,3 +1,8 @@
+## 2.0.1 (April 23, 2019)
+BUG FIXES:
+  - Fixed the error message for host-only network collision
+  [[GH-340](https://github.com/Parallels/vagrant-parallels/issues/340)]
+
 ## 2.0.0 (November 19, 2018)
 BREAKING CHANGES:
   - **Linked Clone feature is enabled by default.**
