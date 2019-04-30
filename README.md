@@ -28,7 +28,7 @@ read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
 
 ## Installation
 Make sure that you have [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
-and [Vagrant](http://www.vagrantup.com/downloads) properly installed.
+and [Vagrant](http://www.vagrantup.com/downloads.html) properly installed.
 We recommend that you use the latest versions of these products.
 
 Parallels provider is a plugin for Vagrant. Run this command to install it:
