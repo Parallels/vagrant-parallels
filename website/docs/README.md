@@ -3,7 +3,7 @@
 There are sources for documentation pages:
 http://parallels.github.io/vagrant-parallels/docs/
 
-This is a [Middleman](http://middlemanapp.com) project, which builds a static
+This is a [Middleman](https://middlemanapp.com) project, which builds a static
 site from these source files.
 
 ## Contributions Welcome!
@@ -51,8 +51,8 @@ $ bundle
 $ bundle exec middleman deploy --build-before
 ```
 
-The site should be available on GitHub: http://parallels.github.io/vagrant-parallels/docs/
-(or `http://<YOUR_USER>.github.io/vagrant-parallels/docs/`)
+The site should be available on GitHub: https://parallels.github.io/vagrant-parallels/docs/
+(or `https://<YOUR_USER>.github.io/vagrant-parallels/docs/`)
 
 
 ## Additional Links

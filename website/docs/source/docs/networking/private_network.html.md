@@ -12,7 +12,7 @@ Private networking by the Parallels provider is fully compatible with the basic
 Vagrant approach.
 
 In order to implement a private network, the Parallels provider configures the
-internal [Host-Only](http://download.parallels.com/desktop/v14/docs/en_US/Parallels%20Desktop%20User's%20Guide/33018.htm)
+internal [Host-Only](https://download.parallels.com/desktop/v14/docs/en_US/Parallels%20Desktop%20User's%20Guide/33018.htm)
 network.
 
 ## DHCP
@@ -47,6 +47,6 @@ It is a responsibility of the user to ensure that the static IP address does not
 conflict with any other machines on the same network.
 
 While you can choose any IP address, you _should_ use an IP from the
-[reserved private address space](http://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces).
+[reserved private address space](https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces).
 These addresses are guaranteed to never be publicly routable, and most routers
 actually block traffic from going to them from the outside world.
