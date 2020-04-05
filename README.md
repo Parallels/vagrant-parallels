@@ -3,16 +3,16 @@
 [![Build Status](https://travis-ci.org/Parallels/vagrant-parallels.svg?branch=master)](https://travis-ci.org/Parallels/vagrant-parallels)
 [![Code Climate](https://codeclimate.com/github/Parallels/vagrant-parallels.svg)](https://codeclimate.com/github/Parallels/vagrant-parallels)
 
-_Vagrant Parallels Provider_ is a plugin for [Vagrant](http://www.vagrantup.com),
-allowing to manage [Parallels Desktop](http://www.parallels.com/products/desktop/)
+_Vagrant Parallels Provider_ is a plugin for [Vagrant](https://www.vagrantup.com),
+allowing to manage [Parallels Desktop](https://www.parallels.com/products/desktop/)
 virtual machines on macOS hosts.
 
 ### Requirements
-- [Vagrant v1.8](http://www.vagrantup.com) or higher
+- [Vagrant v1.8](https://www.vagrantup.com) or higher
 (_there are known issues with Vagrant v1.9.5
 [[GH-297](https://github.com/Parallels/vagrant-parallels/issues/297#issuecomment-304458691)]
 and v1.9.6 [[GH-301]](https://github.com/Parallels/vagrant-parallels/issues/301)_)
-- [Parallels Desktop 11 for Mac](http://www.parallels.com/products/desktop/) or higher
+- [Parallels Desktop 11 for Mac](https://www.parallels.com/products/desktop/) or higher
 
 *Note:* Only **Pro** and **Business** editions of **Parallels Desktop for Mac**
 are compatible with this Vagrant provider.
@@ -24,11 +24,11 @@ The Parallels provider supports all basic Vagrant features, including Shared Fol
 Private and Public Networking, Forwarded ports and Vagrant Share.
 
 If you're just getting started with Vagrant, it is highly recommended that you
-read the official [Vagrant documentation](http://docs.vagrantup.com/v2/) first.
+read the official [Vagrant documentation](https://docs.vagrantup.com/v2/) first.
 
 ## Installation
-Make sure that you have [Parallels Desktop for Mac](http://www.parallels.com/products/desktop/)
-and [Vagrant](http://www.vagrantup.com/downloads.html) properly installed.
+Make sure that you have [Parallels Desktop for Mac](https://www.parallels.com/products/desktop/)
+and [Vagrant](https://www.vagrantup.com/downloads.html) properly installed.
 We recommend that you use the latest versions of these products.
 
 Parallels provider is a plugin for Vagrant. Run this command to install it:
@@ -40,12 +40,12 @@ $ vagrant plugin install vagrant-parallels
 ## Provider Documentation
 
 More information about the Parallels provider is available in
-[Vagrant Parallels Documentation](http://parallels.github.io/vagrant-parallels/docs/)
+[Vagrant Parallels Documentation](https://parallels.github.io/vagrant-parallels/docs/)
 
 We recommend you to start from these pages:
-* [Usage](http://parallels.github.io/vagrant-parallels/docs/usage.html)
-* [Getting Started](http://parallels.github.io/vagrant-parallels/docs/getting-started.html)
-* [Boxes](http://parallels.github.io/vagrant-parallels/docs/boxes/index.html)
+* [Usage](https://parallels.github.io/vagrant-parallels/docs/usage.html)
+* [Getting Started](https://parallels.github.io/vagrant-parallels/docs/getting-started.html)
+* [Boxes](https://parallels.github.io/vagrant-parallels/docs/boxes/index.html)
 
 ## Getting Help
 
@@ -58,4 +58,4 @@ please report it on the [Issue Tracker](https://github.com/Parallels/vagrant-par
 * Author: Mikhail Zholobov <legal90@gmail.com>
 * Copyright 2013-2018, Parallels International GmbH.
 
-Vagrant Parallels Provider is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+Vagrant Parallels Provider is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

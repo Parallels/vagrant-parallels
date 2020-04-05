@@ -1,7 +1,7 @@
 # Vagrant Parallels Documentation
 
 There are sources for documentation pages:
-http://parallels.github.io/vagrant-parallels/docs/
+https://parallels.github.io/vagrant-parallels/docs/
 
 This is a [Middleman](https://middlemanapp.com) project, which builds a static
 site from these source files.
@@ -29,7 +29,7 @@ Your local copy of the site should be available by this URL: http://localhost:45
 
 This example describes the deployment process of our official documentation
 site,
-http://parallels.github.io/vagrant-parallels/docs/. You will need
+https://parallels.github.io/vagrant-parallels/docs/. You will need
 write permissions for the GitHub repo which you want to deploy to.
 
 Make sure your current working directory is `website/docs/`. Then clone

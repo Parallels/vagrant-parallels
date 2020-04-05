@@ -23,7 +23,7 @@ instructions.
 Veewee requires the 'prlsdkapi' Python module from the Parallels Virtualization
 SDK to interact with Parallels Desktop and virtual machines. To use Veewee with
 the Parallels provider you need to download and install this SDK package:
-[The Parallels Virtualization SDK for Mac](http://www.parallels.com/download/pvsdk/)
+[The Parallels Virtualization SDK for Mac](https://www.parallels.com/download/pvsdk/)
 
 You can also install it with [Homebrew](brew.sh) package manager:
 
