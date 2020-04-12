@@ -58,8 +58,7 @@ with default Vagrant settings, the SSH user must be set to accept the [insecure
 keypair](https://github.com/mitchellh/vagrant/blob/master/keys/vagrant.pub)
 that ships with Vagrant.
 
-- [Parallels Tools](https://download.parallels.com/desktop/v14/docs/en_US/
-Parallels%20Desktop%20User's%20Guide/32791.htm) so that things such as shared
+- [Parallels Tools](https://download.parallels.com/desktop/v16/docs/en_US/Parallels%20Desktop%20User's%20Guide/32791.htm) so that things such as shared
 folders can function. There are many other benefits to installing the tools,
 such as networking configuration and device mapping.
 
