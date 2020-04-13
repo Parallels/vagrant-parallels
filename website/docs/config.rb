@@ -11,6 +11,9 @@ set :relative_links, true
 # Use relative URLs
 activate :relative_assets
 
+# Use syntax highlighting
+activate :syntax
+
 # Build-specific configuration
 configure :build do
   activate :asset_hash

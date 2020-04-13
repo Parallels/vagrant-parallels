@@ -52,7 +52,7 @@ port, since it is often surprising when it occurs and can lead the Vagrant
 user to think that the port wasn't properly forwarded. Enabling auto correct
 is easy:
 
-```
+```ruby
 Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 80, host: 8080,
     auto_correct: true
