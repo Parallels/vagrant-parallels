@@ -10,19 +10,19 @@ $ cd vagrant-parallels
 
 ### Dependencies and Unit Tests
 
-To hack on our plugin, you'll need a [Ruby interpreter](https://www.ruby-lang.org/en/downloads/) 
-(>= 2.0) and [Bundler](http://bundler.io/) which can be installed with a simple 
+To hack on our plugin, you'll need a [Ruby interpreter](https://www.ruby-lang.org/en/downloads/)
+(>= 2.0) and [Bundler](http://bundler.io/) which can be installed with a simple
 `gem install bundler`. Afterwards, do the following:
 
 ```
 $ bundle install
-$ rake
+$ bundle exec rake
 ```
 
-This will run the unit test suite, which should come back all green! 
+This will run the unit test suite, which should come back all green!
 Then you're good to go!
 
-If you want to run Vagrant without having to install the `vagrant-parallels` 
+If you want to run Vagrant without having to install the `vagrant-parallels`
 gem, you may use `bundle exec`, like so:
 
 ```
@@ -33,7 +33,7 @@ $ bundle exec vagrant up --provider=parallels
 To build a `vagrant-parallels` gem just run this command:
 
 ```
-$ rake build
+$ bundle exec rake build
 ```
 
 The built "gem" package will appear in the `./pkg` folder.
@@ -75,6 +75,6 @@ specify a local path to it.
 Run acceptance tests:
 
 ```
-$ rake acceptance:run
+$ bundle exec rake acceptance:run
 ...
 ```

@@ -20,9 +20,9 @@ Gem::Specification.new do |spec|
 
   # Constraint rake to properly handle deprecated method usage
   # from within rspec
-  spec.add_development_dependency 'rake', '~> 11.3.0'
+  spec.add_development_dependency 'rake', '~> 12.3.3'
   spec.add_development_dependency 'rspec', '~> 3.5.0'
-  spec.add_development_dependency 'rspec-its', '~> 1.2.0'
+  spec.add_development_dependency 'rspec-its', '~> 1.3.0'
 
   spec.files = Dir['lib/**/*', 'locales/**/*', 'README.md', 'CHANGELOG.md', 'LICENSE.txt']
   spec.require_path = 'lib'
