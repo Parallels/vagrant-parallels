@@ -9,9 +9,9 @@ BREAKING CHANGES:
   Now each time when you create a new virtual machine with `vagrant up` it is
   created as a linked clone of the box image (instead of the full clone, as it
   was before). Read more about it:
-  [Full Clone vs Linked Clone](http://parallels.github.io/vagrant-parallels/docs/configuration.html#linked_clone).
+  [Full Clone vs Linked Clone](https://parallels.github.io/vagrant-parallels/docs/configuration.html#linked_clone).
   - **Dropped support of Parallels Desktop 10**. It reached
-  [End-of-Life and End-of-Support](http://kb.parallels.com/eu/122533).
+  [End-of-Life and End-of-Support](https://kb.parallels.com/eu/122533).
 
 ## 1.7.8 (November 18, 2017)
 BUG FIXES:
@@ -87,7 +87,7 @@ BUG FIXES:
 ## 1.7.0 (November 15, 2016)
 BREAKING CHANGES:
   - **Dropped support of Parallels Desktop 8 and 9**. These versions have
-  reached their [End-of-Life and End-of-Support](http://kb.parallels.com/eu/122533).
+  reached their [End-of-Life and End-of-Support](https://kb.parallels.com/eu/122533).
   - **Removed customization options, which were previously deprecated:** [[GH-271](https://github.com/Parallels/vagrant-parallels/pull/271)]
     - "use_linked_clone" - use `linked_clone` instead.
     - "regen_box_uuid" - use `regen_src_uuid` instead.

@@ -8,7 +8,7 @@ sidebar_current: "gettingstarted"
 This page describes steps to get your first Parallels Desktop virtual machine
 managed by Vagrant.
 
-First, download and install [Vagrant for Mac](http://www.vagrantup.com/downloads.html).
+First, download and install [Vagrant for Mac](https://www.vagrantup.com/downloads.html).
 Second, install the 'vagrant-parallels' plugin:
 
 ```
