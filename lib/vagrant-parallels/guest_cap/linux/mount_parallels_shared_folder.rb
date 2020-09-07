@@ -35,12 +35,12 @@ module VagrantPlugins
           end
 
           # First mount command uses getent to get the group
-          mount_options = "-o uid=#{mount_uid},gid=#{mount_gid}"
+          mount_options = "-o uid=#{mount_uid},gid=#{mount_gid},host_inodes"
           mount_options += ",#{options[:mount_options].join(',')}" if options[:mount_options]
           mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
 
           # Second mount command uses the old style `id -g`
-          mount_options = "-o uid=#{mount_uid},gid=#{mount_gid_old}"
+          mount_options = "-o uid=#{mount_uid},gid=#{mount_gid_old},host_inodes"
           mount_options += ",#{options[:mount_options].join(',')}" if options[:mount_options]
           mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
 
