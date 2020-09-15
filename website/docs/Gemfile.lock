@@ -70,7 +70,7 @@ GEM
       servolux
       tilt (~> 2.0.9)
       uglifier (~> 3.0)
-    middleman-deploy (1.0.0)
+    middleman-deploy (2.0.0.pre.alpha)
       middleman-core (>= 3.2)
       net-sftp
       ptools
@@ -123,7 +123,7 @@ DEPENDENCIES
   kramdown (>= 2.3.0)
   less (~> 2.6)
   middleman (~> 4.3.0)
-  middleman-deploy (~> 1.0)
+  middleman-deploy (~> 2.0.0.pre.alpha)
   middleman-syntax (~> 3.0)
   rack (~> 2.1.4)
   rack-contrib (~> 1.2)
