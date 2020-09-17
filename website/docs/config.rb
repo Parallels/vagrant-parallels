@@ -23,6 +23,6 @@ end
 
 activate :deploy do |deploy|
   deploy.remote = 'origin'
-  deploy.method = :git
+  deploy.deploy_method = :git
   deploy.branch = 'gh-pages'
 end
