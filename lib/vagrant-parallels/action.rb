@@ -113,6 +113,7 @@ module VagrantPlugins
             b1.use Package
             b1.use Export
             b1.use PackageConfigFiles
+            b1.use PackageVagrantfile
           end
         end
       end
@@ -413,6 +414,7 @@ module VagrantPlugins
       autoload :Network, File.expand_path('../action/network', __FILE__)
       autoload :Package, File.expand_path('../action/package', __FILE__)
       autoload :PackageConfigFiles, File.expand_path('../action/package_config_files', __FILE__)
+      autoload :PackageVagrantfile, File.expand_path('../action/package_vagrantfile', __FILE__)
       autoload :PrepareCloneSnapshot, File.expand_path('../action/prepare_clone_snapshot', __FILE__)
       autoload :PrepareForwardedPortCollisionParams, File.expand_path('../action/prepare_forwarded_port_collision_params', __FILE__)
       autoload :PrepareNFSSettings, File.expand_path('../action/prepare_nfs_settings', __FILE__)
