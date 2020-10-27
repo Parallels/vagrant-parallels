@@ -1,3 +1,12 @@
+## 2.1.0 (November 25, 2020)
+BUG FIXES:
+  - Fixed the private network adapter workflow on macOS 11.0 Big Sur
+  [[GH-371](https://github.com/Parallels/vagrant-parallels/pull/371)]
+  - Fixed the concurrency issue with box unregister in multi-vm environment
+  [[GH-370](https://github.com/Parallels/vagrant-parallels/pull/370)]
+  - Fixed the `vagrant package` with custom `Vagrantfile`
+  [[GH-368](https://github.com/Parallels/vagrant-parallels/pull/368)]
+
 ## 2.0.1 (April 23, 2019)
 BUG FIXES:
   - Fixed the error message for host-only network collision
