@@ -53,9 +53,9 @@ module VagrantPlugins
             file.flush
           end
 
-          # Delete the lease file if we are the last who need this box.
+          # Delete the lease file if we were the last who needed this box.
           # Then the box image will be unregistered.
-          lease_file.delete if lease_file.read.chomp.to_i <= 1
+          lease_file.delete if lease_file.read.chomp.to_i <= 0
         end
 
         def unregister_box(env)
