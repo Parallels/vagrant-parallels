@@ -131,7 +131,6 @@ describe VagrantPlugins::Parallels::Action::Network do
         let(:hostonlyifs) {
           [{
              name:     'vagrant-vnet2',
-             bound_to: 'vnic4',
              ip:       '172.28.128.2',
              netmask:  '255.255.255.0',
              status:   'Up'
