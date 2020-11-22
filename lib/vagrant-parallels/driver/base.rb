@@ -193,14 +193,13 @@ module VagrantPlugins
           end
         end
 
-        # Deletes any host only networks that aren't being used for anything.
+        # Deletes host-only networks that aren't being used by any virtual machine.
         def delete_unused_host_only_networks
           networks = read_virtual_networks
-          # 'Shared'(vnic0) and 'Host-Only'(vnic1) are default in Parallels Desktop
-          # They should not be deleted anyway.
+
+          # Exclude all host-only network interfaces which were not created by vagrant provider.
           networks.keep_if do |net|
-            net['Type'] == 'host-only' && net['Bound To'] &&
-              net['Bound To'].match(/^(?>vnic|Parallels Host-Only #)(\d+)$/)[1].to_i >= 2
+            net['Type'] == 'host-only' && net['Network ID'] =~ /^vagrant-vnet(\d+)$/
           end
 
           read_vms_info.each do |vm|
@@ -210,8 +209,8 @@ module VagrantPlugins
             end
           end
 
+          # Delete all unused network interfaces.
           networks.each do |net|
-            # Delete the actual host only network interface.
             execute_prlsrvctl('net', 'del', net['Network ID'])
           end
         end
@@ -496,7 +495,6 @@ module VagrantPlugins
         #
         # {
         #   name:     'Host-Only',     # Parallels Network ID
-        #   bound_to: 'vnic1',         # interface name
         #   ip:       '10.37.129.2',   # IP address of the interface
         #   netmask:  '255.255.255.0', # netmask associated with the interface
         #   status:   'Up'             # status of the interface
@@ -519,11 +517,9 @@ module VagrantPlugins
             }
 
             adapter = net_info['Parallels adapter']
-            if adapter && net_info['Bound To']
-              # In PD >= 10.1.2 there are new field names for an IP/Subnet
-              iface[:ip]       = adapter['IP address'] || adapter['IPv4 address']
-              iface[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
-              iface[:bound_to] = net_info['Bound To']
+            if adapter
+              iface[:ip]       = adapter['IPv4 address']
+              iface[:netmask]  = adapter['IPv4 subnet mask']
               iface[:status]   = 'Up'
 
               if adapter['IPv6 address'] && adapter['IPv6 subnet mask']
@@ -618,11 +614,9 @@ module VagrantPlugins
           }
           adapter = net_info['Parallels adapter']
 
-          if adapter && net_info['Bound To']
-            # In PD >= 10.1.2 there are new field names for an IP/Subnet
-            iface[:ip]       = adapter['IP address'] || adapter['IPv4 address']
-            iface[:netmask]  = adapter['Subnet mask'] || adapter['IPv4 subnet mask']
-            iface[:bound_to] = net_info['Bound To']
+          if adapter
+            iface[:ip]       = adapter['IPv4 address']
+            iface[:netmask]  = adapter['IPv4 subnet mask']
             iface[:status]   = 'Up'
           end
 

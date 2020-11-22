@@ -10,7 +10,6 @@ shared_context 'parallels' do
   let(:tpl_name) {'Some_Template_Name'}
   let(:tools_state) {'installed'}
   let(:tools_version) {'12.0.18615.123456'}
-  let(:hostonly_iface) {'vnic10'}
 
   let(:vnic_options) do {
     name:       'vagrant_vnic6',
@@ -179,7 +178,6 @@ shared_context 'parallels' do
 {
   "Network ID": "#{vnic_options[:name]}",
   "Type": "host-only",
-  "Bound To": "#{hostonly_iface}",
   "Parallels adapter": {
     "IP address": "#{vnic_options[:adapter_ip]}",
     "Subnet mask": "#{vnic_options[:netmask]}"
