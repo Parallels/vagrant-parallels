@@ -1,7 +1,19 @@
+require 'shellwords'
+
+require_relative "../../util/unix_mount_helpers"
+
 module VagrantPlugins
   module Parallels
     module GuestLinuxCap
       class MountParallelsSharedFolder
+        extend VagrantPlugins::Parallels::Util::UnixMountHelpers
+
+        # Mounts Parallels Desktop shared folder on linux guest
+        #
+        # @param [Machine] machine
+        # @param [String] name of mount
+        # @param [String] path of mount on guest
+        # @param [Hash] hash of mount options
         def self.mount_parallels_shared_folder(machine, name, guestpath, options)
           # Sanity check for mount options: we are not supporting
           # VirtualBox-specific 'fmode' and 'dmode' options
@@ -15,83 +27,38 @@ module VagrantPlugins
             end
           end
 
-          expanded_guest_path = machine.guest.capability(
-            :shell_expand_guest_path, guestpath)
+          guest_path = Shellwords.escape(guestpath)
+          mount_type = options[:plugin].capability(:mount_type)
 
-          mount_commands = []
+          @@logger.debug("Mounting #{name} (#{options[:hostpath]} to #{guestpath})")
 
-          if options[:owner].is_a? Integer
-            mount_uid = options[:owner]
-          else
-            mount_uid = "`id -u #{options[:owner]}`"
-          end
-
-          if options[:group].is_a? Integer
-            mount_gid = options[:group]
-            mount_gid_old = options[:group]
-          else
-            mount_gid = "`getent group #{options[:group]} | cut -d: -f3`"
-            mount_gid_old = "`id -g #{options[:group]}`"
-          end
-
-          # First mount command uses getent to get the group
-          mount_options = "-o uid=#{mount_uid},gid=#{mount_gid}"
-          mount_options += ",#{options[:mount_options].join(',')}" if options[:mount_options]
-          mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
-
-          # Second mount command uses the old style `id -g`
-          mount_options = "-o uid=#{mount_uid},gid=#{mount_gid_old}"
-          mount_options += ",#{options[:mount_options].join(',')}" if options[:mount_options]
-          mount_commands << "mount -t prl_fs #{mount_options} #{name} #{expanded_guest_path}"
-
-          # Clear prior symlink if exists
-          if machine.communicate.test("test -L #{expanded_guest_path}")
-            machine.communicate.sudo("rm #{expanded_guest_path}")
-          end
+          mount_options, mount_uid, mount_gid = options[:plugin].capability(:mount_options, name, guest_path, options)
+          mount_command = "mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}"
 
           # Create the guest path if it doesn't exist
-          machine.communicate.sudo("mkdir -p #{expanded_guest_path}")
+          machine.communicate.sudo("mkdir -p #{guest_path}")
 
           # Attempt to mount the folder. We retry here a few times because
           # it can fail early on.
-          attempts = 0
-          while true
-            success = true
-
-            mount_commands.each do |command|
-              no_such_device = false
-              status = machine.communicate.sudo(command, error_check: false) do |type, data|
-                no_such_device = true if type == :stderr && data =~ /No such device/i
-              end
-
-              success = status == 0 && !no_such_device
-              break if success
-            end
-
-            break if success
-
-            attempts += 1
-            if attempts > 10
-              raise VagrantPlugins::Parallels::Errors::LinuxMountFailed,
-                command: mount_commands.join("\n")
-            end
-
-            sleep 2
+          stderr = ""
+          retryable(on: Errors::ParallelsMountFailed, tries: 3, sleep: 5) do
+            machine.communicate.sudo(mount_command,
+              error_class: Errors::ParallelsMountFailed,
+              error_key: :parallels_mount_failed,
+              command: mount_command,
+              output: stderr,
+            ) { |type, data| stderr = data if type == :stderr }
           end
 
-          # Emit an upstart event if we can
-          machine.communicate.sudo <<-EOH.gsub(/^ {10}/, "")
-            if command -v /sbin/init && /sbin/init 2>/dev/null --version | grep upstart; then
-              /sbin/initctl emit --no-wait vagrant-mounted MOUNTPOINT=#{expanded_guest_path}
-            fi
-          EOH
+          emit_upstart_notification(machine, guest_path)
         end
 
         def self.unmount_parallels_shared_folder(machine, guestpath, options)
-          result = machine.communicate.sudo(
-            "umount #{guestpath}", error_check: false)
+          guest_path = Shellwords.escape(guestpath)
+
+          result = machine.communicate.sudo("umount #{guest_path}", error_check: false)
           if result == 0
-            machine.communicate.sudo("rmdir #{guestpath}", error_check: false)
+            machine.communicate.sudo("rmdir #{guest_path}", error_check: false)
           end
         end
 

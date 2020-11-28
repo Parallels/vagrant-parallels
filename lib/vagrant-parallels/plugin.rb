@@ -103,6 +103,16 @@ module VagrantPlugins
         SyncedFolder
       end
 
+      synced_folder_capability(:parallels, "mount_options") do
+        require_relative "cap/mount_options"
+        SyncedFolderCap::MountOptions
+      end
+
+      synced_folder_capability(:parallels, "mount_type") do
+        require_relative "cap/mount_options"
+        SyncedFolderCap::MountOptions
+      end
+
       # This initializes the internationalization strings.
       def self.setup_i18n
         I18n.load_path << File.expand_path('locales/en.yml', Parallels.source_root)

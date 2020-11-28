@@ -45,14 +45,6 @@ en:
         disk is inconsistent, please remove it from the VM configuration.
 
         Disk image path: %{path}
-      linux_mount_failed: |-
-        Failed to mount folders in Linux guest. This is usually because
-        the "prl_fs" file system is not available. Please verify that
-        Parallels Tools are properly installed in the guest and
-        can work properly. If so, the VM reboot can solve a problem.
-        The command attempted was:
-
-        %{command}
       linux_prl_fs_invalid_options: |-
         Failed to mount folders in Linux guest. You've specified mount options
         which are not supported by "prl_fs" file system.
@@ -81,6 +73,19 @@ en:
           %{output}
 
         This is an internal error that should be reported as a bug.
+      parallels_mount_failed: |-
+        Vagrant was unable to mount Parallels Desktop shared folders. This is usually
+        because the filesystem "prl_fs" is not available. This filesystem is
+        made available via the Parallels Tools and kernel module.
+        Please verify that these guest tools are properly installed in the
+        guest. This is not a bug in Vagrant and is usually caused by a faulty
+        Vagrant box. For context, the command attempted was:
+
+        %{command}
+
+        The error output from the command was:
+
+        %{output}
       parallels_no_room_for_high_level_network: |-
         There is no available slots on the Parallels Desktop VM for the configured
         high-level network interfaces. "private_network" and "public_network"

@@ -27,10 +27,6 @@ module VagrantPlugins
         error_key(:json_parse_error)
       end
 
-      class LinuxMountFailed < VagrantParallelsError
-        error_key(:linux_mount_failed)
-      end
-
       class LinuxPrlFsInvalidOptions < VagrantParallelsError
         error_key(:linux_prl_fs_invalid_options)
       end
@@ -57,6 +53,10 @@ module VagrantPlugins
 
       class ParallelsInvalidVersion < VagrantParallelsError
         error_key(:parallels_invalid_version)
+      end
+
+      class ParallelsMountFailed < VagrantParallelsError
+        error_key(:parallels_mount_failed)
       end
 
       class ParallelsNotDetected < VagrantParallelsError
