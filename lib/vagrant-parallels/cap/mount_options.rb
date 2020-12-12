@@ -29,6 +29,10 @@ module VagrantPlugins
         def self.mount_type(machine)
           return PRL_MOUNT_TYPE
         end
+
+        def self.mount_name(machine, data)
+          data[:guestpath].gsub(/[*":<>?|\/\\]/,'_').sub(/^_/, '')
+        end
       end
     end
   end

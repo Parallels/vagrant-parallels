@@ -19,7 +19,7 @@ module VagrantPlugins
           end
 
           defs << {
-            name: os_friendly_id(id),
+            name: data[:plugin].capability(:mount_name, data),
             hostpath: hostpath.to_s,
           }
         end
@@ -89,7 +89,7 @@ module VagrantPlugins
         end
 
         # Remove the shared folders from the VM metadata
-        names = folders.map { |id, _data| os_friendly_id(id) }
+        names = folders.map { |_id, data| data[:plugin].capability(:mount_name, data) }
         driver(machine).unshare_folders(names)
       end
 
@@ -102,11 +102,6 @@ module VagrantPlugins
       # This is here so that we can stub it for tests
       def driver(machine)
         machine.provider.driver
-      end
-
-      def os_friendly_id(id)
-        # Replace chars *, ", :, <, >, ?, |, /, \
-        id.gsub(/[*":<>?|\/\\]/,'_').sub(/^_/, '')
       end
     end
   end
