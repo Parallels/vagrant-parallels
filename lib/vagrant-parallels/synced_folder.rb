@@ -19,14 +19,11 @@ module VagrantPlugins
           end
 
           defs << {
-            name: os_friendly_id(id),
+            name: data[:plugin].capability(:mount_name, data),
             hostpath: hostpath.to_s,
           }
         end
 
-        # We should prepare only folders with unique hostpath values.
-        # Anyway, duplicates will be mounted later.
-        defs.uniq! { |d| d[:hostpath] }
         driver(machine).share_folders(defs)
 
         # short guestpaths first, so we don't step on ourselves
@@ -39,8 +36,6 @@ module VagrantPlugins
           end
         end
 
-        shf_config = driver(machine).read_shared_folders
-
         # Parallels Shared Folder services can override Vagrant synced folder
         # configuration. These services should be pre-configured.
         if machine.guest.capability?(:prepare_psf_services)
@@ -49,12 +44,8 @@ module VagrantPlugins
 
         # Go through each folder and mount
         machine.ui.output(I18n.t('vagrant.actions.vm.share_folders.mounting'))
-        folders.each do |_ , data|
-          # Parallels specific: get id from the VM setting
-          # It allows to mount one host folder more then one time [GH-105]
-          id = shf_config.key(data[:hostpath])
-
-          if data[:guestpath] and id
+        folders.each do |id , data|
+          if data[:guestpath]
             # Guest path specified, so mount the folder to specified point
             machine.ui.detail(I18n.t('vagrant.actions.vm.share_folders.mounting_entry',
                                      guestpath: data[:guestpath],
@@ -70,7 +61,11 @@ module VagrantPlugins
 
             # Mount the actual folder
             machine.guest.capability(
-                :mount_parallels_shared_folder, id, data[:guestpath], data)
+              :mount_parallels_shared_folder,
+              data[:plugin].capability(:mount_name, data),
+              data[:guestpath],
+              data
+            )
           else
             # If no guest path is specified, then automounting is disabled
             machine.ui.detail(I18n.t('vagrant.actions.vm.share_folders.nomount_entry',
@@ -89,7 +84,7 @@ module VagrantPlugins
         end
 
         # Remove the shared folders from the VM metadata
-        names = folders.map { |id, _data| os_friendly_id(id) }
+        names = folders.map { |_id, data| data[:plugin].capability(:mount_name, data) }
         driver(machine).unshare_folders(names)
       end
 
@@ -102,11 +97,6 @@ module VagrantPlugins
       # This is here so that we can stub it for tests
       def driver(machine)
         machine.provider.driver
-      end
-
-      def os_friendly_id(id)
-        # Replace chars *, ", :, <, >, ?, |, /, \
-        id.gsub(/[*":<>?|\/\\]/,'_').sub(/^_/, '')
       end
     end
   end
