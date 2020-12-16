@@ -95,14 +95,16 @@ modify the virtual machines settings.
 
 
 The Parallels provider allows to execute the prlctl command with any of the
-available options just prior to booting the virtual machine:
+available options just prior to booting the virtual machine(to mount a iso file as a cdrom also to enable nested virtualization):
 
 ```ruby
 config.vm.provider "parallels" do |prl|
   prl.customize ["set", :id, "--device-set", "cdrom0", "--image",
                  "/path/to/disk.iso", "--connect"]
+  prl.customize ["set", :id, "--nested-virt", "on"]
 end
 ```
+
 
 In the example above, the virtual machine is modified to have a specified ISO
 image mounted on its virtual media device (cdrom). The `:id` parameter is
