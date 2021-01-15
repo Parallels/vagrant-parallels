@@ -96,7 +96,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    redcarpet (3.5.0)
+    redcarpet (3.5.1)
     ref (2.0.0)
     rexml (3.2.4)
     rouge (3.23.0)
@@ -127,7 +127,7 @@ DEPENDENCIES
   middleman-syntax (~> 3.0)
   rack (~> 2.1.4)
   rack-contrib (~> 1.2)
-  redcarpet (~> 3.3)
+  redcarpet (~> 3.5)
   therubyracer (~> 0.12)
 
 BUNDLED WITH
