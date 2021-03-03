@@ -120,22 +120,24 @@ config.vm.provider "parallels" do |prl|
   prl.customize "post-import", ["set", :id, "--nested-virt", "on"]
 end
 ```
+
 As you can see, the event could be configured af a first argument, before the list of arguments.
 Here are the supported events:
+
 - `post-import` - executed only once, just after the VM is cloned from the base box
 - `pre-boot` - executed prior to VM booting _(default event, used if none is specified explicitly)_
 - `post-boot` - executed after VM booting, before the communicator (_ssh_ or _winrm_) confirms the connection
 - `post-comm` - executed after VM booting, after the communicator (_ssh_ or _winrm_) confirms the connection
 
-Some settings have also a "shortcut" aliases. For example, here is the simple way
+Some settings have also "shortcut" aliases. For example, here is the simple way
 to change the number of CPUs and memory size (in MiB):
+
 ```ruby
 config.vm.provider "parallels" do |prl|
   prl.memory = 1024
   prl.cpus = 2
 end
 ```
-
 
 You can read the [Command-Line Reference](https://download.parallels.com/desktop/v16/docs/en_US/Parallels%20Desktop%20Pro%20Edition%20Command-Line%20Reference.pdf)
 for the complete information about the prlctl command and its options.
