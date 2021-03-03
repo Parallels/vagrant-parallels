@@ -1,3 +1,12 @@
+## 2.2.0 (March 3, 2021)
+IMPROVEMENTS:
+  - Mount shared folders after manual VM reboot
+  [[GH-377](https://github.com/Parallels/vagrant-parallels/pull/377)]
+
+BUG FIXES:
+  - Fixed mount of shared folders with non-ASCII symbols in the name
+  [[GH-290](https://github.com/Parallels/vagrant-parallels/issues/290)]
+
 ## 2.1.0 (November 25, 2020)
 BUG FIXES:
   - Fixed the private network adapter workflow on macOS 11.0 Big Sur
