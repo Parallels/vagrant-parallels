@@ -30,7 +30,7 @@ GEM
     hashie (3.6.0)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
-    kramdown (2.3.0)
+    kramdown (2.3.1)
       rexml
     less (2.6.0)
       commonjs (~> 0.2.7)
