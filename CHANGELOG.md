@@ -1,3 +1,8 @@
+## 2.2.1 (April 14, 2021)
+BUG FIXES:
+  - Fixed the compatibility with Vagrant 2.2.15
+  [[GH-386](https://github.com/Parallels/vagrant-parallels/pull/386)]
+
 ## 2.2.0 (March 3, 2021)
 IMPROVEMENTS:
   - Mount shared folders after manual VM reboot
