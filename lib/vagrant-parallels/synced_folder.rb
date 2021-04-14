@@ -19,7 +19,7 @@ module VagrantPlugins
           end
 
           defs << {
-            name: data[:plugin].capability(:mount_name, data),
+            name: data[:plugin].capability(:mount_name, id, data),
             hostpath: hostpath.to_s,
           }
         end
@@ -62,7 +62,7 @@ module VagrantPlugins
             # Mount the actual folder
             machine.guest.capability(
               :mount_parallels_shared_folder,
-              data[:plugin].capability(:mount_name, data),
+              data[:plugin].capability(:mount_name, id, data),
               data[:guestpath],
               data
             )
@@ -84,7 +84,7 @@ module VagrantPlugins
         end
 
         # Remove the shared folders from the VM metadata
-        names = folders.map { |_id, data| data[:plugin].capability(:mount_name, data) }
+        names = folders.map { |id, data| data[:plugin].capability(:mount_name, id, data) }
         driver(machine).unshare_folders(names)
       end
 

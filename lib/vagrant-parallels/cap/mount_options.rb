@@ -30,8 +30,18 @@ module VagrantPlugins
           return PRL_MOUNT_TYPE
         end
 
-        def self.mount_name(machine, data)
-          data[:guestpath].gsub(/[*":<>?|\/\\]/,'_').sub(/^_/, '')
+        ## We have to support 2 different expected interfaces of `mount_name` call:
+        ##   Vagrant < 2.2.15:   `def self.mount_name(machine, data)`
+        ##   Vagrant >= 2.2.15:  `def self.mount_name(machine, id, data)`
+        ## https://github.com/Parallels/vagrant-parallels/issues/384
+        def self.mount_name(*args)
+          if args.length >= 3
+            id = args[1]
+          else
+            id = args[-1][:guestpath]
+          end
+
+          id.gsub(/[*":<>?|\/\\]/,'_').sub(/^_/, '')
         end
       end
     end
