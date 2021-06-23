@@ -9,8 +9,8 @@ module VagrantPlugins
           machine.provider_config.functional_psf
       end
 
-      def enable(machine, folders, _opts)
-        # Export the shared folders to the VM
+      def prepare(machine, folders, _opts)
+        # Setup shared folder definitions in the VM config.
         defs = []
         folders.each do |id, data|
           hostpath = data[:hostpath]
@@ -25,7 +25,9 @@ module VagrantPlugins
         end
 
         driver(machine).share_folders(defs)
+      end
 
+      def enable(machine, folders, _opts)
         # short guestpaths first, so we don't step on ourselves
         folders = folders.sort_by do |id, data|
           if data[:guestpath]
