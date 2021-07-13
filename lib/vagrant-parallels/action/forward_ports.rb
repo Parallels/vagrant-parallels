@@ -54,7 +54,7 @@ module VagrantPlugins
             # bridged networking don't require port-forwarding and establishing
             # forwarded ports on these attachment types has uncertain behaviour.
             @env[:ui].detail(I18n.t('vagrant_parallels.actions.vm.forward_ports.forwarding_entry',
-                                    message_attributes))
+                                    **message_attributes))
 
             # In Parallels Desktop the scope port forwarding rules is global,
             # so we have to keep their names unique.
