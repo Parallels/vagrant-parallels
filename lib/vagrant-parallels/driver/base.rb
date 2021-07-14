@@ -27,11 +27,11 @@ module VagrantPlugins
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
 
-          @prlctl_path    = util_path('prlctl')
+          @prlctl_path = util_path('prlctl')
           @prlsrvctl_path = util_path('prlsrvctl')
           @prldisktool_path = util_path('prl_disk_tool')
 
-          if !@prlctl_path
+          unless @prlctl_path
             # This means that Parallels Desktop was not found, so we raise this
             # error here.
             raise VagrantPlugins::Parallels::Errors::ParallelsNotDetected
@@ -60,9 +60,7 @@ module VagrantPlugins
             args.concat(["--nat-#{r[:protocol]}-del", r[:name]])
           end
 
-          if !args.empty?
-            execute_prlsrvctl('net', 'set', read_shared_network_id, *args)
-          end
+          execute_prlsrvctl('net', 'set', read_shared_network_id, *args) unless args.empty?
         end
 
         # Clears the shared folders that have been set on the virtual machine.
@@ -78,7 +76,7 @@ module VagrantPlugins
         # @param [String] src_name Name or UUID of the source VM or template.
         # @param [<String => String>] options Options to clone virtual machine.
         # @return [String] UUID of the new VM.
-        def clone_vm(src_name, options={})
+        def clone_vm(src_name, options = {})
           dst_name = "vagrant_temp_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
 
           args = ['clone', src_name, '--name', dst_name]
@@ -146,10 +144,10 @@ module VagrantPlugins
 
           # Return the details
           {
-            name:    options[:network_id],
-            ip:      options[:adapter_ip],
+            name: options[:network_id],
+            ip: options[:adapter_ip],
             netmask: options[:netmask],
-            dhcp:    options[:dhcp]
+            dhcp: options[:dhcp]
           }
         end
 
@@ -160,9 +158,7 @@ module VagrantPlugins
         # @return [String] ID of the created snapshot.
         def create_snapshot(uuid, snapshot_name)
           stdout = execute_prlctl('snapshot', uuid, '--name', snapshot_name)
-          if stdout =~ /\{([\w-]+)\}/
-            return Regexp.last_match(1)
-          end
+          return Regexp.last_match(1) if stdout =~ /{([\w-]+)}/
 
           raise Errors::SnapshotIdNotDetected, stdout: stdout
         end
@@ -222,7 +218,7 @@ module VagrantPlugins
         # ['create-vm', 'add-vm', 'remove-vm', 'clone-vm']
         def disable_password_restrictions(acts)
           server_info = json { execute_prlsrvctl('info', '--json') }
-          server_info.fetch('Require password to',[]).each do |act|
+          server_info.fetch('Require password to', []).each do |act|
             execute_prlsrvctl('set', '--require-pwd', "#{act}:off") if acts.include? act
           end
         end
@@ -251,34 +247,29 @@ module VagrantPlugins
 
           # Disable all previously existing adapters (except shared 'vnet0')
           existing_adapters.each do |adapter|
-            if adapter != 'vnet0'
-              execute_prlctl('set', @uuid, '--device-set', adapter, '--disable')
-            end
+            execute_prlctl('set', @uuid, '--device-set', adapter, '--disable') if adapter != 'vnet0'
           end
 
           adapters.each do |adapter|
             args = []
             if existing_adapters.include? "net#{adapter[:adapter]}"
-              args.concat(['--device-set',"net#{adapter[:adapter]}", '--enable'])
+              args.concat(['--device-set', "net#{adapter[:adapter]}", '--enable'])
             else
-              args.concat(['--device-add', 'net'])
+              args.concat(%w[--device-add net])
             end
 
-            if adapter[:type] == :hostonly
+            case adapter[:type]
+            when :hostonly
               args.concat(['--type', 'host', '--iface', adapter[:hostonly]])
-            elsif adapter[:type] == :bridged
+            when :bridged
               args.concat(['--type', 'bridged', '--iface', adapter[:bridge]])
-            elsif adapter[:type] == :shared
-              args.concat(['--type', 'shared'])
+            when :shared
+              args.concat(%w[--type shared])
             end
 
-            if adapter[:mac_address]
-              args.concat(['--mac', adapter[:mac_address]])
-            end
+            args.concat(['--mac', adapter[:mac_address]]) if adapter[:mac_address]
 
-            if adapter[:nic_type]
-              args.concat(['--adapter-type', adapter[:nic_type].to_s])
-            end
+            args.concat(['--adapter-type', adapter[:nic_type].to_s]) if adapter[:nic_type]
 
             execute_prlctl('set', @uuid, *args)
           end
@@ -329,7 +320,7 @@ module VagrantPlugins
           snap_config = File.join(settings.fetch('Home'), 'Snapshots.xml')
 
           # There are no snapshots, exit
-          return {} if !File.exist?(snap_config)
+          return {} unless File.exist?(snap_config)
 
           xml = Nokogiri::XML(File.read(snap_config))
           snapshots = {}
@@ -349,7 +340,7 @@ module VagrantPlugins
         end
 
         # Halts the virtual machine (pulls the plug).
-        def halt(force=false)
+        def halt(force = false)
           args = ['stop', @uuid]
           args << '--kill' if force
           execute_prlctl(*args)
@@ -370,22 +361,18 @@ module VagrantPlugins
             info = {}
             ifconfig = execute('ifconfig', iface)
             # Assign default values
-            info[:name]    = iface
-            info[:ip]      = '0.0.0.0'
+            info[:name] = iface
+            info[:ip] = '0.0.0.0'
             info[:netmask] = '0.0.0.0'
-            info[:status]  = 'Down'
+            info[:status] = 'Down'
 
-            if ifconfig =~ /(?<=inet\s)(\S*)/
-              info[:ip] = $1.to_s
-            end
+            info[:ip] = $1.to_s if ifconfig =~ /(?<=inet\s)(\S*)/
             if ifconfig =~ /(?<=netmask\s)(\S*)/
               # Netmask will be converted from hex to dec:
               # '0xffffff00' -> '255.255.255.0'
-              info[:netmask] = $1.hex.to_s(16).scan(/../).each.map{|octet| octet.hex}.join('.')
+              info[:netmask] = $1.hex.to_s(16).scan(/../).each.map { |octet| octet.hex }.join('.')
             end
-            if ifconfig =~ /\W(UP)\W/ and ifconfig !~ /(?<=status:\s)inactive$/
-              info[:status] = 'Up'
-            end
+            info[:status] = 'Up' if ifconfig =~ /\W(UP)\W/ and ifconfig !~ /(?<=status:\s)inactive$/
 
             bridged_ifaces << info
           end
@@ -406,7 +393,7 @@ module VagrantPlugins
         # @param [Boolean] global If true, returns all the rules on the host.
         # Otherwise only rules related to the context VM will be returned.
         # @return [Array<Symbol => String>]
-        def read_forwarded_ports(global=false)
+        def read_forwarded_ports(global = false)
           all_rules = read_shared_interface[:nat]
 
           if global
@@ -426,21 +413,21 @@ module VagrantPlugins
           leases = {}
           begin
             File.open(leases_file).grep(/#{mac_addr}/) do |line|
-              _, ip, exp, dur, _, _ = line.split /([\d.]*)="(\d*),(\d*),(\w*),(\w*)".*/
+              _, ip, exp, dur, = line.split /([\d.]*)="(\d*),(\d*),(\w*),(\w*)".*/
               leases[ip] = exp.to_i - dur.to_i
             end
           rescue Errno::EACCES
-            raise Errors::DhcpLeasesNotAccessible, :leases_file => leases_file.to_s
+            raise Errors::DhcpLeasesNotAccessible, leases_file: leases_file.to_s
           rescue Errno::ENOENT
             # File does not exist
             # Perhaps, it is the fist start of Parallels Desktop
-            return nil
+            return ''
           end
 
-          return nil if leases.empty?
+          return '' if leases.empty?
 
           # Get the most resent lease and return an associated IP
-          leases.sort_by { |_ip, lease_time| lease_time }.last.first
+          leases.max_by { |_ip, lease_time| lease_time }.first
         end
 
         # Returns path to the Parallels Tools ISO file.
@@ -449,21 +436,19 @@ module VagrantPlugins
         # @return [String] Path to the ISO.
         def read_guest_tools_iso_path(guest_os)
           guest_os = guest_os.to_sym
-          iso_name ={
+          iso_name = {
             linux: 'prl-tools-lin.iso',
             darwin: 'prl-tools-mac.iso',
             windows: 'PTIAgent.exe'
           }
-          return nil if !iso_name[guest_os]
+          return nil unless iso_name[guest_os]
 
-          bundle_id =  'com.parallels.desktop.console'
+          bundle_id = 'com.parallels.desktop.console'
           bundle_path = execute('mdfind', "kMDItemCFBundleIdentifier == #{bundle_id}")
           iso_path = File.expand_path("./Contents/Resources/Tools/#{iso_name[guest_os]}",
                                       bundle_path.split("\n")[0])
 
-          if !File.exist?(iso_path)
-            raise Errors::ParallelsToolsIsoNotFound, :iso_path => iso_path
-          end
+          raise Errors::ParallelsToolsIsoNotFound, iso_path: iso_path unless File.exist?(iso_path)
 
           iso_path
         end
@@ -478,7 +463,7 @@ module VagrantPlugins
         # @return [Symbol]
         def read_guest_tools_state
           state = read_settings.fetch('GuestTools', {}).fetch('state', nil)
-          state = 'not_installed' if !state
+          state ||= 'not_installed'
           state.to_sym
         end
 
@@ -512,18 +497,18 @@ module VagrantPlugins
             end
 
             iface = {
-              name:   net_info['Network ID'],
+              name: net_info['Network ID'],
               status: 'Down'
             }
 
             adapter = net_info['Parallels adapter']
             if adapter
-              iface[:ip]       = adapter['IPv4 address']
-              iface[:netmask]  = adapter['IPv4 subnet mask']
-              iface[:status]   = 'Up'
+              iface[:ip] = adapter['IPv4 address']
+              iface[:netmask] = adapter['IPv4 subnet mask']
+              iface[:status] = 'Up'
 
               if adapter['IPv6 address'] && adapter['IPv6 subnet mask']
-                iface[:ipv6]        = adapter['IPv6 address']
+                iface[:ipv6] = adapter['IPv6 address']
                 iface[:ipv6_prefix] = adapter['IPv6 subnet mask']
               end
             end
@@ -542,9 +527,7 @@ module VagrantPlugins
             name.start_with?('net') && params['type'] == 'shared'
           end
 
-          if shared_ifaces.empty?
-            raise Errors::SharedInterfaceNotFound
-          end
+          raise Errors::SharedInterfaceNotFound if shared_ifaces.empty?
 
           shared_ifaces.values.first.fetch('mac', nil)
         end
@@ -570,14 +553,15 @@ module VagrantPlugins
             adapter = name.match(/^net(\d+)$/)[1].to_i
             nics[adapter] ||= {}
 
-            if params['type'] == 'shared'
+            case params['type']
+            when 'shared'
               nics[adapter][:type] = :shared
-            elsif params['type'] == 'host'
+            when 'host'
               nics[adapter][:type] = :hostonly
-              nics[adapter][:hostonly] = params.fetch('iface','')
-            elsif params['type'] == 'bridged'
+              nics[adapter][:hostonly] = params.fetch('iface', '')
+            when 'bridged'
               nics[adapter][:type] = :bridged
-              nics[adapter][:bridge] = params.fetch('iface','')
+              nics[adapter][:bridge] = params.fetch('iface', '')
             end
           end
           nics
@@ -586,8 +570,8 @@ module VagrantPlugins
         # Returns virtual machine settings
         #
         # @return [<String => String, Hash>]
-        def read_settings(uuid=@uuid)
-          vm = json { execute_prlctl('list', uuid, '--info', '--no-header', '--json')  }
+        def read_settings(uuid = @uuid)
+          vm = json { execute_prlctl('list', uuid, '--info', '--no-header', '--json') }
           vm.last
         end
 
@@ -609,20 +593,20 @@ module VagrantPlugins
           end
 
           iface = {
-            nat:    [],
+            nat: [],
             status: 'Down'
           }
           adapter = net_info['Parallels adapter']
 
           if adapter
-            iface[:ip]       = adapter['IPv4 address']
-            iface[:netmask]  = adapter['IPv4 subnet mask']
-            iface[:status]   = 'Up'
+            iface[:ip] = adapter['IPv4 address']
+            iface[:netmask] = adapter['IPv4 subnet mask']
+            iface[:status] = 'Up'
           end
 
           if net_info.key?('DHCPv4 server')
             iface[:dhcp] = {
-              ip:    net_info['DHCPv4 server']['Server address'],
+              ip: net_info['DHCPv4 server']['Server address'],
               lower: net_info['DHCPv4 server']['IP scope start address'],
               upper: net_info['DHCPv4 server']['IP scope end address']
             }
@@ -631,10 +615,10 @@ module VagrantPlugins
           net_info['NAT server'].each do |group, rules|
             rules.each do |name, params|
               iface[:nat] << {
-                name:      name,
-                protocol:  group == 'TCP rules' ? 'tcp' : 'udp',
-                guest:     params['destination IP/VM id'],
-                hostport:  params['source port'],
+                name: name,
+                protocol: group == 'TCP rules' ? 'tcp' : 'udp',
+                guest: params['destination IP/VM id'],
+                hostport: params['source port'],
                 guestport: params['destination port']
               }
             end
@@ -650,7 +634,7 @@ module VagrantPlugins
         def read_shared_folders
           shf_info = read_settings.fetch('Host Shared Folders', {})
           list = {}
-          shf_info.delete_if { |k,v| k == 'enabled' }.each do |id, data|
+          shf_info.delete_if { |k, _v| k == 'enabled' }.each do |id, data|
             list[id] = data.fetch('path')
           end
 
@@ -686,11 +670,9 @@ module VagrantPlugins
         # @param [String] option Name of option (See all: `prlctl list -L`)
         # @param [String] uuid Virtual machine UUID
         # @return [String]
-        def read_vm_option(option, uuid=@uuid)
-          out = execute_prlctl('list', uuid,'--no-header', '-o', option).strip
-          if out.empty?
-            raise Errors::ParallelsVMOptionNotFound, vm_option: option
-          end
+        def read_vm_option(option, uuid = @uuid)
+          out = execute_prlctl('list', uuid, '--no-header', '-o', option).strip
+          raise Errors::ParallelsVMOptionNotFound, vm_option: option if out.empty?
 
           out
         end
@@ -699,7 +681,7 @@ module VagrantPlugins
         #
         # @return [<String => String>]
         def read_vms
-          args = %w(list --all --no-header --json -o name,uuid)
+          args = %w[list --all --no-header --json -o name,uuid]
           vms_arr = json { execute_prlctl(*args) }
           templates_arr = json { execute_prlctl(*args, '--template') }
 
@@ -711,7 +693,7 @@ module VagrantPlugins
         #
         # @return [Array <String => String>]
         def read_vms_info
-          args = %w(list --all --info --no-header --json)
+          args = %w[list --all --info --no-header --json]
           vms_arr = json { execute_prlctl(*args) }
           templates_arr = json { execute_prlctl(*args, '--template') }
 
@@ -722,7 +704,7 @@ module VagrantPlugins
         #
         # @param [String] pvm_file Path to the machine image (*.pvm)
         # @param [Array<String>] opts List of options for "prlctl register"
-        def register(pvm_file, opts=[])
+        def register(pvm_file, opts = [])
           execute_prlctl('register', pvm_file, *opts)
         end
 
@@ -823,7 +805,7 @@ module VagrantPlugins
 
             # Sometimes this happens. In this case, retry.
             # If we don't see this text, the VM really doesn't exist.
-            return false if !result.stderr.include?('Login failed:')
+            return false unless result.stderr.include?('Login failed:')
 
             # Sleep a bit though to give Parallels Desktop time to fix itself
             sleep 2
@@ -861,8 +843,8 @@ module VagrantPlugins
               # If there was an error running command, show the error and the
               # output.
               raise VagrantPlugins::Parallels::Errors::ExecutionError,
-                :command => command.inspect,
-                :stderr  => r.stderr
+                    command: command.inspect,
+                    stderr: r.stderr
             end
           end
           r.stdout
@@ -877,12 +859,10 @@ module VagrantPlugins
             JSON.parse(data)
           rescue JSON::JSONError
             # We retried already, raise the issue and be done
-            if raise_error
-              raise VagrantPlugins::Parallels::Errors::JSONParseError, data: data
-            end
+            raise VagrantPlugins::Parallels::Errors::JSONParseError, data: data if raise_error
 
             # Remove garbage before/after json string[GH-204]
-            data = data[/(\{.*\}|\[.*\])/m]
+            data = data[/({.*}|\[.*\])/m]
 
             # Remove all control characters unsupported by JSON [GH-219]
             data.tr!("\u0000-\u001f", '')
@@ -903,7 +883,7 @@ module VagrantPlugins
           end
 
           # Append in the options for subprocess
-          command << {notify: [:stdout, :stderr]}
+          command << { notify: [:stdout, :stderr] }
 
           Vagrant::Util::Busy.busy(int_callback) do
             Vagrant::Util::Subprocess.execute(*command, &block)
