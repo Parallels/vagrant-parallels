@@ -308,9 +308,9 @@ module VagrantPlugins
             protocol = options[:protocol] || 'tcp'
             pf_builder = [
               options[:name],
-              options[:hostport],
+              options[:host_port],
               @uuid,
-              options[:guestport]
+              options[:guest_port]
             ]
 
             args.concat(["--nat-#{protocol}-add", pf_builder.join(',')])

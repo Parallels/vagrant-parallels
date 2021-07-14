@@ -28,7 +28,7 @@ module VagrantPlugins
               env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
               forward_ports
             end
-          rescue Errors::EnvironmentLockedError
+          rescue Vagrant::Errors::EnvironmentLockedError
             sleep 1
             retry
           end
