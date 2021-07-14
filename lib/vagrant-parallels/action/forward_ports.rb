@@ -44,7 +44,9 @@ module VagrantPlugins
           @env[:forwarded_ports].each do |fp|
             message_attributes = {
               guest_port: fp.guest_port,
-              host_port: fp.host_port
+              guest_ip: fp.guest_ip,
+              host_port: fp.host_port,
+              host_ip: fp.host_ip
             }
 
             # Assuming the only reason to establish port forwarding is
@@ -68,7 +70,9 @@ module VagrantPlugins
             # Add the options to the ports array to send to the driver later
             ports << {
               guest_port: fp.guest_port,
+              guest_ip: fp.guest_ip,
               host_port: fp.host_port,
+              host_ip: fp.host_ip,
               name: unique_id,
               protocol: fp.protocol
             }

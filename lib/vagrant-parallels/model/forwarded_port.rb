@@ -29,14 +29,26 @@ module VagrantPlugins
         # @return [Integer]
         attr_reader :host_port
 
-        def initialize(id, host_port, guest_port, options)
+        # The ip of the guest to be used for the port.
+        #
+        # @return [String]
+        attr_reader :guest_ip
+
+        # The ip of the host used to access the port.
+        #
+        # @return [String]
+        attr_reader :host_ip
+
+        def initialize(id, host_port, guest_port, host_ip, guest_ip, **options)
           @id         = id
           @guest_port = guest_port
+          @guest_ip   = guest_ip
           @host_port  = host_port
+          @host_ip    = host_ip
 
           options ||= {}
           @auto_correct = false
-          @auto_correct = options[:auto_correct] if options.has_key?(:auto_correct)
+          @auto_correct = options[:auto_correct] if options.key?(:auto_correct)
           @protocol = options[:protocol] || 'tcp'
         end
 
