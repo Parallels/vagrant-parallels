@@ -5,7 +5,7 @@ module VagrantPlugins
         include VagrantPlugins::Parallels::Util::CompileForwardedPorts
         @@lock = Mutex.new
 
-        def initialize(app, env)
+        def initialize(app, _env)
           @app = app
         end
 
@@ -22,17 +22,15 @@ module VagrantPlugins
           return @app.call(env) if env[:forwarded_ports].empty?
 
           # Acquire both of class- and process-level locks so that we don't
-          # forward ports simultaneousely with someone else.
+          # forward ports simultaneously with someone else.
           @@lock.synchronize do
-            begin
-              env[:machine].env.lock('forward_ports') do
-                env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
-                forward_ports
-              end
-            rescue Errors::EnvironmentLockedError
-              sleep 1
-              retry
+            env[:machine].env.lock('forward_ports') do
+              env[:ui].output(I18n.t('vagrant.actions.vm.forward_ports.forwarding'))
+              forward_ports
             end
+          rescue Vagrant::Errors::EnvironmentLockedError
+            sleep 1
+            retry
           end
 
           @app.call(env)
@@ -46,7 +44,9 @@ module VagrantPlugins
           @env[:forwarded_ports].each do |fp|
             message_attributes = {
               guest_port: fp.guest_port,
-              host_port: fp.host_port
+              guest_ip: fp.guest_ip,
+              host_port: fp.host_port,
+              host_ip: fp.host_ip
             }
 
             # Assuming the only reason to establish port forwarding is
@@ -54,7 +54,7 @@ module VagrantPlugins
             # bridged networking don't require port-forwarding and establishing
             # forwarded ports on these attachment types has uncertain behaviour.
             @env[:ui].detail(I18n.t('vagrant_parallels.actions.vm.forward_ports.forwarding_entry',
-                                    message_attributes))
+                                    **message_attributes))
 
             # In Parallels Desktop the scope port forwarding rules is global,
             # so we have to keep their names unique.
@@ -69,14 +69,16 @@ module VagrantPlugins
 
             # Add the options to the ports array to send to the driver later
             ports << {
-              guestport: fp.guest_port,
-              hostport:  fp.host_port,
-              name:      unique_id,
-              protocol:  fp.protocol
+              guest_port: fp.guest_port,
+              guest_ip: fp.guest_ip,
+              host_port: fp.host_port,
+              host_ip: fp.host_ip,
+              name: unique_id,
+              protocol: fp.protocol
             }
           end
 
-          if !ports.empty?
+          unless ports.empty?
             # We only need to forward ports if there are any to forward
             @env[:machine].provider.driver.forward_ports(ports)
           end
