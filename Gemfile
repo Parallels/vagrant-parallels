@@ -11,6 +11,5 @@ group :development do
   # Vagrant environment itself using `vagrant plugin`.
   gem 'vagrant', git: 'https://github.com/hashicorp/vagrant.git', branch: 'main'
 
-  # Switch back to the upstream after this PR is merged: https://github.com/hashicorp/vagrant-spec/pull/43
-  gem 'vagrant-spec', git: 'https://github.com/legal90/vagrant-spec.git', branch: 'fix-synced-folder-after-reboot'
+  gem 'vagrant-spec', git: 'https://github.com/hashicorp/vagrant-spec.git', branch: 'main'
 end
