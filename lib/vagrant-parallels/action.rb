@@ -277,8 +277,7 @@ module VagrantPlugins
           b.use Call, IsState, :running do |env1, b1|
             # If the VM is running, run the necessary provisioners
             if env1[:result]
-              b1.use Message, I18n.t('vagrant_parallels.commands.common.vm_already_running')
-              action_provision
+              b1.use action_provision
               next
             end
 
