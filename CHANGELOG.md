@@ -1,3 +1,8 @@
+## 2.2.4 (August 18, 2021)
+BUG FIXES:
+  - Fixed running the provisioner on "vagrant up --provision"
+  [[GH-402](https://github.com/Parallels/vagrant-parallels/pull/402)]
+
 ## 2.2.3 (July 14, 2021)
 BUG FIXES:
   - Fixed the compatibility with Vagrant 2.2.17
