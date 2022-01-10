@@ -7,9 +7,12 @@ module VagrantPlugins
           if ptiagent_usable?(machine)
             machine.communicate.sudo('ptiagent-cmd --install')
           else
+            guest_os = 'linux' + 
+                (['arm', 'arm64'].include?(machine.provider_config.guest_tools_arch) ? '-arm' : '')
+            
             machine.communicate.tap do |comm|
               tools_iso_path = File.expand_path(
-                machine.provider.driver.read_guest_tools_iso_path('linux'),
+                machine.provider.driver.read_guest_tools_iso_path(guest_os),
                 machine.env.root_path
               )
               remote_file = '/tmp/prl-tools-lin.iso'

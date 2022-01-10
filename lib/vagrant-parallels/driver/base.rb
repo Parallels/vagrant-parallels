@@ -438,7 +438,9 @@ module VagrantPlugins
           guest_os = guest_os.to_sym
           iso_name = {
             linux: 'prl-tools-lin.iso',
+            linux_arm: 'prl-tools-lin-arm.iso',
             darwin: 'prl-tools-mac.iso',
+            darwin_arm: 'prl-tools-mac-arm.iso',
             windows: 'PTIAgent.exe'
           }
           return nil unless iso_name[guest_os]
