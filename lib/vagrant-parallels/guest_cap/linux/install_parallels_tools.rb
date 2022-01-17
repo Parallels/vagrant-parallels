@@ -8,7 +8,7 @@ module VagrantPlugins
             machine.communicate.sudo('ptiagent-cmd --install')
           else
             guest_os = 'linux' + 
-                (['arm', 'arm64'].include?(machine.provider_config.guest_tools_arch) ? '-arm' : '')
+                (['arm', 'arm64'].include?(machine.provider_config.guest_tools_arch) ? '_arm' : '')
             
             machine.communicate.tap do |comm|
               tools_iso_path = File.expand_path(
