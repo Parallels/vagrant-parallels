@@ -1,3 +1,5 @@
+require 'log4r'
+
 module VagrantPlugins
   module Parallels
     module GuestLinuxCap
@@ -7,12 +9,12 @@ module VagrantPlugins
           if ptiagent_usable?(machine)
             machine.communicate.sudo('ptiagent-cmd --install')
           else
-            guest_os = 'linux' + 
-                (['arm', 'arm64'].include?(machine.provider_config.guest_tools_arch) ? '_arm' : '')
-            
             machine.communicate.tap do |comm|
+              arch = ''
+              comm.execute("uname -p") { |type, data| arch << data if type == :stdout }
+
               tools_iso_path = File.expand_path(
-                machine.provider.driver.read_guest_tools_iso_path(guest_os),
+                machine.provider.driver.read_guest_tools_iso_path("linux", arch),
                 machine.env.root_path
               )
               remote_file = '/tmp/prl-tools-lin.iso'

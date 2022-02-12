@@ -434,8 +434,8 @@ module VagrantPlugins
         #
         # @param [String] guest_os Guest os type: "linux", "darwin" or "windows"
         # @return [String] Path to the ISO.
-        def read_guest_tools_iso_path(guest_os)
-          guest_os = guest_os.to_sym
+        def read_guest_tools_iso_path(guest_os, arch=nil)
+          guest_os = (guest_os + (['arm', 'arm64', 'aarch64'].include?(arch.to_s.strip) ? '_arm' : '')).to_sym
           iso_name = {
             linux: 'prl-tools-lin.iso',
             linux_arm: 'prl-tools-lin-arm.iso',

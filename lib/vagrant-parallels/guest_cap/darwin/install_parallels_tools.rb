@@ -5,11 +5,11 @@ module VagrantPlugins
 
         def self.install_parallels_tools(machine)
           machine.communicate.tap do |comm|
-            guest_os = 'darwin' + 
-                (['arm', 'arm64'].include?(machine.provider_config.guest_tools_arch) ? '_arm' : '')
-            
+            arch = ''
+            comm.execute("uname -p") { |type, data| arch << data if type == :stdout }
+
             tools_iso_path = File.expand_path(
-              machine.provider.driver.read_guest_tools_iso_path(gues_os),
+              machine.provider.driver.read_guest_tools_iso_path("darwin", arch),
               machine.env.root_path
             )
             remote_file = '/tmp/prl-tools-mac.iso'
