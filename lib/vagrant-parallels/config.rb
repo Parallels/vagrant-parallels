@@ -12,7 +12,6 @@ module VagrantPlugins
       attr_reader   :network_adapters
       attr_accessor :regen_src_uuid
       attr_accessor :update_guest_tools
-      attr_accessor :guest_tools_arch
 
       # Compatibility with virtualbox provider's syntax
       alias :check_guest_additions= :check_guest_tools=
@@ -28,7 +27,6 @@ module VagrantPlugins
         @name              = UNSET_VALUE
         @regen_src_uuid     = UNSET_VALUE
         @update_guest_tools = UNSET_VALUE
-        @guest_tools_arch = UNSET_VALUE
 
         network_adapter(0, :shared)
       end
@@ -83,8 +81,6 @@ module VagrantPlugins
         if @update_guest_tools == UNSET_VALUE
           @update_guest_tools = false
         end
-
-        @guest_tools_arch = nil if @guest_tools_arch == UNSET_VALUE
       end
 
       def validate(machine)
