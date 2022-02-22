@@ -62,7 +62,7 @@ describe VagrantPlugins::Parallels::Driver::Base do
     it "reads `linux`:nil exception" do
       VagrantPlugins::Parallels::Plugin.setup_i18n
       allow(File).to receive(:exist?).and_return(false)
-      expect(instance.read_guest_tools_iso_path('linux')).to raise_exception
+      expect { instance.read_guest_tools_iso_path('linux') }.to raise_exception
     end
   end
 end
