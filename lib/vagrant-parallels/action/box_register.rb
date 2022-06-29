@@ -40,6 +40,14 @@ module VagrantPlugins
 
         def box_path(env)
           pvm = Dir.glob(env[:machine].box.directory.join('*.pvm')).first
+          mac_vm_m1 = false
+
+          if !pvm
+            pvm = Dir.glob(env[:machine].box.directory.join('*.macvm')).first
+            if pvm
+              mac_vm_m1 = true
+            end
+          end
 
           if !pvm
             raise Errors::BoxImageNotFound, name: env[:machine].box.name
@@ -121,8 +129,10 @@ module VagrantPlugins
           end
 
           # Convert template to VM (compatibility with old-styled boxes)
-          env[:machine].provider.driver.execute_prlctl(
-            'set', env[:clone_id], '--template', 'off')
+          # Not required for a macOS VM on M1 - not supported as a template and overall no such boxes anymore in public. Removed.          # 
+          #   env[:machine].provider.driver.execute_prlctl(
+          #   'set', env[:clone_id], '--template', 'off')
+
         end
       end
     end

@@ -16,7 +16,7 @@ en:
         Box VM config: "%{config}"
 
       box_image_not_found: |-
-        Parallels VM image (*.pvm) could not be found in the directory of
+        Parallels VM image (*.pvm or *.macvm) could not be found in the directory of
         '%{name}' box. This is usually because the image has been removed manually.
         Please remove the box, re-add it, and try again.
       dhcp_leases_file_not_accessible: |-
