@@ -6,6 +6,7 @@ module VagrantPlugins
   module Parallels
     module Action
       class PrepareCloneSnapshot
+        include VagrantPlugins::Parallels::Util::Common
         @@lock = Mutex.new
 
         def initialize(app, env)
@@ -16,6 +17,12 @@ module VagrantPlugins
         def call(env)
           if !env[:clone_id]
             @logger.info('No source VM for cloning, skip snapshot preparing')
+            return @app.call(env)
+          end
+
+          if is_macvm(env)
+            #Ignore, since macvms doesn't support snapshot creation
+            @logger.info('Snapshot creation is not supported yet for macOS ARM Guests, skip snapshot preparing')
             return @app.call(env)
           end
 

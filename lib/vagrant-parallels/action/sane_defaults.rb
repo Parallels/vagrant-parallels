@@ -4,6 +4,8 @@ module VagrantPlugins
   module Parallels
     module Action
       class SaneDefaults
+        include VagrantPlugins::Parallels::Util::Common
+
         def initialize(app, env)
           @logger = Log4r::Logger.new('vagrant_parallels::action::sanedefaults')
           @app = app
@@ -27,24 +29,25 @@ module VagrantPlugins
         private
 
         def default_settings
+          # Options defined below are not supported for `*.macvm` VMs
+          return {} if is_macvm(@env)
+
           {
-            # all commented for macOS VM, need a better solution here
-            
-            # tools_autoupdate: 'no',
-            # on_shutdown: 'close',
-            # on_window_close: 'keep-running',
-            # auto_share_camera: 'off',
-            # smart_guard: 'off',
-            # longer_battery_life: 'on',
-            # shared_cloud: 'off',
-            # shared_profile: 'off',
-            # smart_mount: 'off',
-            # sh_app_guest_to_host: 'off',
-            # sh_app_host_to_guest: 'off',
-            # startup_view: 'headless',
-            # time_sync: 'on',
-            # disable_timezone_sync: 'on',
-            # shf_host_defined: 'off'
+            tools_autoupdate: 'no',
+            on_shutdown: 'close',
+            on_window_close: 'keep-running',
+            auto_share_camera: 'off',
+            smart_guard: 'off',
+            longer_battery_life: 'on',
+            shared_cloud: 'off',
+            shared_profile: 'off',
+            smart_mount: 'off',
+            sh_app_guest_to_host: 'off',
+            sh_app_host_to_guest: 'off',
+            startup_view: 'headless',
+            time_sync: 'on',
+            disable_timezone_sync: 'on',
+            shf_host_defined: 'off'
           }
         end
       end
