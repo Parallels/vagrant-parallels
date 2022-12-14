@@ -22,9 +22,16 @@ it using Vagrant. The following describes how to create a virtual machine.
 
 Create a new directory and init the new Vagrant project in it:
 
+For Intel chip use
 ```
 $ vagrant init bento/ubuntu-18.04
 $ vagrant up --provider=parallels
+```
+For Apple M series chip use 
+```
+$ vagrant init bento/ubuntu-20.04-arm64 \
+  --box-version 202112.19.0
+$ $ vagrant up --provider=parallels
 ```
 
 Vagrant will automatically download and import the box and create a new virtual

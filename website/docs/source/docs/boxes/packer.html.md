@@ -26,7 +26,7 @@ builders for Packer you need to download and install this SDK package:
 You can also install it with [Homebrew](brew.sh) package manager:
 
 ```
-$ brew cask install parallels-virtualization-sdk
+$ brew install parallels-virtualization-sdk
 ```
 
 ## Packer Templates

@@ -21,6 +21,9 @@ documentation page.
 All boxes for "parallels" provider could be found on Vagrant Cloud:
 [https://app.vagrantup.com/boxes/search?provider=parallels](https://app.vagrantup.com/boxes/search?provider=parallels)
 
+For Apple M series chip use arm based boxes
+[https://app.vagrantup.com/boxes/search?utf8=%E2%9C%93&sort=downloads&provider=parallels&q=arm](https://app.vagrantup.com/boxes/search?utf8=%E2%9C%93&sort=downloads&provider=parallels&q=arm)
+
 Adding a box from the catalog is very easy:
 
 ```
@@ -30,7 +33,15 @@ $ vagrant box add bento/ubuntu-18.04
 
 You can also quickly initialize a Vagrant environment with the command:
 
+For Intel chip use
 ```
 $ vagrant init bento/ubuntu-18.04
 ...
+```
+For Apple M series chip use
+
+```
+$ vagrant init bento/ubuntu-20.04-arm64 \
+  --box-version 202112.19.0
+$ ...
 ```
