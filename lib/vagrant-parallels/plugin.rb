@@ -168,6 +168,7 @@ module VagrantPlugins
 
     module Util
       autoload :CompileForwardedPorts, File.expand_path('../util/compile_forwarded_ports', __FILE__)
+      autoload :Common, File.expand_path('../util/common', __FILE__)
     end
   end
 end

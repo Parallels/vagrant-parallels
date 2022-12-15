@@ -39,13 +39,13 @@ module VagrantPlugins
         protected
 
         def box_path(env)
-          pvm = Dir.glob(env[:machine].box.directory.join('*.pvm')).first
+          res = Dir.glob(env[:machine].box.directory.join('*.{pvm,macvm}')).first
 
-          if !pvm
+          if !res
             raise Errors::BoxImageNotFound, name: env[:machine].box.name
           end
 
-          pvm
+          res
         end
 
         def box_id(env)
@@ -120,9 +120,6 @@ module VagrantPlugins
             f.write(env[:clone_id])
           end
 
-          # Convert template to VM (compatibility with old-styled boxes)
-          env[:machine].provider.driver.execute_prlctl(
-            'set', env[:clone_id], '--template', 'off')
         end
       end
     end

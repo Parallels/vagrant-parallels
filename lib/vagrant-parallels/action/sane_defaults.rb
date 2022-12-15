@@ -4,6 +4,8 @@ module VagrantPlugins
   module Parallels
     module Action
       class SaneDefaults
+        include VagrantPlugins::Parallels::Util::Common
+
         def initialize(app, env)
           @logger = Log4r::Logger.new('vagrant_parallels::action::sanedefaults')
           @app = app
@@ -27,6 +29,9 @@ module VagrantPlugins
         private
 
         def default_settings
+          # Options defined below are not supported for `*.macvm` VMs
+          return {} if is_macvm(@env)
+
           {
             tools_autoupdate: 'no',
             on_shutdown: 'close',
