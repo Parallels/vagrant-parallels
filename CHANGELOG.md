@@ -1,3 +1,8 @@
+## 2.2.6 (December 19, 2022)
+BUG FIXES:
+  - Fix the macOS VMs support on ARM-based Mac
+  [[GH-429](https://github.com/Parallels/vagrant-parallels/pull/429)]
+
 ## 2.2.5 (February 22, 2022)
 BUG FIXES:
   - Fixed Parallels Tool installation on M1 hosts with arm64
