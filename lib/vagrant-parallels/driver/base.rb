@@ -757,11 +757,19 @@ module VagrantPlugins
           end
         end
 
+        def prlctl_read_guest_ip
+          vm_info = json { execute_prlctl('list', '-f', @uuid, '--json') }
+          ip = vm_info[0]['ip_configured']
+          ip == '-' ? nil : ip
+        end
+
         # Reads the SSH IP of this VM.
         #
         # @return [String] IP address to use for SSH connection to the VM.
         def ssh_ip
-          read_guest_ip
+          result = read_guest_ip
+          result = prlctl_read_guest_ip if result.empty?
+          result
         end
 
         # Reads the SSH port of this VM.
