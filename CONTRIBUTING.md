@@ -10,8 +10,8 @@ $ cd vagrant-parallels
 
 ### Dependencies and Unit Tests
 
-To hack on our plugin, you'll need a [Ruby interpreter](https://www.ruby-lang.org/en/downloads/) 
-(>= 2.0) and [Bundler](https://bundler.io/) which can be installed with a simple 
+To hack on our plugin, you'll need a [Ruby interpreter](https://www.ruby-lang.org/en/downloads/)
+(>= 3.0) and [Bundler](https://bundler.io/) which can be installed with a simple
 `gem install bundler`. Afterwards, do the following:
 
 ```

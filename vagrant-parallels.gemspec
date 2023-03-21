@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/Parallels/vagrant-parallels'
   spec.license       = 'MIT'
 
+  spec.required_ruby_version     = '>= 3.0', '< 3.3'
   spec.required_rubygems_version = '>= 1.3.6'
   spec.rubyforge_project         = 'vagrant-parallels'
 
@@ -21,7 +22,7 @@ Gem::Specification.new do |spec|
   # Constraint rake to properly handle deprecated method usage
   # from within rspec
   spec.add_development_dependency 'rake', '~> 13.0'
-  spec.add_development_dependency 'rspec', '~> 3.10.0'
+  spec.add_development_dependency 'rspec', '~> 3.11'
   spec.add_development_dependency 'rspec-its', '~> 1.3.0'
 
   spec.files = Dir['lib/**/*', 'locales/**/*', 'README.md', 'CHANGELOG.md', 'LICENSE.txt']
