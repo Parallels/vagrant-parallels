@@ -13,16 +13,15 @@ When Parallels provider is installed it has a higher priority than any other
 provider shipped with Vagrant. In most cases you will not have to specify the
 provider name, just "vagrant up" will be enough:
 
-For Intel chip use
+For Macs with Intel chip:
 ```
 $ vagrant init bento/ubuntu-18.04
 $ vagrant up
 ```
 
-For Apple M series chip use
+For Macs with Apple M-series chip:
 ```
-$ vagrant init bento/ubuntu-20.04-arm64 \
-  --box-version 202112.19.0
+$ vagrant init bento/ubuntu-20.04-arm64
 $ vagrant up
 ```
 But if you have a multi-provider configuration and/or want to be sure that

@@ -33,15 +33,14 @@ $ vagrant box add bento/ubuntu-18.04
 
 You can also quickly initialize a Vagrant environment with the command:
 
-For Intel chip use
+For Macs with Intel chip:
 ```
 $ vagrant init bento/ubuntu-18.04
 ...
 ```
-For Apple M series chip use
+For Macs with Apple M-series chip:
 
 ```
-$ vagrant init bento/ubuntu-20.04-arm64 \
-  --box-version 202112.19.0
-$ ...
+$ vagrant init bento/ubuntu-20.04-arm64
+...
 ```
