@@ -53,6 +53,6 @@ please report it on the [Issue Tracker](https://github.com/Parallels/vagrant-par
 
 * Author: Youssef Shahin <yshahin@gmail.com>
 * Author: Mikhail Zholobov <legal90@gmail.com>
-* Copyright 2013-2020, Parallels International GmbH.
+* Copyright 2013-2023, Parallels International GmbH.
 
 Vagrant Parallels Provider is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
