@@ -37,7 +37,7 @@ module VagrantPlugins
         # The ! indicates that this method modifies its argument.
         def add_ips_to_env!(env)
           host_ip  = @machine.provider.driver.read_shared_interface[:ip]
-          guest_ip = @machine.provider.driver.read_guest_ip
+          guest_ip = @machine.provider.driver.ssh_ip
 
           # If we couldn't determine either guest's or host's IP, then
           # it is probably a bug. Display an appropriate error message.
