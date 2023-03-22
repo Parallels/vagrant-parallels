@@ -21,8 +21,8 @@ documentation page.
 All boxes for "parallels" provider could be found on Vagrant Cloud:
 [https://app.vagrantup.com/boxes/search?provider=parallels](https://app.vagrantup.com/boxes/search?provider=parallels)
 
-For Apple M series chip use arm based boxes
-[https://app.vagrantup.com/boxes/search?utf8=%E2%9C%93&sort=downloads&provider=parallels&q=arm](https://app.vagrantup.com/boxes/search?utf8=%E2%9C%93&sort=downloads&provider=parallels&q=arm)
+For Macs with Apple M-series chip use ARM-based boxes:
+[https://app.vagrantup.com/boxes/search?provider=parallels&q=arm](https://app.vagrantup.com/boxes/search?provider=parallels&q=arm)
 
 Adding a box from the catalog is very easy:
 
