@@ -1,3 +1,15 @@
+## 2.3.0 (March 22, 2022)
+IMPROVEMENTS:
+  - Support fetching the VM IP using prlctl
+  [[GH-434](https://github.com/Parallels/vagrant-parallels/pull/434)].
+  - Update gem dependensies and support Ruby 3.0
+  [[GH-437](https://github.com/Parallels/vagrant-parallels/pull/437)],
+  [[GH-439](https://github.com/Parallels/vagrant-parallels/pull/439)].
+
+BUG FIXES:
+  - Fixes SSH access to `.macvm` VMs on Macs with Apple M-series chip
+  [[GH-435](https://github.com/Parallels/vagrant-parallels/issues/435)]
+
 ## 2.2.6 (December 19, 2022)
 BUG FIXES:
   - Fix the macOS VMs support on ARM-based Mac

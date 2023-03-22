@@ -1,5 +1,5 @@
 module VagrantPlugins
   module Parallels
-    VERSION = '2.2.6'
+    VERSION = '2.3.0'
   end
 end
