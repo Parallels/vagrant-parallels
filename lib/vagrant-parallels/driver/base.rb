@@ -403,11 +403,12 @@ module VagrantPlugins
           end
         end
 
-        # Returns an IP of the virtual machine. It requires that Shared network
-        # adapter is configured for this VM and it obtains an IP via DHCP.
+        # Returns an IP of the virtual machine fetched from the DHCP lease file.
+        # It requires that Shared network adapter is configured for this VM
+        # and it obtains an IP via DHCP.
         #
         # @return [String] IP address leased by DHCP server in "Shared" network
-        def read_guest_ip
+        def read_guest_ip_dhcp
           mac_addr = read_mac_address.downcase
           leases_file = '/Library/Preferences/Parallels/parallels_dhcp_leases'
           leases = {}
@@ -428,6 +429,15 @@ module VagrantPlugins
 
           # Get the most resent lease and return an associated IP
           leases.max_by { |_ip, lease_time| lease_time }.first
+        end
+
+        # Returns an IP of the virtual machine fetched from prlctl.
+        #
+        # @return [String] IP address returned by `prlctl list -f` command
+        def read_guest_ip_prlctl
+          vm_info = json { execute_prlctl('list', @uuid, '--full', '--json') }
+          ip = vm_info.first.fetch('ip_configured', nil)
+          ip == '-' ? nil : ip
         end
 
         # Returns path to the Parallels Tools ISO file.
@@ -757,11 +767,14 @@ module VagrantPlugins
           end
         end
 
-        # Reads the SSH IP of this VM.
+        # Reads the SSH IP of this VM from DHCP lease file or from `prlctl list`
+        # command - whatever returns a non-empty result.
+        # The method with DHCP does not work for *.macvm VMs on Apple M-series Macs,
+        # so we try both sources here.
         #
         # @return [String] IP address to use for SSH connection to the VM.
         def ssh_ip
-          read_guest_ip
+          read_guest_ip_dhcp || read_guest_ip_prlctl
         end
 
         # Reads the SSH port of this VM.
