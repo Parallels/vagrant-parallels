@@ -786,7 +786,9 @@ module VagrantPlugins
             sleep 2
           end
 
-          return ''
+          # We didn't manage to determine IP - return nil and
+          # expect SSH client to do a retry
+          return nil
         end
 
         # Reads the SSH port of this VM.
