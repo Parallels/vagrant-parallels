@@ -1,3 +1,9 @@
+## 2.3.1 (March 23, 2022)
+BUG FIXES:
+  - Fix the detection of VM IP. Wait for the IP to become available to
+  avoid connection issues and Vagrant warnings.
+  [[GH-440](https://github.com/Parallels/vagrant-parallels/issues/440)]
+
 ## 2.3.0 (March 22, 2022)
 IMPROVEMENTS:
   - Support fetching the VM IP using prlctl
