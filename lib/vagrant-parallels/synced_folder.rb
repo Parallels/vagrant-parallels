@@ -28,6 +28,11 @@ module VagrantPlugins
       end
 
       def enable(machine, folders, _opts)
+        # Skip executing these steps for Mac OS VMs running in M series Chips
+        if Util::Common::is_macvm(machine)
+          return
+        end
+
         # short guestpaths first, so we don't step on ourselves
         folders = folders.sort_by do |id, data|
           if data[:guestpath]
@@ -77,7 +82,8 @@ module VagrantPlugins
       end
 
       def disable(machine, folders, _opts)
-        if machine.guest.capability?(:unmount_parallels_shared_folder)
+        # Skip executing unmounting steps for Mac OS VMs running in M series Chips
+        if machine.guest.capability?(:unmount_parallels_shared_folder) && !Util::Common::is_macvm(machine)
           folders.each do |id, data|
             machine.guest.capability(
               :unmount_parallels_shared_folder,
