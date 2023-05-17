@@ -1,11 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.4.3)
+    activesupport (6.1.7.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
     backports (3.24.0)
@@ -13,9 +14,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    commonjs (0.2.7)
     concurrent-ruby (1.2.2)
-    contracts (0.17)
+    contracts (0.16.1)
     dotenv (2.8.1)
     erubis (2.7.0)
     execjs (2.8.1)
@@ -32,9 +32,6 @@ GEM
       concurrent-ruby (~> 1.0)
     kramdown (2.4.0)
       rexml
-    less (2.6.0)
-      commonjs (~> 0.2.7)
-    libv8 (3.16.14.19)
     listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -99,16 +96,12 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redcarpet (3.6.0)
-    ref (2.0.0)
     rexml (3.2.5)
     rouge (3.30.0)
     sassc (2.4.0)
       ffi (~> 1.9)
     servolux (0.13.0)
     temple (0.10.0)
-    therubyracer (0.12.3)
-      libv8 (~> 3.16.14.15)
-      ref
     thor (1.2.1)
     tilt (2.0.11)
     toml (0.3.0)
@@ -118,6 +111,7 @@ GEM
     uglifier (3.2.0)
       execjs (>= 0.3.0, < 3)
     webrick (1.8.1)
+    zeitwerk (2.6.8)
 
 PLATFORMS
   ruby
@@ -125,14 +119,12 @@ PLATFORMS
 DEPENDENCIES
   activesupport (>= 5.2.4.3)
   kramdown (>= 2.3.0)
-  less (~> 2.6)
   middleman (~> 4.4.0)
   middleman-deploy (~> 2.0.0.pre.alpha)
   middleman-syntax (~> 3.0)
   rack (~> 2.2.6)
   rack-contrib (~> 1.2)
   redcarpet (~> 3.5)
-  therubyracer (~> 0.12)
 
 BUNDLED WITH
-   2.4.9
+   2.4.13

@@ -1,0 +1,47 @@
+/* variables */
+
+//grayscale
+$black: #000;
+$white: #fff;
+$gray-footer: #494b51;
+$dark-gray-text: #7f7f7f;
+$light-gray-background: #f0f0f0;
+$light-gray: #d7d7d8;
+$light-gray-text: #eeeeee;
+$dark-gray-footer: #333;
+$medium-gray-text: #585a5e;
+
+//parallels colors
+$links: #6179aa;
+$links_press: #3c3c3c;
+
+//vagrant colors
+$blue-text: #6179aa;
+$dark-blue-text: #476576;
+$light-blue-background: #dbf1ff;
+$vagrant-blue: #0094bf;
+$light-sidebar-background: #a1ccf0;
+$docs-blue: #22407f;
+$blue-background: #1e71a1;
+$purple-text: #270836;
+$purple: #735f9f;
+
+//mixins
+$bg_one: #eaeaea;
+$bg_two: #ffffff;
+
+//misc colors
+$red: #d92231;
+$blue: #48b4fb;
+$green: #43d193;
+$current-color: inherit;
+$button-color: $vagrant-blue;
+$primary-button-color: #FB487A;
+
+//type
+$sans-serif-stack: 'helvetica neue', helvetica, arial, sans-serif;
+$mono-stack: Menlo, Monaco, Consolas, "Courier New", monospace;
+$base-font-size: 18px;
+$base-line-height: 30px;
+$baseline: 20px;
+$headline-span-size: 30px;
