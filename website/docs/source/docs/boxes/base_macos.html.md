@@ -10,7 +10,7 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
 
 ## Pre-requisites
 
-* Install Vagrant, you can find the instructions [here](/docs/installation)
+* Install Vagrant, you can find the instructions [here](/vagrant-parallels/docs/installation)
 
 * Start Parallels Desktop and create a new macOS virtual machine as outlined  in [KB 125561](http://kb.parallels.com/125561/).
     <div class="alert alert-info">
