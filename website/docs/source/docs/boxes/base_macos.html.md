@@ -10,17 +10,13 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
 
 ## Pre-requisites
 
-* Download and install [Vagrant](https://developer.hashicorp.com/vagrant/downloads).
-* Install Parallels plugin for Vagrant by executing the command below in Terminal:
-  
-    ```bash
-    $ vagrant plugin install vagrant-parallels
-    ```
+* Install Vagrant, you can find the instructions [here](/docs/installation)
 
 * Start Parallels Desktop and create a new macOS virtual machine as outlined  in [KB 125561](http://kb.parallels.com/125561/).
     <div class="alert alert-info">
     <p>
-        While creating the VM, give the username as ‘vagrant’ only.
+        While creating the VM, give the username as ‘vagrant’ only.<br />
+        If this is a public box you should set the password to ‘vagrant’ as well.
     </p>
     </div>
 
@@ -43,16 +39,18 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
     %admin ALL=(ALL) NOPASSWD: ALL
     ```
 
-    Now, you should now be able to run sudo without password.
+    Now, you should be able to run sudo without password.
 
 * Install Parallels Tools inside the macOS virtual machine.
+  ![install_parallels_extension](/images/install_extension.gif)
 * Boot macOS virtual machine and enable Remote Login (System Settings > General > Sharing > Enable Remote Login). Don't forget to give “Full disk access to users”, do allow “All users” (in the same settings, press ![info](/images/info_32.png) button)
 ![Parallels Desktop](/images/allow_sharing.gif)
 * Restart macOS virtual machine for the Remote Login to take effect.
 
 ## SSH Keys
 
-We will need to create a new SSH keypair for Vagrant to use to communicate
+We will need to create a new SSH keypair for Vagrant to use to communicate, we will be creating one from our host.  
+You can also use the vagrant public boxes key found [here](https://github.com/hashicorp/vagrant/tree/main/keys)
 
 * Create an ssh public-private key from the host.
   * Start Terminal on the host side.
@@ -103,6 +101,11 @@ We will need to create a new SSH keypair for Vagrant to use to communicate
     </p>
     </div>
 
+    <div class="alert alert-warn">
+    <p>
+        <strong>Attention:</strong> If you used the public vagrant ssh key then you will not need to do the next steps as they are only copying the ssh key that you generated.
+    </p>
+    </div>
 * Download [Vagrantfile](https://kb.parallels.com/Attachments/kcs-191881/Vagrantfile) and put it in the VagrantTest folder.
 * Download [metadata.json](https://kb.parallels.com/Attachments/kcs-191881/metadata.json) file and put it in the VagrantTest folder.
 * Copy your **private** key from ~/.ssh/ directory in VagrantTest directory and rename it to '**vagrant\_private\_key**':
