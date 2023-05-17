@@ -41,8 +41,16 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
 
     Now, you should be able to run sudo without password.
 
-* Install Parallels Tools inside the macOS virtual machine.
+* Install Parallels Tools inside the macOS virtual machine.  
+    macOs 13 > **Install Parallels Tools**
   ![install_parallels_extension](/images/install_extension.gif)
+
+      <div class="alert alert-info">
+    <p>
+        <strong>Note:</strong> Installing the Parallels Tools will require a reboot
+    </p>
+    </div>
+
 * Boot macOS virtual machine and enable Remote Login (System Settings > General > Sharing > Enable Remote Login). Don't forget to give “Full disk access to users”, do allow “All users” (in the same settings, press ![info](/images/info_32.png) button)
 ![Parallels Desktop](/images/allow_sharing.gif)
 * Restart macOS virtual machine for the Remote Login to take effect.
