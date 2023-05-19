@@ -103,6 +103,11 @@ module VagrantPlugins
         SyncedFolder
       end
 
+      synced_folder(:parallels_macvm) do
+        require_relative 'synced_folder_macvm'
+        SyncedFolderMacVM
+      end
+
       synced_folder_capability(:parallels, "mount_name") do
         require_relative "cap/mount_options"
         SyncedFolderCap::MountOptions
