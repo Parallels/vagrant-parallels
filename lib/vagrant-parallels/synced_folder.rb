@@ -4,9 +4,10 @@ module VagrantPlugins
   module Parallels
     class SyncedFolder < Vagrant.plugin('2', :synced_folder)
       def usable?(machine, raise_errors=false)
-        # These synced folders only work if the provider is Parallels
+        # These synced folders only work if the provider is Parallels and the guest is not *.macvm
         machine.provider_name == :parallels &&
-          machine.provider_config.functional_psf
+          machine.provider_config.functional_psf &&
+          !Util::Common::is_macvm(machine)
       end
 
       def prepare(machine, folders, _opts)

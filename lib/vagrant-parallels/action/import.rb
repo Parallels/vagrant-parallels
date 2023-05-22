@@ -4,7 +4,6 @@ module VagrantPlugins
   module Parallels
     module Action
       class Import
-        include VagrantPlugins::Parallels::Util::Common
         @@lock = Mutex.new
 
         def initialize(app, env)
@@ -26,7 +25,7 @@ module VagrantPlugins
 
           # Linked clones are supported only for PD 11 and higher
           # Linked clones are not supported in macvms
-          if env[:machine].provider_config.linked_clone and !is_macvm(env)
+          if env[:machine].provider_config.linked_clone and !Util::Common::is_macvm(env[:machine])
             # Linked clone creation should not be concurrent [GH-206]
             options[:snapshot_id] = env[:clone_snapshot_id]
             options[:linked] = true
