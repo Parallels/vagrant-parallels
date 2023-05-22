@@ -1,10 +1,19 @@
-## 2.3.1 (March 23, 2022)
+## 2.4.0 (May 22, 2023)
+IMPROVEMENTS:
+  - Implement shared folder support for `.macvm` VMs
+  [[GH-448](https://github.com/Parallels/vagrant-parallels/pull/448)]
+
+BUG FIXES:
+  - Fix shared folder mount error on `.macvm` VMs
+  [[GH-445](https://github.com/Parallels/vagrant-parallels/pull/445)]
+
+## 2.3.1 (March 23, 2023)
 BUG FIXES:
   - Fix the detection of VM IP. Wait for the IP to become available to
   avoid connection issues and Vagrant warnings.
   [[GH-440](https://github.com/Parallels/vagrant-parallels/issues/440)]
 
-## 2.3.0 (March 22, 2022)
+## 2.3.0 (March 22, 2023)
 IMPROVEMENTS:
   - Support fetching the VM IP using prlctl
   [[GH-434](https://github.com/Parallels/vagrant-parallels/pull/434)].
