@@ -35,7 +35,7 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
 
     To Say:
 
-    ``` bash
+    ```bash
     %admin ALL=(ALL) NOPASSWD: ALL
     ```
 
@@ -54,35 +54,15 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
 * Boot macOS virtual machine and enable Remote Login (System Settings > General > Sharing > Enable Remote Login). Don't forget to give “Full disk access to users”, do allow “All users” (in the same settings, press ![info](/images/info_32.png) button)
 ![Parallels Desktop](/images/allow_sharing.gif)
 * Restart macOS virtual machine for the Remote Login to take effect.
-
-## SSH Keys
-
-We will need to create a new SSH keypair for Vagrant to use to communicate, we will be creating one from our host.  
-You can also use the vagrant public boxes key found [here](https://github.com/hashicorp/vagrant/tree/main/keys)
-
-* Create an ssh public-private key from the host.
-  * Start Terminal on the host side.
-  * Execute the following command:
-
-        ``` bash
-        $ ssh-keygen -t rsa
-        ```
-
-  * After every step press "Enter". You don't need to use a passphrase or file. As a result, you will get a similar output as in the example below:
-  ![ssh_key](/images/ssh_key.jpeg)
-  It will generate the files below in the ~/.ssh/ directory:
-  ![ssh_pair](/images/ssh_pair.png)
-* Upload the public key to macOS virtual machine from your host by executing the command below in Terminal:
+* Copy the vagrant public SSH key to the machine
   
-    ``` bash
-    $ ssh-copy-id vagrant@<virtual machine's ipv4 address>
+    ```bash
+    $ ssh-copy-id -i $(find /opt/vagrant/embedded/gems -type d -name keys)/vagrant vagrant@<virtual_machine_ip>
     ```
 
-    <div class="alert alert-info">
-    <p>
-        <strong>Note:</strong> To check your virtual machine's IP address, go to Finder > System Settings > Network > Ethernet > IP address.
-    </p>
-    </div>
+    where:  
+
+    ```virtual_machine_ip``` \- the virtual machine ip.  
 
 ## Create Base Box
 
@@ -97,7 +77,7 @@ You can also use the vagrant public boxes key found [here](https://github.com/ha
 
   * Run Terminal on the host side and execute the following command:
   
-    ``` bash
+    ```bash
     $ prlctl set "macOS 13" --name "macOS_13"
     ```
 
@@ -114,23 +94,20 @@ You can also use the vagrant public boxes key found [here](https://github.com/ha
         <strong>Attention:</strong> If you used the public vagrant ssh key then you will not need to do the next steps as they are only copying the ssh key that you generated.
     </p>
     </div>
-* Download [Vagrantfile](https://kb.parallels.com/Attachments/kcs-191881/Vagrantfile) and put it in the VagrantTest folder.
 * Download [metadata.json](https://kb.parallels.com/Attachments/kcs-191881/metadata.json) file and put it in the VagrantTest folder.
-* Copy your **private** key from ~/.ssh/ directory in VagrantTest directory and rename it to '**vagrant\_private\_key**':
-  ![vagrant_private_key](/images/vagrant_private_key.png)
 * Create a box by Terminal.
   * Execute the following command:
-    
-    ``` bash
+
+    ```bash
     $ cd VagrantTest
-    $ tar cvzf custom.box ./box.macvm ./Vagrantfile ./metadata.json ./vagrant_private_key
+    $ tar cvzf custom.box ./box.macvm ./metadata.json
     ```
 
     where:  
 
     ```custom.box``` \- any box name. For example, vagrant.box, vagrant\_project.box, etc.  
     ```box.macvm``` \- macOS virtual machine's name from step 1 (for example, ```macOS\_13.macvm```)  
-    ```Vagrantfile```, ```metadata.json```, ```vagrant\_private_key``` - files from VagrantTest folder.  
+    ```metadata.json``` - files from VagrantTest folder.  
 
     <div class="alert alert-info">
     <p>
@@ -138,19 +115,19 @@ You can also use the vagrant public boxes key found [here](https://github.com/ha
     </p>
     </div>
 
-    ![custom_box](/images/custom_box.png)
+    ![custom_box](/images/custom_box_new.png)
 * Add the created box into vagrant boxes:
 
     * Run Terminal and execute:
 
-    ``` bash
+    ```bash
     $ vagrant box add <name>.box --name macOS13
     ```
 
     where ```<name>```.box is the name of the box created in the previous step.
 
 * Go to **~/.vagrant.d/boxes/macOS13** folder and check that extension of macOS virtual machine is ```.macvm```:
-  ![check_extension_macvm](/images/check_extension_macvm.png)
+  ![check_extension_macvm](/images/check_extension_macvm_new.png)
 
 ## Create a Vagrant folder
 
