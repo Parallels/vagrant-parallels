@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title> Private Networks - Networking - Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<link href="../../stylesheets/bootstrap-83bc38f8.css" rel="stylesheet" /><link href="../../stylesheets/vagrant-parallels-4acb13e4.css" rel="stylesheet" />
+
+		<!-- lib js -->
+		<script src="../../javascripts/jquery-7a374c2f.js"></script>
+		<script src="../../javascripts/modernizr-d4b01192.js"></script>
+		<script src="../../javascripts/bootstrap.min-94c68c6f.js"></script>
+		<script src="../../javascripts/backstretch-3d1212ad.js"></script>
+		<script src="../../javascripts/vagrant-parallels-919511ec.js"></script>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+				<div class="container">
+					<!-- vagrant logo -->
+					<a href="../" class="vagrant-docs-logo">Vagrant Parallels Documentation</a>
+					<!-- nav -->
+					<ul class="pull-right">
+						<li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+						<li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+					</ul>
+				</div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+					<div class="sidebar span4">
+						<!-- get the sidebar nav -->
+						<!-- side nav docs -->
+						<aside class="sidebar-nav">
+
+							<div class="toggle hidden-desktop">
+								<div class="open-close open"></div>
+								<a href="#">Contents</a>
+							</div>
+
+							<ul class="unstyled">
+								<li><a href="../">Overview</a></li>
+								<li><a href="../installation/">Installation</a></li>
+
+
+								<li><a href="../usage.html">Usage</a></li>
+								<li><a href="../getting-started.html">Getting Started</a></li>
+								<li><a href="../share.html">Vagrant Share</a></li>
+								<li><a href="../boxes/">Boxes</a></li>
+
+
+								<li><a href="../sharedfolders.html">Shared Folders</a></li>
+								<li><a href="../configuration.html">Configuration</a></li>
+								<li><a href="./">Networking</a></li>
+
+								<ul class="sub unstyled">
+									<li class="current"><a href="private_network.html">Private Network</a></li>
+									<li><a href="public_network.html">Public Network</a></li>
+									<li><a href="forwarded_ports.html">Forwarded Ports</a></li>
+								</ul>
+
+								<li><a href="../contacts.html">Contacts</a></li>
+							</ul>
+						</aside> <!-- /.sidebar -->
+					</div> <!-- /.sidebar -->
+
+					<div class="page-contents span9">
+						<div class="page-background"></div>
+
+						<!-- start page content -->
+						<div class="row">
+							<div class="span8 offset1">
+								<h1>Private Networks</h1>
+
+<p><strong>General Vagrant doc page</strong>: <a href="https://www.vagrantup.com/docs/networking/private_network.html">Private Networks</a>.</p>
+
+<p>Private networking by the Parallels provider is fully compatible with the basic
+Vagrant approach.</p>
+
+<p>In order to implement a private network, the Parallels provider configures the
+internal <a href="https://download.parallels.com/desktop/v16/docs/en_US/Parallels%20Desktop%20User's%20Guide/33018.htm">Host-Only</a>
+network.</p>
+
+<h2>DHCP</h2>
+
+<p>The easiest way to use a private network is to allow the IP address to be assigned
+via DHCP.</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Vagrant</span><span class="p">.</span><span class="nf">configure</span><span class="p">(</span><span class="s2">"2"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">network</span> <span class="s2">"private_network"</span><span class="p">,</span> <span class="ss">type: </span><span class="s2">"dhcp"</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>This will automatically assign an IP address from the reserved address space.
+The IP address can be determined by using <code>vagrant ssh</code> to SSH into the virtual
+machine and using the appropriate command-line tool to find the IP, such as
+<code>ifconfig</code>.</p>
+
+<h2>Static IP</h2>
+
+<p>You can also specify a static IP address for the machine. This lets you access
+the Vagrant managed machine using a static (known) IP address. The Vagrantfile
+for a static IP address should look like this:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Vagrant</span><span class="p">.</span><span class="nf">configure</span><span class="p">(</span><span class="s2">"2"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">network</span> <span class="s2">"private_network"</span><span class="p">,</span> <span class="ss">ip: </span><span class="s2">"192.168.50.4"</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>It is a responsibility of the user to ensure that the static IP address does not
+conflict with any other machines on the same network.</p>
+
+<p>While you can choose any IP address, you <em>should</em> use an IP from the
+<a href="https://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces">reserved private address space</a>.
+These addresses are guaranteed to never be publicly routable, and most routers
+actually block traffic from going to them from the outside world.</p>
+
+							</div> <!-- /.span8 -->
+						</div> <!-- /.row -->
+					</div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+				<div class="container">
+					<div class="row">
+						<ul class="unstyled logos">
+							<a href="http://www.vagrantup.com/downloads.html">
+								<li class="vagrant-logo-monochrome">
+									<p>Vagrant</p>
+								</li>
+							</a>
+							<a href="http://www.parallels.com/products/desktop/">
+								<li class="pd-logo-monochrome">
+									<p>Parallels Desktop</p>
+								</li>
+							</a>
+						</ul> <!-- /span -->
+
+					</div> <!-- /row -->
+
+					<div class="row">
+						<h6 class="legal">
+							&copy; 2023 Parallels International GmbH.
+						</h6>
+					</div> <!-- row -->
+				</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>

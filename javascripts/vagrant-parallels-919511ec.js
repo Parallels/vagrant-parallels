@@ -1,0 +1,1 @@
+$(document).ready(function(){$(document).scroll(function(){var o=$(document).scrollTop();o>0&&$("nav").addClass("drop-shadow"),0===o&&$("nav").removeClass("drop-shadow")})}),$(document).ready(function(){$(".toggle").click(function(){$(".sidebar-nav ul").slideToggle("slow")})});

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title> Configuration - Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<link href="../stylesheets/bootstrap-83bc38f8.css" rel="stylesheet" /><link href="../stylesheets/vagrant-parallels-4acb13e4.css" rel="stylesheet" />
+
+		<!-- lib js -->
+		<script src="../javascripts/jquery-7a374c2f.js"></script>
+		<script src="../javascripts/modernizr-d4b01192.js"></script>
+		<script src="../javascripts/bootstrap.min-94c68c6f.js"></script>
+		<script src="../javascripts/backstretch-3d1212ad.js"></script>
+		<script src="../javascripts/vagrant-parallels-919511ec.js"></script>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+				<div class="container">
+					<!-- vagrant logo -->
+					<a href="./" class="vagrant-docs-logo">Vagrant Parallels Documentation</a>
+					<!-- nav -->
+					<ul class="pull-right">
+						<li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+						<li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+					</ul>
+				</div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+					<div class="sidebar span4">
+						<!-- get the sidebar nav -->
+						<!-- side nav docs -->
+						<aside class="sidebar-nav">
+
+							<div class="toggle hidden-desktop">
+								<div class="open-close open"></div>
+								<a href="#">Contents</a>
+							</div>
+
+							<ul class="unstyled">
+								<li><a href="./">Overview</a></li>
+								<li><a href="installation/">Installation</a></li>
+
+
+								<li><a href="usage.html">Usage</a></li>
+								<li><a href="getting-started.html">Getting Started</a></li>
+								<li><a href="share.html">Vagrant Share</a></li>
+								<li><a href="boxes/">Boxes</a></li>
+
+
+								<li><a href="sharedfolders.html">Shared Folders</a></li>
+								<li class="current"><a href="configuration.html">Configuration</a></li>
+								<li><a href="networking/">Networking</a></li>
+
+
+								<li><a href="contacts.html">Contacts</a></li>
+							</ul>
+						</aside> <!-- /.sidebar -->
+					</div> <!-- /.sidebar -->
+
+					<div class="page-contents span9">
+						<div class="page-background"></div>
+
+						<!-- start page content -->
+						<div class="row">
+							<div class="span8 offset1">
+								<h1>Configuration</h1>
+
+<p>While the Parallels provider is a drop-in replacement for VirtualBox, there are
+additional features that allow you to more finely configure Parallels-specific
+aspects of your machines.</p>
+
+<h2>Virtual Machine Name</h2>
+
+<p>You can customize the virtual machine name that appears in the Parallels Desktop
+GUI. By default, Vagrant sets it to the name of the folder containing the
+Vagrantfile plus a timestamp of when the machine was created.</p>
+
+<p>To change the name, set the <code>name</code> property to the desired value:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">name</span> <span class="o">=</span> <span class="s2">"my_vm"</span>
+<span class="k">end</span>
+</code></pre></div>
+<div id="linked_clone"></div>
+
+<h2>Full Clone vs Linked Clone</h2>
+
+<p>Starting since vagrant-parallels v2.0.0, when you create a new virtual machine with
+<code>vagrant up</code> it is created as a linked clone of the box image.
+Previously the provider created a full clone of the box image.</p>
+
+<p>Differences between linked and full clones:</p>
+
+<ul>
+<li>Linked clone creation is extremely faster than the full cloning, because
+there is no image copying process.</li>
+<li>Linked clone requires much less disk space, because the initial hard disk
+image is less than 1Mb (it is bound to the parent&#39;s snapshot).</li>
+<li>Full clone is a full image copy, which is totally independent from the box.
+Linked clones are always bound to the specific snapshot of the box image. That means
+that the box deletion will make all its linked clones not working. Vagrant will
+warn you about such cases but you still need be careful when you delete boxes!</li>
+</ul>
+
+<p>If you want the provider to create a full clone instead, you should disable the linked
+clone feature explicitly in Vagrantfile:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">linked_clone</span> <span class="o">=</span> <span class="kp">false</span>
+<span class="k">end</span>
+</code></pre></div>
+<p><em>Note:</em> Changes of this setting will take an effect only for newly created machines.</p>
+
+<h2>Parallels Tools Auto-Update</h2>
+
+<p>Parallels Tools is a set of Parallels utilities that ensures a high level of
+integration between the host and the guest operating systems (read more:
+<a href="https://download.parallels.com/desktop/v16/docs/en_US/Parallels%20Desktop%20User's%20Guide/32789.htm">Parallels Tools Overview</a>).</p>
+
+<p>By default the Parallels provider checks the status of Parallels Tools after
+booting the machine. If they are outdated or newer, a warning message will be
+displayed.</p>
+
+<p>You can configure the Parallels provider to update Parallels Tools
+automatically:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">update_guest_tools</span> <span class="o">=</span> <span class="kp">true</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>This option is disabled by default because of Parallels Tools installation
+takes some time (2-6 minutes) and includes a VM restart. Although, it runs
+only when there is a version mismatch.</p>
+
+<p>Also, you can completely disable the Parallels Tools version check, if you want:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">check_guest_tools</span> <span class="o">=</span> <span class="kp">false</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>In this case both of Parallels Tools status check and an automatic update
+procedure will be skipped as well.</p>
+
+<div id="prlctl"></div>
+
+<h2>Customization with prlctl</h2>
+
+<p>Parallels Desktop includes the <code>prlctl</code> command-line utility that can be used to
+modify the virtual machines settings.</p>
+
+<p>The Parallels provider allows to execute the prlctl command with any of the
+available options just prior to booting the virtual machine:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"set"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--device-set"</span><span class="p">,</span> <span class="s2">"cdrom0"</span><span class="p">,</span> <span class="s2">"--image"</span><span class="p">,</span>
+                 <span class="s2">"/path/to/disk.iso"</span><span class="p">,</span> <span class="s2">"--connect"</span><span class="p">]</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>In the example above, the virtual machine is modified to have a specified ISO
+image mounted on its virtual media device (cdrom). The <code>:id</code> parameter is
+replaced with the actual virtual machine ID.</p>
+
+<p>Multiple <code>customize</code> directives can be used simultaneously. They will be
+executed in the given order.</p>
+
+<p>It is also possible to set the customization not only on every booting, but on other
+events as well. The following example shows how to enable nested virtualization and
+do it only once, after the VM is cloned from the box:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">customize</span> <span class="s2">"post-import"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"set"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--nested-virt"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>As you can see, the event could be configured af a first argument, before the list of arguments.
+Here are the supported events:</p>
+
+<ul>
+<li><code>post-import</code> - executed only once, just after the VM is cloned from the base box</li>
+<li><code>pre-boot</code> - executed prior to VM booting <em>(default event, used if none is specified explicitly)</em></li>
+<li><code>post-boot</code> - executed after VM booting, before the communicator (<em>ssh</em> or <em>winrm</em>) confirms the connection</li>
+<li><code>post-comm</code> - executed after VM booting, after the communicator (<em>ssh</em> or <em>winrm</em>) confirms the connection</li>
+</ul>
+
+<p>Some settings have also &quot;shortcut&quot; aliases. For example, here is the simple way
+to change the number of CPUs and memory size (in MiB):</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"parallels"</span> <span class="k">do</span> <span class="o">|</span><span class="n">prl</span><span class="o">|</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">memory</span> <span class="o">=</span> <span class="mi">1024</span>
+  <span class="n">prl</span><span class="p">.</span><span class="nf">cpus</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>You can read the <a href="https://download.parallels.com/desktop/v16/docs/en_US/Parallels%20Desktop%20Pro%20Edition%20Command-Line%20Reference.pdf">Command-Line Reference</a>
+for the complete information about the prlctl command and its options.</p>
+
+							</div> <!-- /.span8 -->
+						</div> <!-- /.row -->
+					</div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+				<div class="container">
+					<div class="row">
+						<ul class="unstyled logos">
+							<a href="http://www.vagrantup.com/downloads.html">
+								<li class="vagrant-logo-monochrome">
+									<p>Vagrant</p>
+								</li>
+							</a>
+							<a href="http://www.parallels.com/products/desktop/">
+								<li class="pd-logo-monochrome">
+									<p>Parallels Desktop</p>
+								</li>
+							</a>
+						</ul> <!-- /span -->
+
+					</div> <!-- /row -->
+
+					<div class="row">
+						<h6 class="legal">
+							&copy; 2023 Parallels International GmbH.
+						</h6>
+					</div> <!-- row -->
+				</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>

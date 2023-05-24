@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title> Forwarded Ports - Networking - Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<link href="../../stylesheets/bootstrap-83bc38f8.css" rel="stylesheet" /><link href="../../stylesheets/vagrant-parallels-4acb13e4.css" rel="stylesheet" />
+
+		<!-- lib js -->
+		<script src="../../javascripts/jquery-7a374c2f.js"></script>
+		<script src="../../javascripts/modernizr-d4b01192.js"></script>
+		<script src="../../javascripts/bootstrap.min-94c68c6f.js"></script>
+		<script src="../../javascripts/backstretch-3d1212ad.js"></script>
+		<script src="../../javascripts/vagrant-parallels-919511ec.js"></script>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+				<div class="container">
+					<!-- vagrant logo -->
+					<a href="../" class="vagrant-docs-logo">Vagrant Parallels Documentation</a>
+					<!-- nav -->
+					<ul class="pull-right">
+						<li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+						<li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+					</ul>
+				</div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+					<div class="sidebar span4">
+						<!-- get the sidebar nav -->
+						<!-- side nav docs -->
+						<aside class="sidebar-nav">
+
+							<div class="toggle hidden-desktop">
+								<div class="open-close open"></div>
+								<a href="#">Contents</a>
+							</div>
+
+							<ul class="unstyled">
+								<li><a href="../">Overview</a></li>
+								<li><a href="../installation/">Installation</a></li>
+
+
+								<li><a href="../usage.html">Usage</a></li>
+								<li><a href="../getting-started.html">Getting Started</a></li>
+								<li><a href="../share.html">Vagrant Share</a></li>
+								<li><a href="../boxes/">Boxes</a></li>
+
+
+								<li><a href="../sharedfolders.html">Shared Folders</a></li>
+								<li><a href="../configuration.html">Configuration</a></li>
+								<li><a href="./">Networking</a></li>
+
+								<ul class="sub unstyled">
+									<li><a href="private_network.html">Private Network</a></li>
+									<li><a href="public_network.html">Public Network</a></li>
+									<li class="current"><a href="forwarded_ports.html">Forwarded Ports</a></li>
+								</ul>
+
+								<li><a href="../contacts.html">Contacts</a></li>
+							</ul>
+						</aside> <!-- /.sidebar -->
+					</div> <!-- /.sidebar -->
+
+					<div class="page-contents span9">
+						<div class="page-background"></div>
+
+						<!-- start page content -->
+						<div class="row">
+							<div class="span8 offset1">
+								<h1>Forwarded Ports</h1>
+
+<p><strong>General Vagrant doc page</strong>: <a href="https://www.vagrantup.com/docs/networking/forwarded_ports.html">Forwarded Ports</a>.</p>
+
+<h2>Defining a Forwarded Port</h2>
+
+<p>The forwarded port configuration expects two parameters, the port on the
+guest and the port on the host. Example:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Vagrant</span><span class="p">.</span><span class="nf">configure</span><span class="p">(</span><span class="s2">"2"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">network</span> <span class="s2">"forwarded_port"</span><span class="p">,</span> <span class="ss">guest: </span><span class="mi">80</span><span class="p">,</span> <span class="ss">host: </span><span class="mi">8080</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>This will allow accessing port 80 on the guest via port 8080 on the host.</p>
+
+<h2>Options Reference</h2>
+
+<p>This is a complete list of the options that are available for forwarded
+ports. Only the <code>guest</code> and <code>host</code> options are required. Below this section,
+there are more detailed examples of using these options.</p>
+
+<ul>
+<li><p><code>guest</code> (int) - The port on the guest that you want to be exposed on
+the host. This can be any port.</p></li>
+<li><p><code>host</code> (int) - The port on the host that you want to use to access the
+port on the guest. It is recommended to use port greater than 1024.</p></li>
+<li><p><code>protocol</code> (string) - Either &quot;udp&quot; or &quot;tcp&quot;. This specifies the protocol
+that will be allowed through the forwarded port. By default this is &quot;tcp&quot;.</p></li>
+</ul>
+
+<h2>Port Collisions and Correction</h2>
+
+<p>It is common when running multiple Vagrant machines to unknowingly create
+forwarded port definitions that collide with each other (two separate
+Vagrant projects forwarded to port 8080, for example). Vagrant includes
+built-in mechanism to detect this and correct it, automatically.</p>
+
+<p>Port collision detection is always done. Vagrant will not allow you to
+define a forwarded port where the port on the host appears to be accepting
+traffic or connections.</p>
+
+<p>Port collision auto-correction must be manually enabled for each forwarded
+port, since it is often surprising when it occurs and can lead the Vagrant
+user to think that the port wasn&#39;t properly forwarded. Enabling auto correct
+is easy:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Vagrant</span><span class="p">.</span><span class="nf">configure</span><span class="p">(</span><span class="s2">"2"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">network</span> <span class="s2">"forwarded_port"</span><span class="p">,</span> <span class="ss">guest: </span><span class="mi">80</span><span class="p">,</span> <span class="ss">host: </span><span class="mi">8080</span><span class="p">,</span>
+    <span class="ss">auto_correct: </span><span class="kp">true</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>The final <code>:auto_correct</code> parameter set to true tells Vagrant to auto
+correct any collisions. During a <code>vagrant up</code> or <code>vagrant reload</code>, Vagrant
+will output information about any collisions detections and auto corrections
+made, so you can take notice and act accordingly.</p>
+
+							</div> <!-- /.span8 -->
+						</div> <!-- /.row -->
+					</div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+				<div class="container">
+					<div class="row">
+						<ul class="unstyled logos">
+							<a href="http://www.vagrantup.com/downloads.html">
+								<li class="vagrant-logo-monochrome">
+									<p>Vagrant</p>
+								</li>
+							</a>
+							<a href="http://www.parallels.com/products/desktop/">
+								<li class="pd-logo-monochrome">
+									<p>Parallels Desktop</p>
+								</li>
+							</a>
+						</ul> <!-- /span -->
+
+					</div> <!-- /row -->
+
+					<div class="row">
+						<h6 class="legal">
+							&copy; 2023 Parallels International GmbH.
+						</h6>
+					</div> <!-- row -->
+				</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>

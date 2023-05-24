@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title> Creating a Base Box Manually - Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<link href="../../stylesheets/bootstrap-83bc38f8.css" rel="stylesheet" /><link href="../../stylesheets/vagrant-parallels-4acb13e4.css" rel="stylesheet" />
+
+		<!-- lib js -->
+		<script src="../../javascripts/jquery-7a374c2f.js"></script>
+		<script src="../../javascripts/modernizr-d4b01192.js"></script>
+		<script src="../../javascripts/bootstrap.min-94c68c6f.js"></script>
+		<script src="../../javascripts/backstretch-3d1212ad.js"></script>
+		<script src="../../javascripts/vagrant-parallels-919511ec.js"></script>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+				<div class="container">
+					<!-- vagrant logo -->
+					<a href="../" class="vagrant-docs-logo">Vagrant Parallels Documentation</a>
+					<!-- nav -->
+					<ul class="pull-right">
+						<li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+						<li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+					</ul>
+				</div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+					<div class="sidebar span4">
+						<!-- get the sidebar nav -->
+						<!-- side nav docs -->
+						<aside class="sidebar-nav">
+
+							<div class="toggle hidden-desktop">
+								<div class="open-close open"></div>
+								<a href="#">Contents</a>
+							</div>
+
+							<ul class="unstyled">
+								<li><a href="../">Overview</a></li>
+								<li><a href="../installation/">Installation</a></li>
+
+
+								<li><a href="../usage.html">Usage</a></li>
+								<li><a href="../getting-started.html">Getting Started</a></li>
+								<li><a href="../share.html">Vagrant Share</a></li>
+								<li><a href="./">Boxes</a></li>
+
+								<ul class="sub unstyled">
+									<li class="current"><a href="base.html">Creating a Base Box</a></li>
+									<li><a href="base_macos.html">Creating a macOS Base Box</a></li>
+									<li><a href="packer.html">Build with Packer</a></li>
+									<li><a href="veewee.html">Build with Veewee</a></li>
+								</ul>
+
+								<li><a href="../sharedfolders.html">Shared Folders</a></li>
+								<li><a href="../configuration.html">Configuration</a></li>
+								<li><a href="../networking/">Networking</a></li>
+
+
+								<li><a href="../contacts.html">Contacts</a></li>
+							</ul>
+						</aside> <!-- /.sidebar -->
+					</div> <!-- /.sidebar -->
+
+					<div class="page-contents span9">
+						<div class="page-background"></div>
+
+						<!-- start page content -->
+						<div class="row">
+							<div class="span8 offset1">
+								<h1>Creating a Base Box Manually</h1>
+
+<div class="alert alert-warn">
+    <p>
+        <strong>Warning: Advanced Topic!</strong> Creating a base box can be a
+        time consuming and tedious process, and is not recommended for new
+        Vagrant users. If you're just getting started with Vagrant, we
+        recommend trying to find <a href="https://app.vagrantup.com/boxes/search?provider=parallels">
+        existing base boxes</a> to use first.
+    </p>
+</div>
+
+<p>We strongly recommend <a href="packer.html">using Packer</a> to create reproducible
+builds for your base boxes, as well as automating the builds.</p>
+
+<p>This page documents the box format in case if you want to create your own base boxes
+manually, from the existing virtual machine.</p>
+
+<p>Prior to reading this page, please check out the <a href="https://www.vagrantup.com/docs/boxes/format.html">basics of the Vagrant
+box file format</a>.</p>
+
+<h2>Contents</h2>
+
+<p>A Parallels base box is a compressed archive of the necessary contents of
+a Parallels &quot;pvm&quot; file. Here is an example of what is contained in such a box:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ tree
+.
+├── Vagrantfile
+├── box.pvm
+│   ├── NVRAM.dat
+│   ├── VmInfo.pvi
+│   ├── config.pvs
+│   └── harddisk.hdd
+│       └── ...
+└── metadata.json
+</code></pre></div>
+<p><code>config.pvs</code> and <code>&lt;diskname&gt;.hdd</code> are strictly required for a Parallels virtual
+machine.</p>
+
+<p>There is also the &quot;metadata.json&quot; file used by Vagrant itself. This file
+contains nothing but the defaults which are documented on the <a href="https://www.vagrantup.com/docs/boxes/format.html">box format</a> page.</p>
+
+<h2>Installed Software</h2>
+
+<p>Base boxes for the Parallels provider should have the following software
+installed, as a bare minimum:</p>
+
+<ul>
+<li><p>SSH server with key-based authentication setup. If you want the box to work
+with default Vagrant settings, the SSH user must be set to accept the <a href="https://github.com/mitchellh/vagrant/blob/master/keys/vagrant.pub">insecure
+keypair</a>
+that ships with Vagrant.</p></li>
+<li><p><a href="https://download.parallels.com/desktop/v16/docs/en_US/Parallels%20Desktop%20User's%20Guide/32791.htm">Parallels Tools</a> so that things such as shared
+folders can function. There are many other benefits to installing the tools,
+such as networking configuration and device mapping.</p></li>
+</ul>
+
+<h2>Box Size Optimization</h2>
+
+<p>Prior to packaging up a box, you should shrink the hard drives as much as
+possible. This can be done with <code>prl_disk_tool</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ prl_disk_tool compact --hdd /path/to/harddisk.hdd
+</code></pre></div>
+<h2>Packaging</h2>
+
+<p>Remove any extraneous files from the &quot;pvm&quot; folder and package it. Be sure to
+compress the tar with gzip (done below in a single command) since Parallels
+hard disks are not compressed by default.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ cd /path/to/my/box.pvm/..
+$ tar cvzf custom.box ./box.pvm ./Vagrantfile ./metadata.json
+</code></pre></div>
+							</div> <!-- /.span8 -->
+						</div> <!-- /.row -->
+					</div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+				<div class="container">
+					<div class="row">
+						<ul class="unstyled logos">
+							<a href="http://www.vagrantup.com/downloads.html">
+								<li class="vagrant-logo-monochrome">
+									<p>Vagrant</p>
+								</li>
+							</a>
+							<a href="http://www.parallels.com/products/desktop/">
+								<li class="pd-logo-monochrome">
+									<p>Parallels Desktop</p>
+								</li>
+							</a>
+						</ul> <!-- /span -->
+
+					</div> <!-- /row -->
+
+					<div class="row">
+						<h6 class="legal">
+							&copy; 2023 Parallels International GmbH.
+						</h6>
+					</div> <!-- row -->
+				</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>

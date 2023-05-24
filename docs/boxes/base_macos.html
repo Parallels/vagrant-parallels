@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title> Creating a macOS Base Box Manually - Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<link href="../../stylesheets/bootstrap-83bc38f8.css" rel="stylesheet" /><link href="../../stylesheets/vagrant-parallels-4acb13e4.css" rel="stylesheet" />
+
+		<!-- lib js -->
+		<script src="../../javascripts/jquery-7a374c2f.js"></script>
+		<script src="../../javascripts/modernizr-d4b01192.js"></script>
+		<script src="../../javascripts/bootstrap.min-94c68c6f.js"></script>
+		<script src="../../javascripts/backstretch-3d1212ad.js"></script>
+		<script src="../../javascripts/vagrant-parallels-919511ec.js"></script>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+				<div class="container">
+					<!-- vagrant logo -->
+					<a href="../" class="vagrant-docs-logo">Vagrant Parallels Documentation</a>
+					<!-- nav -->
+					<ul class="pull-right">
+						<li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+						<li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+					</ul>
+				</div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+					<div class="sidebar span4">
+						<!-- get the sidebar nav -->
+						<!-- side nav docs -->
+						<aside class="sidebar-nav">
+
+							<div class="toggle hidden-desktop">
+								<div class="open-close open"></div>
+								<a href="#">Contents</a>
+							</div>
+
+							<ul class="unstyled">
+								<li><a href="../">Overview</a></li>
+								<li><a href="../installation/">Installation</a></li>
+
+
+								<li><a href="../usage.html">Usage</a></li>
+								<li><a href="../getting-started.html">Getting Started</a></li>
+								<li><a href="../share.html">Vagrant Share</a></li>
+								<li><a href="./">Boxes</a></li>
+
+								<ul class="sub unstyled">
+									<li><a href="base.html">Creating a Base Box</a></li>
+									<li class="current"><a href="base_macos.html">Creating a macOS Base Box</a></li>
+									<li><a href="packer.html">Build with Packer</a></li>
+									<li><a href="veewee.html">Build with Veewee</a></li>
+								</ul>
+
+								<li><a href="../sharedfolders.html">Shared Folders</a></li>
+								<li><a href="../configuration.html">Configuration</a></li>
+								<li><a href="../networking/">Networking</a></li>
+
+
+								<li><a href="../contacts.html">Contacts</a></li>
+							</ul>
+						</aside> <!-- /.sidebar -->
+					</div> <!-- /.sidebar -->
+
+					<div class="page-contents span9">
+						<div class="page-background"></div>
+
+						<!-- start page content -->
+						<div class="row">
+							<div class="span8 offset1">
+								<h1>Creating a macOS Base Box Manually</h1>
+
+<p>Prior to reading this page, please check out the <a href="https://www.vagrantup.com/docs/boxes/format.html">basics of the Vagrant
+box file format</a>.</p>
+
+<h2>Pre-requisites</h2>
+
+<ul>
+<li><p>Install Vagrant, you can find the instructions <a href="/vagrant-parallels/docs/installation">here</a></p></li>
+<li><p>Start Parallels Desktop and create a new macOS virtual machine as outlined  in <a href="http://kb.parallels.com/125561/">KB 125561</a>.
+<div class="alert alert-info">
+<p>
+    While creating the VM, give the username as ‘vagrant’ only.<br />
+    If this is a public box you should set the password to ‘vagrant’ as well.
+</p>
+</div></p>
+
+<ul>
+<li>Enable passwordless sudo for <code>vagrant</code> user on macOS virtual machine:</li>
+<li>Open Terminal in macOS virtual machine and run:</li>
+</ul>
+<div class="highlight"><pre class="highlight shell"><code>   <span class="nv">$ </span><span class="nb">sudo </span>visudo /private/etc/sudoers.d/vagrant
+</code></pre></div>
+<p>Paste this line there and save the file (<code>:wq</code>) :</p>
+<div class="highlight"><pre class="highlight shell"><code>  vagrant ALL <span class="o">=</span> <span class="o">(</span>ALL<span class="o">)</span> NOPASSWD: ALL
+</code></pre></div>
+<p>Now <code>vagrant</code> user is allowed to run <code>sudo</code> without a password prompt.</p></li>
+<li><p>Install Parallels Tools inside the macOS virtual machine.<br>
+macOs 13 &gt; <strong>Install Parallels Tools</strong>
+<img src="../../images/install_parallels_tools-d5472d51.gif" alt="install_parallels_tools" /></p>
+
+<p><div class="alert alert-info">
+<p>
+    <strong>Note:</strong> Installing the Parallels Tools will require a reboot
+</p>
+</div></p></li>
+<li><p>Reboot macOS virtual machine and then enable Remote Login (<em>System Settings &gt; General &gt; Sharing &gt; Enable Remote Login</em>). Select “All users” and also enable “Full disk access to users”, as shown on the picture below:<br>
+<img src="../../images/allow_remote_login-fbb15b12.gif" alt="allow_remote_login" /></p></li>
+<li><p>Copy the vagrant public SSH key to the machine</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>ssh-copy-id <span class="nt">-i</span> <span class="si">$(</span>find /opt/vagrant/embedded/gems <span class="nt">-type</span> d <span class="nt">-name</span> keys<span class="si">)</span>/vagrant vagrant@&lt;virtual_machine_ip&gt;
+</code></pre></div>
+<p>where <code>&lt;virtual_machine_ip&gt;</code> is the current IP of the virtual machine, which could be determined using this command:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>prlctl list <span class="nt">-f</span> 
+</code></pre></div></li>
+</ul>
+
+<h2>Create Base Box</h2>
+
+<ul>
+<li>In Parallels directory on your Mac create a folder (something simple like <code>VagrantTest</code>).</li>
+<li><p>Copy the initially created bundle of your macOS virtual machine (it has the <strong>.macvm</strong> extension) to the newly created folder (<code>VagrantTest</code>).</p>
+
+<div class="alert alert-info">
+<p>
+    <strong>Optional:</strong> You can rename macOS virtual machine with a unique name so that you won't get any name collision issues.
+</p>
+</div>
+
+<ul>
+<li>Run Terminal on the host side and execute the following command:</li>
+</ul>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>prlctl <span class="nb">set</span> <span class="s2">"macOS 13"</span> <span class="nt">--name</span> <span class="s2">"macOS_13"</span>
+</code></pre></div>
+<p>Where the name &#39;macOS_13&#39; is your virtual machine&#39;s name.</p>
+
+<div class="alert alert-info">
+<p>
+    <strong>Note:</strong> Renaming the virtual machine is one of the solutions to avoid name collision. You can also remove macOS virtual machine from Control Center (Parallels icon > Control Center > Right-click on macOS 13 virtual machine > Remove 'macOS 13' > <strong>Keep Files</strong>).
+</p>
+</div>
+
+<div class="alert alert-warn">
+<p>
+    <strong>Attention:</strong> If you used the public vagrant ssh key then you will not need to do the next steps as they are only copying the ssh key that you generated.
+</p>
+</div></li>
+<li><p>Download <a href="https://kb.parallels.com/Attachments/kcs-191881/metadata.json">metadata.json</a> file and put it in the VagrantTest folder.</p></li>
+<li><p>Create a box by Terminal.</p>
+
+<ul>
+<li>Execute the following command:</li>
+</ul>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd </span>VagrantTest
+<span class="nv">$ </span><span class="nb">tar </span>cvzf custom.box ./box.macvm ./metadata.json
+</code></pre></div>
+<p>where:  </p>
+
+<p><code>custom.box</code> - any box name. For example, vagrant.box, vagrant_project.box, etc.<br>
+<code>box.macvm</code> - macOS virtual machine&#39;s name from step 1 (for example, <code>macOS\_13.macvm</code>)<br>
+<code>metadata.json</code> - files from VagrantTest folder.  </p>
+
+<div class="alert alert-info">
+<p>
+    <strong>Note:</strong> The name of the macOS 13 virtual machine should not contain any spaces.
+</p>
+</div>
+
+<p><img src="../../images/custom_box-2a420084.png" alt="custom_box" /></p></li>
+<li><p>Add the created box into vagrant boxes:</p>
+
+<ul>
+<li>Run Terminal and execute:</li>
+</ul>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>vagrant box add &lt;name&gt;.box <span class="nt">--name</span> macOS13
+</code></pre></div>
+<p>where <code>&lt;name&gt;</code>.box is the name of the box created in the previous step.</p></li>
+<li><p>Go to <strong>~/.vagrant.d/boxes/macOS13</strong> folder and check that extension of macOS virtual machine is <code>.macvm</code>:
+<img src="../../images/check_extension_macvm-8c2dd65d.png" alt="check_extension_macvm" /></p></li>
+</ul>
+
+<h2>Create a Vagrant folder</h2>
+
+<p>We now have our base box created, to create virtual machines from it we will need to create a Vagrant folder structure and a Vagrantfile.</p>
+
+<ul>
+<li><p>Create a new folder in the home directory and name it VFTest (In the Finder, you can open your home folder by choosing <strong>Go</strong> &gt; <strong>Home</strong> or by pressing <strong>Shift-Command-H</strong>).</p>
+
+<div class="alert alert-info">
+<p>
+    <strong>Note:</strong> The name of the folder can be different. 'VFTest' is just for example.
+</p>
+</div></li>
+<li><p>You can now start the vagrant box by typing:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd</span> &lt;path to the folder&gt;
+<span class="nv">$ </span>vagrant init macOS13
+<span class="nv">$ </span>vagrant up <span class="nt">-provider</span><span class="o">=</span>parallels
+</code></pre></div>
+<p>This command will start macOS virtual machine (the name of the virtual machine will be different):
+<img src="../../images/macos_vm_started-35a31f55.png" alt="macos_vm_started" /></p>
+
+<p>Now you are ready to execute Vagrant commands.</p></li>
+</ul>
+
+							</div> <!-- /.span8 -->
+						</div> <!-- /.row -->
+					</div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+				<div class="container">
+					<div class="row">
+						<ul class="unstyled logos">
+							<a href="http://www.vagrantup.com/downloads.html">
+								<li class="vagrant-logo-monochrome">
+									<p>Vagrant</p>
+								</li>
+							</a>
+							<a href="http://www.parallels.com/products/desktop/">
+								<li class="pd-logo-monochrome">
+									<p>Parallels Desktop</p>
+								</li>
+							</a>
+						</ul> <!-- /span -->
+
+					</div> <!-- /row -->
+
+					<div class="row">
+						<h6 class="legal">
+							&copy; 2023 Parallels International GmbH.
+						</h6>
+					</div> <!-- row -->
+				</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>

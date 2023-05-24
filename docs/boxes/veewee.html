@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title> Build Base Boxes with Veewee - Vagrant Parallels Provider Documentation</title>
+
+		<!-- meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<!-- lib styles -->
+		<link href="../../stylesheets/bootstrap-83bc38f8.css" rel="stylesheet" /><link href="../../stylesheets/vagrant-parallels-4acb13e4.css" rel="stylesheet" />
+
+		<!-- lib js -->
+		<script src="../../javascripts/jquery-7a374c2f.js"></script>
+		<script src="../../javascripts/modernizr-d4b01192.js"></script>
+		<script src="../../javascripts/bootstrap.min-94c68c6f.js"></script>
+		<script src="../../javascripts/backstretch-3d1212ad.js"></script>
+		<script src="../../javascripts/vagrant-parallels-919511ec.js"></script>
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+	</head>
+	<body>
+		<!-- wrap everything -->
+		<div class="wrapper">
+
+			<!-- nav -->
+
+			<nav class="docs">
+				<div class="container">
+					<!-- vagrant logo -->
+					<a href="../" class="vagrant-docs-logo">Vagrant Parallels Documentation</a>
+					<!-- nav -->
+					<ul class="pull-right">
+						<li><a href="https://docs.vagrantup.com">Vagrant Docs</a></li>
+						<li><a href="https://github.com/Parallels/vagrant-parallels">Github</a></li>
+					</ul>
+				</div> <!-- container -->
+			</nav>
+
+			<div class="page docs docs-home">
+				<div class="container">
+					<div class="sidebar span4">
+						<!-- get the sidebar nav -->
+						<!-- side nav docs -->
+						<aside class="sidebar-nav">
+
+							<div class="toggle hidden-desktop">
+								<div class="open-close open"></div>
+								<a href="#">Contents</a>
+							</div>
+
+							<ul class="unstyled">
+								<li><a href="../">Overview</a></li>
+								<li><a href="../installation/">Installation</a></li>
+
+
+								<li><a href="../usage.html">Usage</a></li>
+								<li><a href="../getting-started.html">Getting Started</a></li>
+								<li><a href="../share.html">Vagrant Share</a></li>
+								<li><a href="./">Boxes</a></li>
+
+								<ul class="sub unstyled">
+									<li><a href="base.html">Creating a Base Box</a></li>
+									<li><a href="base_macos.html">Creating a macOS Base Box</a></li>
+									<li><a href="packer.html">Build with Packer</a></li>
+									<li class="current"><a href="veewee.html">Build with Veewee</a></li>
+								</ul>
+
+								<li><a href="../sharedfolders.html">Shared Folders</a></li>
+								<li><a href="../configuration.html">Configuration</a></li>
+								<li><a href="../networking/">Networking</a></li>
+
+
+								<li><a href="../contacts.html">Contacts</a></li>
+							</ul>
+						</aside> <!-- /.sidebar -->
+					</div> <!-- /.sidebar -->
+
+					<div class="page-contents span9">
+						<div class="page-background"></div>
+
+						<!-- start page content -->
+						<div class="row">
+							<div class="span8 offset1">
+								<h1>Build Base Boxes with Veewee</h1>
+
+<div class="alert alert-warn">
+    <p>
+        <strong>Warning: Advanced Topic!</strong> If you're not familiar with
+        Veewee, you should read the <a href="https://github.com/jedi4ever/veewee/blob/master/README.md">
+        Veewee documentation</a> first.
+    </p>
+</div>
+
+<p>Veewee must be properly installed in order to build a new base box using one of
+the existing Veewee templates. If you haven&#39;t installed it yet, please refer to
+the <a href="https://github.com/jedi4ever/veewee/blob/master/doc/installation.md">Veewee Installation</a>
+instructions.</p>
+
+<h2>Parallels Virtualization SDK</h2>
+
+<p>Veewee requires the &#39;prlsdkapi&#39; Python module from the Parallels Virtualization
+SDK to interact with Parallels Desktop and virtual machines. To use Veewee with
+the Parallels provider you need to download and install this SDK package:
+<a href="https://www.parallels.com/download/pvsdk/">The Parallels Virtualization SDK for Mac</a></p>
+
+<p>You can also install it with <a href="brew.sh">Homebrew</a> package manager:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ brew install parallels-virtualization-sdk
+</code></pre></div>
+<h2>Preparing a definition</h2>
+
+<p>List available Veewee templates, choose what you want to use and create a
+definition:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ veewee parallels templates
+$ veewee parallels define 'my_centos' 'CentOS-6.5-x86_64-minimal'
+</code></pre></div>
+<p>Since most of the default templates are not ready to be used with the Parallels
+provider, you need to customize the definition manually.</p>
+
+<p>Navigate to the definition folder and create a <code>parallels.sh</code> script with the
+following content:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ vi ./definition/my_centos/parallels.sh
+
+# Install the Parallels Tools
+PARALLELS_TOOLS_ISO=prl-tools-lin.iso
+mkdir -p /media/cdrom
+mount -o loop $PARALLELS_TOOLS_ISO /media/cdrom
+/media/cdrom/install --install-unattended-with-deps --progress
+umount /media/cdrom
+</code></pre></div>
+<p>Open the <code>definition.rb</code> file for editing, find the &#39;:postinstall_files&#39; array
+and add the &quot;parallels.sh&quot; string to it. It should now look like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ vi ./definition/my_centos/definition.rb
+
+...
+  :postinstall_files =&gt; [
+     "base.sh",
+     "ruby.sh",
+     "chef.sh",
+     "puppet.sh",
+     "vagrant.sh",
+     "parallels.sh",
+     "cleanup.sh",
+  ],
+...
+</code></pre></div>
+<p>Please observe the following important rules:</p>
+
+<ul>
+<li>You can insert <code>&quot;parallels.sh&quot;</code> on any position of this array, but it&#39;s
+necessary to place it between <code>&quot;base.sh&quot;</code> and <code>&quot;cleanup.sh&quot;</code></li>
+<li>You also have to comment (or delete) strings like &quot;vbox.sh&quot; or &quot;virtualbox.sh&quot;,
+to prevent VirtualBox customization.</li>
+</ul>
+
+<h2>Building a VM Image</h2>
+
+<p>After customizing the definition you can start building a vm image:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ veewee parallels build 'my_centos'
+</code></pre></div>
+<p>This action can take a long time to complete because it involves downloading the
+ISO image, installing the OS, and configuring it after the installation.</p>
+
+<h2>Exporting</h2>
+<div class="highlight"><pre class="highlight plaintext"><code>$ veewee parallels export 'my_centos'
+</code></pre></div>
+<p>The virtual machine will be shut down, exported, and packed in the <code>my_centos.box</code>
+file inside the current directory. When it&#39;s done, you can use it as any other
+box for the Parallels provider.</p>
+
+							</div> <!-- /.span8 -->
+						</div> <!-- /.row -->
+					</div> <!-- /.page-contents -->
+				</div> <!-- /.container -->
+			</div> <!-- /.page -->
+
+			<!-- footer -->
+			<footer>
+				<div class="container">
+					<div class="row">
+						<ul class="unstyled logos">
+							<a href="http://www.vagrantup.com/downloads.html">
+								<li class="vagrant-logo-monochrome">
+									<p>Vagrant</p>
+								</li>
+							</a>
+							<a href="http://www.parallels.com/products/desktop/">
+								<li class="pd-logo-monochrome">
+									<p>Parallels Desktop</p>
+								</li>
+							</a>
+						</ul> <!-- /span -->
+
+					</div> <!-- /row -->
+
+					<div class="row">
+						<h6 class="legal">
+							&copy; 2023 Parallels International GmbH.
+						</h6>
+					</div> <!-- row -->
+				</div> <!-- container -->
+			</footer>
+
+			<!-- close .wrapper -->
+		</div>
+
+		<!-- load scripts -->
+	</body>
+</html>
