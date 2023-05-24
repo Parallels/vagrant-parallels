@@ -1,0 +1,84 @@
+// roll your own nav
+
+nav {
+  width: 100%;
+  font-size: 15px;
+  @include helvetica-neue-light;
+  color: $medium-gray-text;
+  height: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: $white;
+  z-index: 9999999999;
+
+  &.docs {
+    background: $red;
+  }
+
+  .vagrant-docs-logo {
+    display: block;
+    text-indent: -999999px;
+    background: url(../images/logo_docs.png) no-repeat 0 center;
+    height: 50px;
+    width: 530px;
+    float: left;
+    margin: 25px 0px;
+  }
+
+  ul {
+    position: relative;
+    display: block;
+    float: left;
+    height: 100px;
+    margin: 0 20px;
+    overflow: hidden;
+
+    li {
+      overflow: hidden;
+      line-height: 100px;
+      display: inline;
+
+      a {
+        padding: 30px 15px;
+        line-height: 40px;
+        color: #18181a;
+        text-shadow: 0 1px 0 #ff6b71;
+        font-size: 18px;
+        background-image: url(../images/nav_divider.png);
+        background-position: center right;
+        background-repeat: no-repeat;
+
+        &:hover {
+          color: #fff;
+          text-shadow: 0 -1px 0 #bd2224;
+        }
+      }
+
+      &:last-child {
+        a {
+          background: none;
+        }
+      }
+    }
+  }
+
+  .active-nav {
+    color: $blue;
+  }
+
+  .contact {
+
+    &:hover {
+      background-color: $light-gray-background;
+      padding: 10px;
+      margin-right: -10px;
+      margin-left: 5px;
+      @include rounded;
+    }
+
+    &:active {
+      background-color: darken($light-gray-background, 5%);
+    }
+  }
+}

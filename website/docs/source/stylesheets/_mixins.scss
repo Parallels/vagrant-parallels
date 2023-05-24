@@ -1,0 +1,117 @@
+// styles and effects
+@mixin round-corners {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -khtml-border-radius: 3px;
+  border-radius: 3px;
+}
+
+@mixin rounded {
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  -khtml-border-radius: 50px;
+  border-radius: 50px;
+}
+
+@mixin animate-background-color {
+  transition: background-color .3s ease-in-out;
+  -moz-transition: background-color .3s ease-in-out;
+  -webkit-transition: background-color .3s ease-in-out;
+  -o-transition: background-color .3s ease-in-out;
+}
+
+@mixin animate-text-color {
+  transition: color .2s ease-in-out;
+  -moz-transition: color .2s ease-in-out;
+  -webkit-transition: color .2s ease-in-out;
+  -o-transition: color .2s ease-in-out;
+}
+
+@mixin animate-opacity {
+  transition: opacity .2s ease-in-out;
+  -moz-transition: opacity .2s ease-in-out;
+  -webkit-transition: opacity .2s ease-in-out;
+  -o-transition: opacity .2s ease-in-out;
+}
+
+@mixin drop-shadow {
+  -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1) !important;
+  -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1) !important;
+  transition: opacity .2s ease-in-out;
+  -moz-transition: opacity .2s ease-in-out;
+  -webkit-transition: opacity .2s ease-in-out;
+  -o-transition: opacity .2s ease-in-out;
+}
+
+@mixin hyphenate {
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+@mixin uppercase {
+  text-transform: uppercase;
+}
+
+@mixin padded {
+  padding: ($baseline * 3) 0;
+}
+
+@mixin padded-medium {
+  padding: ($baseline * 2) 0;
+}
+
+@mixin padded-small{
+  padding: $baseline 0;
+}
+
+@mixin docs-bg-large {
+  background: $bg_one;
+}
+
+
+@mixin docs-bg-small {
+  background: $bg_one;
+}
+
+// helpers
+@mixin reset {
+  margin: 0;
+  padding: 0;
+}
+
+@mixin kill-effects {
+  -webkit-box-shadow: 0 0;
+  -moz-box-shadow: 0 0;
+  box-shadow: 0 0;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  font-family: inherit;
+  color: inherit;
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  text-shadow: none;
+}
+
+@mixin debug {
+  border: 1px solid #ff0000;
+}
+
+
+@mixin hover {
+  &:hover {
+    cursor: pointer;
+    transition: color .2s ease-in-out;
+    -moz-transition: color .2s ease-in-out;
+    -webkit-transition: color .2s ease-in-out;
+    -o-transition: color .2s ease-in-out;
+  }
+}
+
+@mixin full-width {
+    margin-right: -20px !important;
+    margin-left: -20px ;
+  }
