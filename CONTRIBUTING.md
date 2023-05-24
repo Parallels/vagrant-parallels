@@ -78,3 +78,31 @@ Run acceptance tests:
 $ bundle exec rake acceptance:run
 ...
 ```
+
+### Releasing a New Provider Version
+
+_Note: Only the owners of `vagrant-parallels` gem on https://rubygems.org are permitted
+to release new versions._
+
+1. Build and test the new gem version (see details above):
+```
+$ bundle exec rake build
+```
+
+2. Update the gem version in `./lib/vagrant-parallels/version.rb`
+
+3. Update change log in `./CHANGELOG.md`
+
+4. Commit those changes and also tag the release with the version:
+```sh
+$ git tag vX.Y.Z
+$ git push --tags
+```
+
+4. Push a new gem version to rubygems.org:
+```sh
+$ gem push ./pkg/vagrant-parallels-<version>.gem
+```
+
+5. Create a new Release on Github from the newly pushed tag: https://github.com/Parallels/vagrant-parallels/tags.
+   More info on the doc page: [Managing releases in a repository](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
