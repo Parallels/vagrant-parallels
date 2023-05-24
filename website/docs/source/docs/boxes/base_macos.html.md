@@ -20,30 +20,24 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
     </p>
     </div>
 
-  * Enable passwordless sudo for macOS virtual machine
-  * Open Terminal in macOS virtual machine and run:
+  * Enable passwordless sudo for `vagrant` user on macOS virtual machine:
+    * Open Terminal in macOS virtual machine and run:
 
-     ```bash
-     $ sudo visudo
-     ```
+       ```bash
+       $ sudo visudo /private/etc/sudoers.d/vagrant
+       ```
 
-    Edit the line:
+      Paste this line there and save the file (`:wq`) :
 
-    ```bash
-    %admin ALL=(ALL) ALL
-    ```
+      ```bash
+      vagrant ALL = (ALL) NOPASSWD: ALL
+      ```
 
-    To Say:
-
-    ```bash
-    %admin ALL=(ALL) NOPASSWD: ALL
-    ```
-
-    Now, you should be able to run sudo without password.
+      Now `vagrant` user is allowed to run `sudo` without a password prompt.
 
 * Install Parallels Tools inside the macOS virtual machine.  
     macOs 13 > **Install Parallels Tools**
-  ![install_parallels_extension](/images/install_extension.gif)
+  ![install_parallels_tools](/images/install_parallels_tools.gif)
 
       <div class="alert alert-info">
     <p>
@@ -51,18 +45,19 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
     </p>
     </div>
 
-* Boot macOS virtual machine and enable Remote Login (System Settings > General > Sharing > Enable Remote Login). Don't forget to give “Full disk access to users”, do allow “All users” (in the same settings, press ![info](/images/info_32.png) button)
-![Parallels Desktop](/images/allow_sharing.gif)
-* Restart macOS virtual machine for the Remote Login to take effect.
+* Reboot macOS virtual machine and then enable Remote Login (_System Settings > General > Sharing > Enable Remote Login_). Select “All users” and also enable “Full disk access to users”, as shown on the picture below:  
+![allow_remote_login](/images/allow_remote_login.gif)
 * Copy the vagrant public SSH key to the machine
   
     ```bash
     $ ssh-copy-id -i $(find /opt/vagrant/embedded/gems -type d -name keys)/vagrant vagrant@<virtual_machine_ip>
     ```
 
-    where:  
+    where `<virtual_machine_ip>` is the current IP of the virtual machine, which could be determined using this command:
 
-    ```virtual_machine_ip``` \- the virtual machine ip.  
+    ```bash
+    $ prlctl list -f 
+    ``` 
 
 ## Create Base Box
 
@@ -115,7 +110,7 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
     </p>
     </div>
 
-    ![custom_box](/images/custom_box_new.png)
+    ![custom_box](/images/custom_box.png)
 * Add the created box into vagrant boxes:
 
     * Run Terminal and execute:
@@ -127,7 +122,7 @@ box file format](https://www.vagrantup.com/docs/boxes/format.html).
     where ```<name>```.box is the name of the box created in the previous step.
 
 * Go to **~/.vagrant.d/boxes/macOS13** folder and check that extension of macOS virtual machine is ```.macvm```:
-  ![check_extension_macvm](/images/check_extension_macvm_new.png)
+  ![check_extension_macvm](/images/check_extension_macvm.png)
 
 ## Create a Vagrant folder
 
@@ -140,17 +135,11 @@ We now have our base box created, to create virtual machines from it we will nee
         <strong>Note:</strong> The name of the folder can be different. 'VFTest' is just for example.
     </p>
     </div>
-* Download the defautl [Vagrantfile](https://kb.parallels.com/Attachments/kcs-191881/Vagrantfile) and put it in ```VFTest``` folder, or the folder you have created in the previous step.
-  ![vagrantfile_folder](/images/vagrantfile_folder.png)
-
-* In Terminal you should go to the directory with Vagrantfile ('VFTest' folder from step 15). Just type:
-
-    ```bash
-    $ cd <path to the VFTest folder>
-    ```
 * You can now start the vagrant box by typing:
 
     ```bash
+    $ cd <path to the folder>
+    $ vagrant init macOS13
     $ vagrant up -provider=parallels
     ```
 
