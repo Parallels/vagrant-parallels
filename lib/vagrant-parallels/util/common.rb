@@ -6,7 +6,7 @@ module VagrantPlugins
         # Determines whether the VM's box contains a macOS guest for an Apple Silicon host.
         # In this case the image file ends with '.macvm' instead of '.pvm'
         def self.is_macvm(machine)
-          return !!Dir.glob(machine.box.directory.join('*.macvm')).first
+          return !machine.box.nil? && !!Dir.glob(machine.box.directory.join('*.macvm')).first
         end
 
       end
