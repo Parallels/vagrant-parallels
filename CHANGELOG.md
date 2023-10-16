@@ -1,5 +1,22 @@
 ## 2.4.0 (May 22, 2023)
 IMPROVEMENTS:
+  - use clonefile copy for macvm boxes
+  [[GH-459](https://github.com/Parallels/vagrant-parallels/pull/459)]
+
+BUG FIXES:
+  - Bump activesupport from 6.1.7.3 to 6.1.7.5
+  [[GH-457](https://github.com/Parallels/vagrant-parallels/pull/457)]
+  - Don't try to call methdods on Nil
+  [[GH-456](https://github.com/Parallels/vagrant-parallels/pull/456)]
+  - Add a doc note for releasing a new provider version
+  [[GH-452](https://github.com/Parallels/vagrant-parallels/pull/452)]
+  - website: Remove unused images
+  [[GH-450](https://github.com/Parallels/vagrant-parallels/pull/450)]
+  - adding macos
+  [[GH-447](https://github.com/Parallels/vagrant-parallels/pull/447)]
+
+## 2.4.0 (May 22, 2023)
+IMPROVEMENTS:
   - Implement shared folder support for `.macvm` VMs
   [[GH-448](https://github.com/Parallels/vagrant-parallels/pull/448)]
 
