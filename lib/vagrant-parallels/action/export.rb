@@ -61,7 +61,8 @@ module VagrantPlugins
           env[:ui].info I18n.t('vagrant.actions.vm.export.exporting')
 
           options = {
-            dst: env['export.temp_dir'].to_s
+            dst: env['export.temp_dir'].to_s,
+            linked: true,
           }
 
           env[:package_box_id] = env[:machine].provider.driver.clone_vm(
