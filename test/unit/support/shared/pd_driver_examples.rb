@@ -112,24 +112,7 @@ shared_examples 'parallels desktop driver' do |options|
   end
 
   describe 'clone_vm' do
-    before do
-      expect(subprocess).to receive(:execute).twice.
-        with('prlctl', 'list', '--json', '-i', an_instance_of(String),
-             an_instance_of(Hash)).
-        and_return(subprocess_result(stdout: '[{"Home": "/home/some/path"}]', exit_code: 0))
-      expect(subprocess).to receive(:execute).
-        with('prlctl', 'list', '--all', '--no-header', '--json', '-o', 'name,uuid', {:notify=>[:stdout, :stderr]}).
-        and_return(subprocess_result(stdout: '[]', exit_code: 0))
-      expect(subprocess).to receive(:execute).
-        with('prlctl', 'list', '--all', '--no-header', '--json', '-o', 'name,uuid', '--template', {:notify=>[:stdout, :stderr]}).
-        and_return(subprocess_result(stdout: '[]', exit_code: 0))
-    end
-
-    it 'clones VM to the new one when not on APFS' do
-      expect(subprocess).to receive(:execute).
-        with('df', '-T', 'apfs', '/home/some/path',
-             an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 1))
+    it 'clones VM to the new one' do
       expect(subprocess).to receive(:execute).
         with('prlctl', 'clone', tpl_uuid, '--name', an_instance_of(String),
              an_instance_of(Hash)).
@@ -137,31 +120,7 @@ shared_examples 'parallels desktop driver' do |options|
       subject.clone_vm(tpl_uuid)
     end
 
-    it 'uses cp to clone VM to the new one when on APFS' do
-      expect(subprocess).to receive(:execute).
-        with('df', '-T', 'apfs', '/home/some/path',
-             an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
-      expect(subprocess).to receive(:execute).
-        with('cp', '-c', '-R', '-p', '/home/some/path', an_instance_of(String),
-             an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
-      expect(subprocess).to receive(:execute).
-        with('prlctl', 'register', an_instance_of(String),
-             an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
-      expect(subprocess).to receive(:execute).
-        with('prlctl', 'unregister', tpl_uuid, an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 0))
-      expect(driver).to receive(:update_vm_name).and_return(true)
-      subject.clone_vm(tpl_uuid)
-    end
-
     it 'clones VM to the exported VM' do
-      expect(subprocess).to receive(:execute).
-        with('df', '-T', 'apfs', '/home/some/path',
-             an_instance_of(Hash)).
-        and_return(subprocess_result(exit_code: 1))
       expect(subprocess).to receive(:execute).
         with('prlctl', 'clone', uuid, '--name', an_instance_of(String),
              '--dst', an_instance_of(String), an_instance_of(Hash)).

@@ -78,26 +78,7 @@ module VagrantPlugins
         # @return [String] UUID of the new VM.
         def clone_vm(src_name, options = {})
           dst_name = "vagrant_temp_#{(Time.now.to_f * 1000.0).to_i}_#{rand(100000)}"
-          src_vm = json { execute_prlctl('list', '--json', '-i', src_name) }.first
 
-          if options[:linked] || !Util::Common.is_apfs?(src_vm.fetch('Home'))
-            # If linked clone is an option, or path to src is not on APFS, then do the normal clone.
-            prlctl_clone_vm(src_name, dst_name, options)
-          else
-            # We can use clonefile on APFS to do a fast CoW clone of the VM source and then register
-            copy_clone_vm(src_name, dst_name, options)
-          end
-          read_vms[dst_name]
-        end
-
-        # Uses prlctl to clone an existing registered VM
-        #
-        # @param [String] src_name Name or UUID of the source VM or template.
-        # @param [String] dst_name Name of the destination VM.
-        # @param [<String => String>] options Options to clone virtual machine.
-        def prlctl_clone_vm(src_name, dst_name, options = {})
-          list_args = ['list', '--json', '-i', src_name]
-          src_vm = json { execute_prlctl(*list_args) }.first
           args = ['clone', src_name, '--name', dst_name]
           args.concat(['--dst', options[:dst]]) if options[:dst]
 
@@ -116,41 +97,7 @@ module VagrantPlugins
               yield $1.to_i if block_given?
             end
           end
-        end
-
-        # Uses cp with clonefile flag to clone an existing registered VM
-        #
-        # @param [String] src_name Name or UUID of the source VM or template.
-        # @param [String] dst_name Name of the destination VM.
-        # @param [<String => String>] options Options to clone virtual machine.
-        def copy_clone_vm(src_name, dst_name, options = {})
-          list_args = ['list', '--json', '-i', src_name]
-          src_vm = json { execute_prlctl(*list_args) }.first
-          basepath = File.dirname(src_vm.fetch('Home')).delete_suffix('/')
-          extension = File.basename(src_vm.fetch('Home')).delete_suffix('/').split('.').last
-          clonepath = File.join(ENV['HOME'], "Parallels", "#{dst_name}.#{extension}")
-          execute('cp', '-c', '-R', '-p', src_vm.fetch('Home'), clonepath)
-
-          # Update config.pvs with dst_name as this is what Parallels uses when registering
-          update_vm_name(File.join(clonepath, 'config.pvs'), dst_name)
-
-          # Register the cloned path as a new VM
-          args = ['register', clonepath]
-          # Regenerate SourceVmUuid of the cloned VM
-          args << '--regenerate-src-uuid' if options[:regenerate_src_uuid]
-
-          # Regenerate SourceVmUuid of the cloned VM
-          execute_prlctl(*args)
-
-          # Don't need the box hanging around in Parallels
-          execute_prlctl('unregister', src_name)
-        end
-
-        def update_vm_name(config_pvs_path, name)
-          xml = Nokogiri::XML(File.read(config_pvs_path))
-          elem = xml.at_xpath('//ParallelsVirtualMachine/Identification/VmName')
-          elem.content = name
-          File.write(config_pvs_path, xml.to_xml)
+          read_vms[dst_name]
         end
 
         # Compacts the specified virtual disk image
