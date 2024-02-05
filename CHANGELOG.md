@@ -1,3 +1,8 @@
+## 2.4.2 (Feb 5, 2024)
+
+BUG FIXES:
+  - Revert "use clonefile copy for macvm boxes"
+  [[GH-464](https://github.com/Parallels/vagrant-parallels/pull/464)]
 ## 2.4.1 (Oct 16, 2023)
 IMPROVEMENTS:
   - use clonefile copy for macvm boxes
