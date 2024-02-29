@@ -18,18 +18,6 @@ the existing Veewee templates. If you haven't installed it yet, please refer to
 the [Veewee Installation](https://github.com/jedi4ever/veewee/blob/master/doc/installation.md)
 instructions.
 
-## Parallels Virtualization SDK
-
-Veewee requires the 'prlsdkapi' Python module from the Parallels Virtualization
-SDK to interact with Parallels Desktop and virtual machines. To use Veewee with
-the Parallels provider you need to download and install this SDK package:
-[The Parallels Virtualization SDK for Mac](https://www.parallels.com/download/pvsdk/)
-
-You can also install it with [Homebrew](brew.sh) package manager:
-
-```
-$ brew install parallels-virtualization-sdk
-```
 
 ## Preparing a definition
 
