@@ -16,19 +16,6 @@ sidebar_current: "boxes-packer"
 Packer must be properly installed in order to build a new base box using templates.
 Read the installation instruction here: [Install Packer](https://www.packer.io/docs/installation.html)
 
-## Parallels Virtualization SDK
-
-Packer requires the 'prlsdkapi' Python module from the Parallels Virtualization
-SDK to interact with Parallels Desktop and virtual machines. To use Parallels
-builders for Packer you need to download and install this SDK package:
-[The Parallels Virtualization SDK for Mac](https://www.parallels.com/download/pvsdk/)
-
-You can also install it with [Homebrew](brew.sh) package manager:
-
-```
-$ brew install parallels-virtualization-sdk
-```
-
 ## Packer Templates
 Packer is shipped with `parallels-iso` builder, which can be used to create
 base Vagrant boxes for the Parallels provider.
