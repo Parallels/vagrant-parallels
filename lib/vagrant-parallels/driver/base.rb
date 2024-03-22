@@ -453,7 +453,8 @@ module VagrantPlugins
             linux_arm: 'prl-tools-lin-arm.iso',
             darwin: 'prl-tools-mac.iso',
             darwin_arm: 'prl-tools-mac-arm.iso',
-            windows: 'PTIAgent.exe'
+            windows: 'prl-tools-win.iso',
+            windows_arm: 'prl-tools-win-arm.iso',
           }
           return nil unless iso_name[guest_os]
 

@@ -46,19 +46,19 @@ describe VagrantPlugins::Parallels::Driver::Base do
     end
 
     it "reads `windows`:nil success" do
-      expect(instance.read_guest_tools_iso_path('windows')).to end_with('PTIAgent.exe')
+      expect(instance.read_guest_tools_iso_path('windows')).to end_with('prl-tools-win.iso')
     end
     it "reads `windows`:`x86_64` success" do
-      expect(instance.read_guest_tools_iso_path('windows')).to end_with('PTIAgent.exe')
+      expect(instance.read_guest_tools_iso_path('windows', 'x86_64')).to end_with('prl-tools-win.iso')
     end
     it "reads `windows`:`aarch64` success" do
-      expect(instance.read_guest_tools_iso_path('windows')).to end_with('PTIAgent.exe')
+      expect(instance.read_guest_tools_iso_path('windows', 'aarch64')).to end_with('prl-tools-win-arm.iso')
     end
-    
+
     it "reads `unknown`:nil success" do
       expect(instance.read_guest_tools_iso_path('unknown')).to eq(nil)
     end
-    
+
     it "reads `linux`:nil exception" do
       VagrantPlugins::Parallels::Plugin.setup_i18n
       allow(File).to receive(:exist?).and_return(false)
