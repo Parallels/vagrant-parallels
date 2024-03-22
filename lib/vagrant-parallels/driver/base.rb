@@ -453,7 +453,8 @@ module VagrantPlugins
             linux_arm: 'prl-tools-lin-arm.iso',
             darwin: 'prl-tools-mac.iso',
             darwin_arm: 'prl-tools-mac-arm.iso',
-            windows: 'PTIAgent.exe'
+            windows: 'prl-tools-win.iso',
+            windows_arm: 'prl-tools-win-arm.iso',
           }
           return nil unless iso_name[guest_os]
 
@@ -462,7 +463,14 @@ module VagrantPlugins
           iso_path = File.expand_path("./Contents/Resources/Tools/#{iso_name[guest_os]}",
                                       bundle_path.split("\n")[0])
 
-          raise Errors::ParallelsToolsIsoNotFound, iso_path: iso_path unless File.exist?(iso_path)
+          unless File.exist?(iso_path)
+            if guest_os == :windows
+              # Fallback to exe tools package for older versions of Paralles
+              iso_path = File.expand_path("./Contents/Resources/Tools/PTIAgent.exe", bundle_path.split("\n")[0])
+            end
+
+            raise Errors::ParallelsToolsIsoNotFound, iso_path: iso_path unless File.exist?(iso_path)
+          end
 
           iso_path
         end
