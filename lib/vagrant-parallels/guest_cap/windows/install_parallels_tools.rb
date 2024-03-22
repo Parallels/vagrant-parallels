@@ -12,7 +12,10 @@ module VagrantPlugins
               machine.env.root_path
             )
 
-            remote_file = '$env:TEMP\parallels-tools-win.iso'
+            # Older versions of Parallels provided an executable file instead of an ISO image.
+            agent_path_is_exe = pti_agent_path.end_with?('.exe')
+
+            remote_file = "C:\\Windows\\Temp\\parallels-tools-win.#{agent_path_is_exe ? 'exe' : 'iso'}"
             comm.upload(pti_agent_path, remote_file)
 
             install_script = <<-EOH
@@ -27,11 +30,21 @@ module VagrantPlugins
             EOH
 
             cleanup_script = <<-EOH
-            Dismount-DiskImage -ImagePath #{remote_file}
             If (Test-Path #{remote_file}){
               Remove-Item #{remote_file}
             }
             EOH
+
+            if agent_path_is_exe
+              install_script = <<-EOH
+              Start-Process -FilePath #{remote_file} `
+                -ArgumentList "/install_silent" `
+                -Verb RunAs `
+                -Wait
+              EOH
+            else
+              cleanup_script = "Dismount-DiskImage -ImagePath #{remote_file}\n" + cleanup_script
+            end
 
             comm.execute(install_script)
             comm.execute(cleanup_script)
