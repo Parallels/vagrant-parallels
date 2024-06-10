@@ -90,8 +90,8 @@ GEM
     ptools (1.5.0)
     public_suffix (5.0.1)
     rack (2.2.8.1)
-    rack-contrib (1.2.0)
-      rack (>= 0.9.1)
+    rack-contrib (2.5.0)
+      rack (< 4)
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -125,7 +125,7 @@ DEPENDENCIES
   middleman-deploy (~> 2.0.0.pre.alpha)
   middleman-syntax (~> 3.0)
   rack (~> 2.2.8)
-  rack-contrib (~> 1.2)
+  rack-contrib (~> 2.5)
   redcarpet (~> 3.5)
 
 BUNDLED WITH
