@@ -96,7 +96,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redcarpet (3.6.0)
-    rexml (3.3.3)
+    rexml (3.3.6)
       strscan
     rouge (3.30.0)
     sassc (2.4.0)
