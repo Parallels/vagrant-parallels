@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.11'
   spec.add_development_dependency 'rspec-its', '~> 2.0.0'
-  spec.add_development_dependency 'webrick', '~> 1.8.0'
+  spec.add_development_dependency 'webrick', '~> 1.9.0'
 
   spec.files = Dir['lib/**/*', 'locales/**/*', 'README.md', 'CHANGELOG.md', 'LICENSE.txt']
   spec.require_path = 'lib'
