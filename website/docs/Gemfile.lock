@@ -89,7 +89,7 @@ GEM
     parslet (2.0.0)
     ptools (1.5.0)
     public_suffix (5.0.1)
-    rack (2.2.8.1)
+    rack (2.2.11)
     rack-contrib (2.5.0)
       rack (< 4)
     rb-fsevent (0.11.2)
@@ -122,7 +122,7 @@ DEPENDENCIES
   middleman (~> 4.4.0)
   middleman-deploy (~> 2.0.0.pre.alpha)
   middleman-syntax (~> 3.0)
-  rack (~> 2.2.8)
+  rack (~> 2.2.11)
   rack-contrib (~> 2.5)
   redcarpet (~> 3.5)
 
