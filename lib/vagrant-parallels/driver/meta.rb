@@ -52,7 +52,7 @@ module VagrantPlugins
           # Starting since PD 11 only Pro and Business editions have CLI
           # functionality and can be used with Vagrant.
           edition = read_edition
-          if !edition || !%w(any pro business).include?(edition)
+          if !edition || !%w(any pro business enterprise).include?(edition)
             raise Errors::ParallelsUnsupportedEdition
           end
 
