@@ -23,7 +23,7 @@ The Vagrant plugin installer will automatically download and install
 
 <div class="alert alert-warn">
     <p>
-		Only <strong>Pro</strong> and <strong>Business</strong> editions of
+		Only <strong>Pro</strong>, <strong>Enterprise</strong> and <strong>Business</strong> editions of
 		<strong>Parallels Desktop for Mac</strong> can be used with this Vagrant provider.
 	</p>
 </div>
