@@ -20,10 +20,11 @@ Read the installation instruction here: [Install Packer](https://www.packer.io/d
 Packer is shipped with `parallels-iso` builder, which can be used to create
 base Vagrant boxes for the Parallels provider.
 
-There are two popular projects containing Packer templates for `parallels-iso` builder:
+There are three popular projects containing Packer templates for `parallels-iso` builder:
 
 - [Bento](https://github.com/chef/bento)
 - [Boxcutter](https://github.com/boxcutter/)
+- [Parallels] (https://github.com/Parallels/packer-examples)
 
 ## Building a Box
 
