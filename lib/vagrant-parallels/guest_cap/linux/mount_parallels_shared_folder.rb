@@ -33,7 +33,17 @@ module VagrantPlugins
           @@logger.debug("Mounting #{name} (#{options[:hostpath]} to #{guestpath})")
 
           mount_options, mount_uid, mount_gid = options[:plugin].capability(:mount_options, name, guest_path, options)
-          mount_command = "mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}"
+          # mount_command = "mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}"
+          # In Parallels 20.2.0, prl_fs is removed and shares stop working with the
+          # `mount` command.  Using prl_fsd fixes this, although there may be additional
+          # issues related to the removal of prl_fs. 
+          mount_command = <<-CMD
+            if [ -f /usr/bin/prl_fsd ]; then
+              prl_fsd #{guest_path} -o nosuid,nodev,noatime,big_writes,fsname=#{name},subtype=prl_fsd --share --sf=#{name}
+            else
+              mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}
+            fi
+          CMD
 
           # Create the guest path if it doesn't exist
           machine.communicate.sudo("mkdir -p #{guest_path}")
