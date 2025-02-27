@@ -16,6 +16,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.2.2)
     contracts (0.16.1)
+    date (3.4.1)
     dotenv (2.8.1)
     erubis (2.7.0)
     execjs (2.8.1)
@@ -77,6 +78,11 @@ GEM
       middleman-core (>= 3.2)
       rouge (~> 3.2)
     minitest (5.19.0)
+    net-ftp (0.3.8)
+      net-protocol
+      time
+    net-protocol (0.2.2)
+      timeout
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
     net-ssh (7.1.0)
@@ -104,6 +110,9 @@ GEM
     temple (0.10.0)
     thor (1.2.1)
     tilt (2.0.11)
+    time (0.4.1)
+      date
+    timeout (0.4.3)
     toml (0.3.0)
       parslet (>= 1.8.0, < 3.0.0)
     tzinfo (2.0.6)
@@ -122,6 +131,7 @@ DEPENDENCIES
   middleman (~> 4.4.0)
   middleman-deploy (~> 2.0.0.pre.alpha)
   middleman-syntax (~> 3.0)
+  net-ftp
   rack (~> 2.2.11)
   rack-contrib (~> 2.5)
   redcarpet (~> 3.5)
