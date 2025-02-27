@@ -1,4 +1,14 @@
-## 2.4.3 (Feb 27, 2025)
+
+## 2.4.4 (Feb 27, 2025)
+
+IMPROVEMENTS:
+
+- Add a check for prl_fsd and use that to mount if it exists.
+  [[GH-487](https://github.com/Parallels/vagrant-parallels/pull/487)]
+- Updated the documentation to reflect the new version of the provider.
+  [[GH-488](https://github.com/Parallels/vagrant-parallels/pull/488)]
+
+## 2.4.3 (Feb 26, 2025)
 
 IMPROVEMENTS:
 
