@@ -33,13 +33,15 @@ module VagrantPlugins
           @@logger.debug("Mounting #{name} (#{options[:hostpath]} to #{guestpath})")
 
           mount_options, mount_uid, mount_gid = options[:plugin].capability(:mount_options, name, guest_path, options)
-          # mount_command = "mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}"
           # In Parallels 20.2.0, prl_fs is removed and shares stop working with the
-          # `mount` command.  Using prl_fsd fixes this, although there may be additional
-          # issues related to the removal of prl_fs. 
+          # `mount` command.  Using prl_fsd fixes this issue.
+
+          # prl_fsd does not support the _netdev option, so we need to remove it from the mount options
+          # for supported mount_options check prl_fsd --help in guest machine after installing Parallels Tools
+          prl_fsd_mount_options = mount_options.split(',').reject { |opt| opt == '_netdev' }.join(',')
           mount_command = <<-CMD
             if [ -f /usr/bin/prl_fsd ]; then
-              prl_fsd #{guest_path} -o nosuid,nodev,noatime,big_writes,fsname=#{name},subtype=prl_fsd --share --sf=#{name}
+              prl_fsd #{guest_path} -o big_writes,#{prl_fsd_mount_options},fsname=#{name},subtype=prl_fsd --sf=#{name}
             else
               mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}
             fi
