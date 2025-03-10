@@ -22,8 +22,14 @@ module VagrantPlugins
           # Convert to full-sized VM, copy all external and linked disks (if any)
           convert_to_full(env)
 
-          # Compact all virtual disks
-          compact(env)
+          # Compact all virtual disks 
+          # Note: The macvm (macOS VM on Apple Silicon Macs) only supports PLAIN virtual disks. 
+          # As a result, these disks cannot be compacted. Therefore, the compacting step 
+          # should be skipped for macvms.
+
+          if !Util::Common::is_macvm(env[:machine])
+            compact(env)
+          end
 
           # Preparations completed. Unregister before packaging
           unregister_vm(env)
