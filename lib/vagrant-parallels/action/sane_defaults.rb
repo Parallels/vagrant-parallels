@@ -44,7 +44,7 @@ module VagrantPlugins
             sh_app_guest_to_host: 'off',
             sh_app_host_to_guest: 'off',
             startup_view: 'headless',
-            time_sync: 'on',
+            time_sync_smart_mode: 'on',
             disable_timezone_sync: 'on',
             shf_host_defined: 'off'
           }
