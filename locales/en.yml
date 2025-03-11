@@ -75,8 +75,10 @@ en:
         This is an internal error that should be reported as a bug.
       parallels_mount_failed: |-
         Vagrant was unable to mount Parallels Desktop shared folders. This is usually
-        because the filesystem "prl_fs" is not available. This filesystem is
-        made available via the Parallels Tools and kernel module.
+        because the filesystem "prl_fs" is not available OR you are passing 
+        unsupported mount options to prl_fsd daemon for supported options please refer
+        to the prl_fsd --help in VM. 
+        "prl_fs"/"prl_fsd" are available via the Parallels Tools and kernel module.
         Please verify that these guest tools are properly installed in the
         guest. This is not a bug in Vagrant and is usually caused by a faulty
         Vagrant box. For context, the command attempted was:
