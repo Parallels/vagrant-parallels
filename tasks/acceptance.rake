@@ -12,14 +12,14 @@ namespace :acceptance do
       network/forwarded_port
       network/private_network
       snapshot
-      synced_folder
-      synced_folder/nfs
+      synced_folder_parallels
       synced_folder/rsync
       provisioner/shell
       provisioner/chef-solo
       package
     ).map{ |s| "provider/parallels/#{s}" }
-
+#   synced_folder/nfs is removed as vagrant nfs is not working in latest macOS versions.
+#   TODO: check how to support nfs for latest macOSes
     command = "vagrant-spec test --components=#{components.join(' ')}"
     puts command
     puts
