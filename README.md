@@ -28,8 +28,8 @@ Make sure that you have [Parallels Desktop for Mac](https://www.parallels.com/pr
 and [Vagrant](https://www.vagrantup.com/downloads.html) properly installed. We recommend
 that you use the latest versions of these products.
 
-Additionally, you'll need the software development tools provided as a part of Xcode to be able
-to build the plugin on you machine. To install these, run this command:
+Additionally, you'll need the command line software development tools provided as a part of Xcode
+to be able to build the plugin on your machine. To install these, run this command:
 
 ```
 $ xcode-select --install
