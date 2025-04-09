@@ -1,4 +1,10 @@
 
+## 2.4.6 (Apr 9, 2025)
+
+IMPROVEMENTS:
+
+- minor fixes
+
 ## 2.4.4 (Feb 27, 2025)
 
 IMPROVEMENTS:
