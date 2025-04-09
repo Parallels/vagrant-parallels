@@ -25,10 +25,18 @@ read the official [Vagrant documentation](https://docs.vagrantup.com/v2/) first.
 
 ## Installation
 Make sure that you have [Parallels Desktop for Mac](https://www.parallels.com/products/desktop/)
-and [Vagrant](https://www.vagrantup.com/downloads.html) properly installed.
-We recommend that you use the latest versions of these products.
+and [Vagrant](https://www.vagrantup.com/downloads.html) properly installed. We recommend
+that you use the latest versions of these products.
 
-Parallels provider is a plugin for Vagrant. Run this command to install it:
+Additionally, you'll need the command line software development tools provided as a part of Xcode
+to be able to build the plugin on your machine. To install these, run this command:
+
+```
+$ xcode-select --install
+```
+
+
+You can then install the Parallels provider plugin for Vagrant. Run this command to install it:
 
 ```
 $ vagrant plugin install vagrant-parallels
