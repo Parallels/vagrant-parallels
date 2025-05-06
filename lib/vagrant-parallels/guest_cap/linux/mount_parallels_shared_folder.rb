@@ -38,10 +38,23 @@ module VagrantPlugins
 
           # prl_fsd does not support the _netdev option, so we need to remove it from the mount options
           # for supported mount_options check prl_fsd --help in guest machine after installing Parallels Tools
-          prl_fsd_mount_options = mount_options.split(',').reject { |opt| opt == '_netdev' }.join(',')
+          
+          # the `share` option needs to be passed as an extra `--share` argument
+
+          prl_fsd_mount_options = mount_options.split(',').reject { |opt| opt == '_netdev' }
+
+          if mount_options.include?('share')
+            share_flag = '--share'
+            prl_fsd_mount_options.reject! { |opt| opt == 'share' || opt.start_with?('uid=', 'gid=') }
+          else
+            share_flag = ''
+          end
+
+          o_options = prl_fsd_mount_options.join(',')
+
           mount_command = <<-CMD
             if [ -f /usr/bin/prl_fsd ]; then
-              prl_fsd #{guest_path} -o big_writes,#{prl_fsd_mount_options},fsname=#{name},subtype=prl_fsd --sf=#{name}
+              prl_fsd #{guest_path} -o big_writes,#{o_options},fsname=#{name},subtype=prl_fsd #{share_flag} --sf=#{name}
             else
               mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}
             fi
