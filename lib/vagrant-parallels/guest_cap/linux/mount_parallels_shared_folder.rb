@@ -43,6 +43,10 @@ module VagrantPlugins
 
           prl_fsd_mount_options = mount_options.split(',').reject { |opt| opt == '_netdev' }
 
+          prl_fsd_mount_options << "big_writes"
+          prl_fsd_mount_options << "fsname=#{name}"
+          prl_fsd_mount_options << "subtype=prl_fsd"
+
           if mount_options.include?('share')
             share_flag = '--share'
             prl_fsd_mount_options.reject! { |opt| opt == 'share' || opt.start_with?('uid=', 'gid=') }
@@ -54,7 +58,7 @@ module VagrantPlugins
 
           mount_command = <<-CMD
             if [ -f /usr/bin/prl_fsd ]; then
-              prl_fsd #{guest_path} -o big_writes,#{o_options},fsname=#{name},subtype=prl_fsd #{share_flag} --sf=#{name}
+              prl_fsd #{guest_path} -o #{o_options} #{share_flag} --sf=#{name}
             else
               mount -t #{mount_type} -o #{mount_options} #{name} #{guest_path}
             fi
