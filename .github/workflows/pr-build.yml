@@ -1,0 +1,24 @@
+name: PR Build
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true # This will cache dependencies
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Build gem
+        run: bundle exec rake build

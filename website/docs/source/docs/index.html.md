@@ -12,7 +12,6 @@ virtual machines.
 If you're just getting started with Vagrant, it is highly recommended you start
 with the official [Vagrant documentation](https://www.vagrantup.com/docs/).
 
-
 ## What is Vagrant?
 
 Vagrant is an amazing tool for building and distributing development environments.
@@ -32,4 +31,4 @@ most trusted solution for running virtual machines on macOS.
 The Parallels provider is free and open for contributions on the [GitHub](https://github.com/Parallels/vagrant-parallels).
 
 The latest version of the provider is compatible with Parallels Desktop for Mac v11
-and higher ("Pro" and "Business" editions only).
+and higher ("Pro", "Enterprise" and "Business" editions only).
