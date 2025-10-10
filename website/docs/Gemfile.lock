@@ -95,7 +95,7 @@ GEM
     parslet (2.0.0)
     ptools (1.5.0)
     public_suffix (5.0.1)
-    rack (2.2.19)
+    rack (2.2.20)
     rack-contrib (2.5.0)
       rack (< 4)
     rb-fsevent (0.11.2)
@@ -132,7 +132,7 @@ DEPENDENCIES
   middleman-deploy (~> 2.0.0.pre.alpha)
   middleman-syntax (~> 3.0)
   net-ftp
-  rack (~> 2.2.19)
+  rack (~> 2.2.20)
   rack-contrib (~> 2.5)
   redcarpet (~> 3.5)
 
