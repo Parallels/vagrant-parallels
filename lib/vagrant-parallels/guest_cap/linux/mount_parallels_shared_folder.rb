@@ -67,6 +67,20 @@ module VagrantPlugins
           # Create the guest path if it doesn't exist
           machine.communicate.sudo("mkdir -p #{guest_path}")
 
+          # On Ubuntu 26.04+, AppArmor's fusermount3 profile blocks FUSE mounts by default.
+          # Add an override rule for this mountpoint and reload the profile.
+          # AppArmor requires a trailing slash on directory paths in mount rules.
+          apparmor_mountpoint = guestpath.end_with?('/') ? guestpath : "#{guestpath}/"
+          apparmor_setup = <<-CMD
+            if [ -f /usr/bin/prl_fsd ] && [ -f /etc/apparmor.d/fusermount3 ]; then
+              mkdir -p /etc/apparmor.d/local
+              rule="mount fstype=@{fuse_types} -> #{apparmor_mountpoint},"
+              grep -qF "$rule" /etc/apparmor.d/local/fusermount3 2>/dev/null || echo "$rule" >> /etc/apparmor.d/local/fusermount3
+              apparmor_parser -r /etc/apparmor.d/fusermount3
+            fi
+          CMD
+          machine.communicate.sudo(apparmor_setup)
+
           # Attempt to mount the folder. We retry here a few times because
           # it can fail early on.
           stderr = ""
