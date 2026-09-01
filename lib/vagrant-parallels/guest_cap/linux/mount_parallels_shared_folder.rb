@@ -43,7 +43,17 @@ module VagrantPlugins
 
           prl_fsd_mount_options = mount_options.split(',').reject { |opt| opt == '_netdev' }
 
-          prl_fsd_mount_options << "big_writes"
+          # The `big_writes` mount option was removed in libfuse3 (guests that
+          # ship `fusermount3`, e.g. Ubuntu 24.04+), since big writes have been
+          # negotiated automatically via the FUSE_BIG_WRITES capability since
+          # Linux kernel 2.6.26. Passing it on a libfuse3 guest causes prl_fsd
+          # to fail outright with:
+          #   fuse: unknown option(s): `-o big_writes'
+          # On libfuse2 guests (only `fusermount`, no `fusermount3` binary) the
+          # option is still the way to opt in to larger write sizes, so keep
+          # passing it there for backwards compatibility (e.g. Ubuntu 18.04).
+          uses_fuse3 = machine.communicate.test("command -v fusermount3")
+          prl_fsd_mount_options << "big_writes" unless uses_fuse3
           prl_fsd_mount_options << "fsname=#{name}"
           prl_fsd_mount_options << "subtype=prl_fsd"
 
