@@ -27,7 +27,7 @@ For Macs with Apple M-series chip use ARM-based boxes:
 Adding a box from the catalog is very easy:
 
 ```
-$ vagrant box add bento/ubuntu-18.04
+$ vagrant box add bento/ubuntu-26.04
 ...
 ```
 
@@ -36,13 +36,13 @@ You can also quickly initialize a Vagrant environment with the command:
 - For Macs with Intel chip:
 
 ```
-$ vagrant init bento/ubuntu-18.04
+$ vagrant init bento/ubuntu-26.04
 ...
 ```
 
 - For Macs with Apple M-series chip:
 
 ```
-$ vagrant init bento/ubuntu-20.04-arm64
+$ vagrant init bento/ubuntu-26.04
 ...
 ```
